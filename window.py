@@ -12,7 +12,7 @@ PADDING = 40
 GRID_SIZE = 15
 TILE_SIZE = (WINDOW_WIDTH - PADDING) // GRID_SIZE
 
-# Special Tile Constants
+# Special Tile Constants (ZERO INDEX)
 TRIPLE_WORD = [(0, 0), (0, 7), (0, 14), (7, 0), (7, 14), (14, 0), (14, 7), (14, 14)]
 TRIPLE_LETTER = [(1, 5), (1, 9), (5, 1), (5, 5), (5, 9), (5, 13),
                        (9, 1), (9, 5), (9, 9), (9, 13), (13, 5), (13, 9)]
@@ -22,6 +22,7 @@ DOUBLE_LETTER = [(0, 3), (0, 11), (2, 6), (2, 8), (3, 0), (3, 7), (3, 14),
                        (6, 2), (6, 6), (6, 8), (6, 12), (7, 3), (7, 11), (8, 2),
                        (8, 6), (8, 8), (8, 12), (11, 0), (11, 7), (11, 14),
                        (12, 6), (12, 8), (14, 3), (14, 11)]
+CENTER = [(7, 7)]
 
 class GameView(arcade.Window):
     def __init__(self):
@@ -49,6 +50,8 @@ class GameView(arcade.Window):
                     color = arcade.color.LIGHT_PINK
                 elif (row, col) in DOUBLE_LETTER:
                     color = arcade.color.LIGHT_BLUE
+                elif (row, col) in CENTER:
+                    color = arcade.color.LIGHT_GREEN
                 else:
                     color = arcade.color.BEIGE
 
