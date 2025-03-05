@@ -4,7 +4,7 @@ Starting Template from Python Arcade Documentation
 import arcade
 
 WINDOW_WIDTH = 720
-WINDOW_HEIGHT = 720
+WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Scrabble"
 PADDING = 40
 
@@ -27,7 +27,7 @@ CENTER = [(7, 7)]
 
 class GameView(arcade.Window):
     def __init__(self):
-        super().__init__(WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE)
+        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
 
         self.background_color = arcade.color.BABY_BLUE
 
@@ -38,12 +38,14 @@ class GameView(arcade.Window):
     def on_draw(self):
         self.clear()
 
+        # Draw Board Boxes
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
                 text = []
-                x = col * TILE_SIZE + PADDING // 2
-                y = row * TILE_SIZE + PADDING // 2
+                x = col * TILE_SIZE + PADDING // 2   # Aligning the board to the left
+                y = WINDOW_HEIGHT - ((row + 1) * TILE_SIZE) - PADDING // 2    # Aligning the board to the top
 
+                # Coloring and writing in special squares
                 if (row, col) in TRIPLE_WORD:
                     color = arcade.color.LIGHT_RED_OCHRE
                     text = ["TRIPLE", "WORD", "SCORE"]
@@ -62,14 +64,20 @@ class GameView(arcade.Window):
                     color = arcade.color.BEIGE
                     text = []
 
+                # Drawing Board Tiles
                 arcade.draw_lbwh_rectangle_filled(x, y, TILE_SIZE, TILE_SIZE, color)
                 arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE, arcade.color.NAVY_BLUE)
+
+                # Writing Text
                 x = x + 22
                 start_y = y + 5
                 for i, word in enumerate(text):
                     y = start_y - (i * 10)
                     arcade.draw_text(word, x, y + 25, arcade.color.BLACK, 5, anchor_x="center")
 
+                # Draw Tile Mat at Bottom of Screen
+        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 7, 25, WINDOW_WIDTH // 1.4, 100, arcade.color.DARK_BROWN)
+        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 7, 25, WINDOW_WIDTH // 1.4, 20, arcade.color.BISTRE_BROWN)
 
     def on_update(self, delta_time):
         """
