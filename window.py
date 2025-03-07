@@ -25,15 +25,42 @@ DOUBLE_LETTER = [(0, 3), (0, 11), (2, 6), (2, 8), (3, 0), (3, 7), (3, 14),
 CENTER = [(7, 7)]
 
 
+class Tile(arcade.SpriteSolidColor):
+    def __init__(self, x, y, width, height):
+        super().__init__(width, height, color=arcade.color.BONE)
+        self.dragging = False
+        self.center_x = x + width // 2
+        self.center_y = y + height // 2
+
+    def on_mouse_press(self, x, y, button):
+        if button == arcade.MOUSE_BUTTON_LEFT and self.collides_with_point((x, y)):
+            self.dragging = True
+            self.offset_x = self.center_x - x
+            self.offset_y = self.center_y - y
+
+    def on_mouse_release(self, x, y, button):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            self.dragging = False
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        if self.dragging:
+            self.center_x = x + self.offset_x
+            self.center_y = y + self.offset_y
+
+
 class GameView(arcade.Window):
     def __init__(self):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
-
         self.background_color = arcade.color.BABY_BLUE
+        self.tiles = arcade.SpriteList()
+        for i in range(7):
+            tile = Tile(i * 60 + 154, 45, TILE_SIZE, TILE_SIZE)
+            self.tiles.append(tile)
+
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
-        self.rectangles = []
+        pass
 
     def on_draw(self):
         self.clear()
@@ -75,9 +102,12 @@ class GameView(arcade.Window):
                     y = start_y - (i * 10)
                     arcade.draw_text(word, x, y + 25, arcade.color.BLACK, 5, anchor_x="center")
 
-                # Draw Tile Mat at Bottom of Screen
-        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 7, 25, WINDOW_WIDTH // 1.4, 100, arcade.color.DARK_BROWN)
-        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 7, 25, WINDOW_WIDTH // 1.4, 20, arcade.color.BISTRE_BROWN)
+        # Draw Tile Mat at Bottom of Screen
+        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 5, 25, WINDOW_WIDTH // 1.7, 100, arcade.color.DARK_BROWN)
+        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 5, 25, WINDOW_WIDTH // 1.7, 20, arcade.color.BISTRE_BROWN)
+
+        # Draw Tiles
+        self.tiles.draw()
 
     def on_update(self, delta_time):
         """
@@ -103,21 +133,18 @@ class GameView(arcade.Window):
         pass
 
     def on_mouse_motion(self, x, y, delta_x, delta_y):
-        """
-        Called whenever the mouse moves.
-        """
+        for tile in self.tiles:
+            tile.on_mouse_motion(x, y, delta_x, delta_y)
         pass
 
     def on_mouse_press(self, x, y, button, key_modifiers):
-        """
-        Called when the user presses a mouse button.
-        """
+        for tile in self.tiles:
+            tile.on_mouse_press(x, y, button)
         pass
 
     def on_mouse_release(self, x, y, button, key_modifiers):
-        """
-        Called when a user releases a mouse button.
-        """
+        for tile in self.tiles:
+            tile.on_mouse_release(x, y, button)
         pass
 
 
