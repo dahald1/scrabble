@@ -7,6 +7,13 @@ WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Scrabble"
 PADDING = 40
+TILE_SPACING = 60
+TILE_PADDING = 154
+TILE_BANK_HEIGHT = 45
+LINE_SPACING = 5
+LINE_TRACING = 22
+MAT_PADDING_TOP_BOT = 5
+MAT_PADDING_LEFT_RIGHT = 1.7
 
 # Grid Constants
 GRID_SIZE = 15
@@ -26,37 +33,56 @@ CENTER = [(7, 7)]
 
 
 class Tile(arcade.SpriteSolidColor):
+    """Main Tile class deals with data and dragging logic."""
     def __init__(self, x, y, width, height):
         super().__init__(width, height, color=arcade.color.BONE)
+        self.offset_y = None
+        self.offset_x = None
         self.dragging = False
         self.center_x = x + width // 2
         self.center_y = y + height // 2
 
+    # Dragging Logic
     def on_mouse_press(self, x, y, button):
+        """ Called when the user presses a mouse button. """
         if button == arcade.MOUSE_BUTTON_LEFT and self.collides_with_point((x, y)):
             self.dragging = True
             self.offset_x = self.center_x - x
             self.offset_y = self.center_y - y
 
     def on_mouse_release(self, x, y, button):
+        """ Called when a user releases a mouse button. """
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
 
+
     def on_mouse_motion(self, x, y, dx, dy):
+        """ Called when the user moves the mouse. """
         if self.dragging:
             self.center_x = x + self.offset_x
             self.center_y = y + self.offset_y
 
+            # Keeping the tile on screen
+            if self.center_x - self.width // 2 < 0:
+                self.center_x = self.width // 2
+            if self.center_x + self.width // 2 > WINDOW_WIDTH:
+                self.center_x = WINDOW_WIDTH - self.width // 2
+            if self.center_y - self.height // 2 < 0:
+                self.center_y = self.height // 2
+            if self.center_y + self.height // 2 > WINDOW_HEIGHT:
+                self.center_y = WINDOW_HEIGHT - self.height // 2
+
 
 class GameView(arcade.Window):
+    """ Main application class. """
     def __init__(self):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
+        # Initializing tiles
         for i in range(7):
-            tile = Tile(i * 60 + 154, 45, TILE_SIZE, TILE_SIZE)
+            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_BANK_HEIGHT, TILE_SIZE, TILE_SIZE)
             self.tiles.append(tile)
-
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -69,8 +95,9 @@ class GameView(arcade.Window):
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
                 text = []
-                x = col * TILE_SIZE + PADDING // 2   # Aligning the board to the left
-                y = WINDOW_HEIGHT - ((row + 1) * TILE_SIZE) - PADDING // 2    # Aligning the board to the top
+                # Aligning the board to the left and top
+                x = col * TILE_SIZE + PADDING // 2
+                y = WINDOW_HEIGHT - ((row + 1) * TILE_SIZE) - PADDING // 2
 
                 # Coloring and writing in special squares
                 if (row, col) in TRIPLE_WORD:
@@ -93,18 +120,22 @@ class GameView(arcade.Window):
 
                 # Drawing Board Tiles
                 arcade.draw_lbwh_rectangle_filled(x, y, TILE_SIZE, TILE_SIZE, color)
-                arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE, arcade.color.NAVY_BLUE)
+                arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE,
+                                                   arcade.color.NAVY_BLUE)
 
                 # Writing Text
-                x = x + 22
-                start_y = y + 5
+                x = x + LINE_TRACING
+                start_y = y + LINE_SPACING
                 for i, word in enumerate(text):
+                    # Spacing out words
                     y = start_y - (i * 10)
                     arcade.draw_text(word, x, y + 25, arcade.color.BLACK, 5, anchor_x="center")
 
         # Draw Tile Mat at Bottom of Screen
-        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 5, 25, WINDOW_WIDTH // 1.7, 100, arcade.color.DARK_BROWN)
-        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // 5, 25, WINDOW_WIDTH // 1.7, 20, arcade.color.BISTRE_BROWN)
+        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
+                                          WINDOW_WIDTH // MAT_PADDING_LEFT_RIGHT, 100, arcade.color.DARK_BROWN)
+        arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
+                                          WINDOW_WIDTH // MAT_PADDING_LEFT_RIGHT, 20, arcade.color.BISTRE_BROWN)
 
         # Draw Tiles
         self.tiles.draw()
@@ -115,7 +146,6 @@ class GameView(arcade.Window):
         Normally, you'll call update() on the sprite lists that
         need it.
         """
-        pass
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -124,13 +154,11 @@ class GameView(arcade.Window):
         For a full list of keys, see:
         https://api.arcade.academy/en/latest/arcade.key.html
         """
-        pass
 
     def on_key_release(self, key, key_modifiers):
         """
         Called whenever the user lets off a previously pressed key.
         """
-        pass
 
     def on_mouse_motion(self, x, y, delta_x, delta_y):
         for tile in self.tiles:
