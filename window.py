@@ -3,17 +3,27 @@ Starting Template from Python Arcade Documentation
 """
 import arcade
 
+# Window Constants
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Scrabble"
 PADDING = 40
+
+# Tile Constants
 TILE_SPACING = 60
 TILE_PADDING = 154
-TILE_BANK_HEIGHT = 45
+
+# Text Constants
 LINE_SPACING = 5
 LINE_TRACING = 22
+
+# Mat constants
 MAT_PADDING_TOP_BOT = 5
 MAT_PADDING_LEFT_RIGHT = 1.7
+TILE_MAT_HEIGHT = 45
+
+# Snapping Constants
+SNAPPING_ERROR = 0.5
 
 # Grid Constants
 GRID_SIZE = 15
@@ -55,7 +65,12 @@ class Tile(arcade.SpriteSolidColor):
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
 
+            # Snap to grid
+            snap_x = round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR) * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2
+            snap_y = round((self.center_y - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR) * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2
 
+            self.center_x = snap_x - self.width
+            self.center_y = snap_y - self.height
     def on_mouse_motion(self, x, y, dx, dy):
         """ Called when the user moves the mouse. """
         if self.dragging:
@@ -81,7 +96,7 @@ class GameView(arcade.Window):
         self.tiles = arcade.SpriteList()
         # Initializing tiles
         for i in range(7):
-            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_BANK_HEIGHT, TILE_SIZE, TILE_SIZE)
+            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE)
             self.tiles.append(tile)
 
     def setup(self):
@@ -172,7 +187,8 @@ class GameView(arcade.Window):
 
     def on_mouse_release(self, x, y, button, key_modifiers):
         for tile in self.tiles:
-            tile.on_mouse_release(x, y, button)
+            if tile.dragging:
+                tile.on_mouse_release(x, y, button)
         pass
 
 
