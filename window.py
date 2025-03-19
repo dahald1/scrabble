@@ -44,6 +44,11 @@ CENTER = [(7, 7)]
 
 class Tile(arcade.SpriteSolidColor):
     """Main Tile class deals with data and dragging logic."""
+
+    # Position of the tile in the tile mat
+    position = 0
+    value = ""
+
     def __init__(self, x, y, width, height):
         super().__init__(width, height, color=arcade.color.BONE)
         self.offset_y = None
@@ -65,14 +70,26 @@ class Tile(arcade.SpriteSolidColor):
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
 
-            # Snap to grid
+            # Setting current corrdinates on mouse release
+            curr_x = self.center_x
+            curr_y = self.center_y
+
+            # Snap to grid coordinates
             snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
                       * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
             snap_y = (round((self.center_y - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
                       * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
 
-            self.center_x = snap_x - self.width
-            self.center_y = snap_y - self.height
+            # Restricting snapping to game board.
+            if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE) + PADDING
+                    or snap_x < PADDING or snap_x > WINDOW_WIDTH):
+                # TODO: Add return to mat instead of current position
+                self.center_y = curr_y
+                self.center_x = curr_x
+            else:
+                self.center_y = snap_y - self.height
+                self.center_x = snap_x - self.width
+
     def on_mouse_motion(self, x, y, dx, dy):
         """ Called when the user moves the mouse. """
         if self.dragging:
@@ -139,6 +156,7 @@ class GameView(arcade.Window):
                 arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE,
                                                    arcade.color.NAVY_BLUE)
 
+                # TODO: Change to text object instead of draw_text
                 # Writing Text
                 x = x + LINE_TRACING
                 start_y = y + LINE_SPACING
@@ -172,6 +190,8 @@ class GameView(arcade.Window):
         For a full list of keys, see:
         https://api.arcade.academy/en/latest/arcade.key.html
         """
+        if key == arcade.key.ESCAPE:
+            arcade.close_window()
 
     def on_key_release(self, key, modifiers):
         """
