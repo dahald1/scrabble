@@ -2,10 +2,11 @@
 Starting Template from Python Arcade Documentation
 """
 import arcade
+import random
 
 # Window Constants
-WINDOW_WIDTH = 720
-WINDOW_HEIGHT = 850
+WINDOW_WIDTH = 500
+WINDOW_HEIGHT = 500
 WINDOW_TITLE = "Scrabble"
 PADDING = 40
 
@@ -41,16 +42,27 @@ DOUBLE_LETTER = [(0, 3), (0, 11), (2, 6), (2, 8), (3, 0), (3, 7), (3, 14),
                  (12, 6), (12, 8), (14, 3), (14, 11)]
 CENTER = [(7, 7)]
 
+# Standard Scrabble Tile Distribution
+TILE_BAG = (
+    "A" * 9 + "B" * 2 + "C" * 2 + "D" * 4 + "E" * 12 + "F" * 2 + "G" * 3 + "H" * 2 +
+    "I" * 9 + "J" * 1 + "K" * 1 + "L" * 4 + "M" * 2 + "N" * 6 + "O" * 8 + "P" * 2 +
+    "Q" * 1 + "R" * 6 + "S" * 4 + "T" * 6 + "U" * 4 + "V" * 2 + "W" * 2 + "X" * 1 + "Y" * 2 + "Z" * 1 + "_" * 2
+)
 
 class Tile(arcade.SpriteSolidColor):
     """Main Tile class deals with data and dragging logic."""
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, letter):
         super().__init__(width, height, color=arcade.color.BONE)
+        self.letter = letter
         self.offset_y = None
         self.offset_x = None
         self.dragging = False
         self.center_x = x + width // 2
         self.center_y = y + height // 2
+
+    def draw(self):
+        super().draw()
+        arcade.draw_text(self.letter, self.center_x, self.center_y, arcade.color.BLACK, 24, anchor_x="center", anchor_y="center")
 
     # Dragging Logic
     def on_mouse_press(self, x, y, button):
@@ -94,9 +106,14 @@ class GameView(arcade.Window):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
+
+        tile_bag = list(TILE_BAG)
+        random.shuffle(tile_bag)
+
         # Initializing tiles
         for i in range(7):
-            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE)
+            letter = tile_bag.pop()
+            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, letter)
             self.tiles.append(tile)
 
     def setup(self):
