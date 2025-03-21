@@ -29,6 +29,9 @@ SNAPPING_ERROR = 0.5
 GRID_SIZE = 15
 TILE_SIZE = (WINDOW_WIDTH - PADDING) // GRID_SIZE
 
+# Position Constants
+POSITIONS = [(176, 67), (236, 67), (296, 67), (356, 67), (416, 67), (476, 67), (536, 67)]
+
 # Special Tile Constants (ZERO INDEX)
 TRIPLE_WORD = [(0, 0), (0, 7), (0, 14), (7, 0), (7, 14), (14, 0), (14, 7), (14, 14)]
 TRIPLE_LETTER = [(1, 5), (1, 9), (5, 1), (5, 5), (5, 9), (5, 13),
@@ -46,16 +49,17 @@ class Tile(arcade.SpriteSolidColor):
     """Main Tile class deals with data and dragging logic."""
 
     # Position of the tile in the tile mat
-    position = 0
+    mat_position = 0
     value = ""
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, mat_pos):
         super().__init__(width, height, color=arcade.color.BONE)
         self.offset_y = None
         self.offset_x = None
         self.dragging = False
         self.center_x = x + width // 2
         self.center_y = y + height // 2
+        self.mat_position = mat_pos
 
     # Dragging Logic
     def on_mouse_press(self, x, y, button):
@@ -83,9 +87,8 @@ class Tile(arcade.SpriteSolidColor):
             # Restricting snapping to game board.
             if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE) + PADDING
                     or snap_x < PADDING or snap_x > WINDOW_WIDTH):
-                # TODO: Add return to mat instead of current position
-                self.center_y = curr_y
-                self.center_x = curr_x
+                self.center_x = POSITIONS[self.mat_position][0]
+                self.center_y = POSITIONS[self.mat_position][1]
             else:
                 self.center_y = snap_y - self.height
                 self.center_x = snap_x - self.width
@@ -115,7 +118,8 @@ class GameView(arcade.Window):
         self.tiles = arcade.SpriteList()
         # Initializing tiles
         for i in range(7):
-            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE)
+            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i)
+            print(tile.center_x, tile.center_y)
             self.tiles.append(tile)
 
     def setup(self):
