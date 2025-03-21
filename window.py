@@ -29,8 +29,8 @@ SNAPPING_ERROR = 0.5
 GRID_SIZE = 15
 TILE_SIZE = (WINDOW_WIDTH - PADDING) // GRID_SIZE
 
-# Position Constants
-POSITIONS = [(176, 67), (236, 67), (296, 67), (356, 67), (416, 67), (476, 67), (536, 67)]
+# Mat Position Constants
+MAT_POSITIONS = [(176, 67), (236, 67), (296, 67), (356, 67), (416, 67), (476, 67), (536, 67)]
 
 # Special Tile Constants (ZERO INDEX)
 TRIPLE_WORD = [(0, 0), (0, 7), (0, 14), (7, 0), (7, 14), (14, 0), (14, 7), (14, 14)]
@@ -64,6 +64,7 @@ class Tile(arcade.SpriteSolidColor):
     # Dragging Logic
     def on_mouse_press(self, x, y, button):
         """ Called when the user presses a mouse button. """
+        # Dragging Logic
         if button == arcade.MOUSE_BUTTON_LEFT and self.collides_with_point((x, y)):
             self.dragging = True
             self.offset_x = self.center_x - x
@@ -74,10 +75,6 @@ class Tile(arcade.SpriteSolidColor):
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
 
-            # Setting current corrdinates on mouse release
-            curr_x = self.center_x
-            curr_y = self.center_y
-
             # Snap to grid coordinates
             snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
                       * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
@@ -85,10 +82,10 @@ class Tile(arcade.SpriteSolidColor):
                       * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
 
             # Restricting snapping to game board.
-            if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE) + PADDING
-                    or snap_x < PADDING or snap_x > WINDOW_WIDTH):
-                self.center_x = POSITIONS[self.mat_position][0]
-                self.center_y = POSITIONS[self.mat_position][1]
+            if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE)
+                    + PADDING or snap_x < PADDING or snap_x > WINDOW_WIDTH):
+                self.center_x = MAT_POSITIONS[self.mat_position][0]
+                self.center_y = MAT_POSITIONS[self.mat_position][1]
             else:
                 self.center_y = snap_y - self.height
                 self.center_x = snap_x - self.width
@@ -114,6 +111,7 @@ class GameView(arcade.Window):
     """ Main application class. """
     def __init__(self):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+        # Initial setup of variables
         self.special_tile_text = None
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
@@ -161,7 +159,6 @@ class GameView(arcade.Window):
                 arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE,
                                                    arcade.color.NAVY_BLUE)
 
-                # TODO: Fix text alignment
                 # Writing Text
                 x = x + LINE_TRACING
                 start_y = y + LINE_SPACING
