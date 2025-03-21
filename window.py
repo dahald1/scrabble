@@ -78,8 +78,10 @@ class Tile(arcade.SpriteSolidColor):
             self.dragging = False
 
             # Snap to grid
-            snap_x = round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR) * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2
-            snap_y = round((self.center_y - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR) * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2
+            snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
+                      * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
+            snap_y = (round((self.center_y - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
+                      * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
 
             self.center_x = snap_x - self.width
             self.center_y = snap_y - self.height
@@ -118,7 +120,6 @@ class GameView(arcade.Window):
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
-        pass
 
     def on_draw(self):
         self.clear()
@@ -165,9 +166,11 @@ class GameView(arcade.Window):
 
         # Draw Tile Mat at Bottom of Screen
         arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
-                                          WINDOW_WIDTH // MAT_PADDING_LEFT_RIGHT, 100, arcade.color.DARK_BROWN)
+                                          WINDOW_WIDTH // MAT_PADDING_LEFT_RIGHT,
+                                          100, arcade.color.DARK_BROWN)
         arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
-                                          WINDOW_WIDTH // MAT_PADDING_LEFT_RIGHT, 20, arcade.color.BISTRE_BROWN)
+                                          WINDOW_WIDTH // MAT_PADDING_LEFT_RIGHT,
+                                          20, arcade.color.BISTRE_BROWN)
 
         # Draw Tiles
         self.tiles.draw()
@@ -179,7 +182,7 @@ class GameView(arcade.Window):
         need it.
         """
 
-    def on_key_press(self, key, key_modifiers):
+    def on_key_press(self, key, modifiers):
         """
         Called whenever a key on the keyboard is pressed.
 
@@ -187,26 +190,23 @@ class GameView(arcade.Window):
         https://api.arcade.academy/en/latest/arcade.key.html
         """
 
-    def on_key_release(self, key, key_modifiers):
+    def on_key_release(self, key, modifiers):
         """
         Called whenever the user lets off a previously pressed key.
         """
 
-    def on_mouse_motion(self, x, y, delta_x, delta_y):
+    def on_mouse_motion(self, x, y, dx, dy):
         for tile in self.tiles:
-            tile.on_mouse_motion(x, y, delta_x, delta_y)
-        pass
+            tile.on_mouse_motion(x, y, dx, dy)
 
-    def on_mouse_press(self, x, y, button, key_modifiers):
+    def on_mouse_press(self, x, y, button, modifiers):
         for tile in self.tiles:
             tile.on_mouse_press(x, y, button)
-        pass
 
-    def on_mouse_release(self, x, y, button, key_modifiers):
+    def on_mouse_release(self, x, y, button, modifiers):
         for tile in self.tiles:
             if tile.dragging:
                 tile.on_mouse_release(x, y, button)
-        pass
 
 
 def main():
