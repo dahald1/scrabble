@@ -114,13 +114,14 @@ class GameView(arcade.Window):
     """ Main application class. """
     def __init__(self):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+        self.special_tile_text = None
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
         # Initializing tiles
         for i in range(7):
             tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i)
-            print(tile.center_x, tile.center_y)
             self.tiles.append(tile)
+
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -160,14 +161,22 @@ class GameView(arcade.Window):
                 arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE,
                                                    arcade.color.NAVY_BLUE)
 
-                # TODO: Change to text object instead of draw_text
+                # TODO: Fix text alignment
                 # Writing Text
                 x = x + LINE_TRACING
                 start_y = y + LINE_SPACING
                 for i, word in enumerate(text):
                     # Spacing out words
                     y = start_y - (i * 10)
-                    arcade.draw_text(word, x, y + 25, arcade.color.BLACK, 5, anchor_x="center")
+                    self.special_tile_text = arcade.Text(
+                        word,
+                        x,
+                        y + 25,
+                        arcade.color.BLACK,
+                        5,
+                        anchor_x="center"
+                    )
+                    self.special_tile_text.draw()
 
         # Draw Tile Mat at Bottom of Screen
         arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
