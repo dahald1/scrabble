@@ -3,6 +3,9 @@ Starting Template from Python Arcade Documentation
 """
 import arcade
 
+# Global Sprite List
+global tiles
+
 # Window Constants
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
@@ -45,6 +48,10 @@ DOUBLE_LETTER = [(0, 3), (0, 11), (2, 6), (2, 8), (3, 0), (3, 7), (3, 14),
 CENTER = [(7, 7)]
 
 
+# Global Board Matrix
+BOARD_MATRIX = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+
+
 class Tile(arcade.SpriteSolidColor):
     """Main Tile class deals with data and dragging logic."""
 
@@ -52,7 +59,7 @@ class Tile(arcade.SpriteSolidColor):
     mat_position = 0
     value = ""
 
-    def __init__(self, x, y, width, height, mat_pos):
+    def __init__(self, x, y, width, height, mat_pos, value):
         super().__init__(width, height, color=arcade.color.BONE)
         self.offset_y = None
         self.offset_x = None
@@ -60,6 +67,21 @@ class Tile(arcade.SpriteSolidColor):
         self.center_x = x + width // 2
         self.center_y = y + height // 2
         self.mat_position = mat_pos
+        self.value = value
+
+    # Tile Letter Logic
+    def set_letter(self):
+        """Draw letter on top of the tile."""
+        text = arcade.Text(
+            self.value,
+            self.center_x,
+            self.center_y,
+            arcade.color.BLACK,
+            20,
+            anchor_x="center",
+            anchor_y="center"
+        )
+        text.draw()
 
     # Dragging Logic
     def on_mouse_press(self, x, y, button):
@@ -117,9 +139,25 @@ class GameView(arcade.Window):
         self.tiles = arcade.SpriteList()
         # Initializing tiles
         for i in range(7):
-            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i)
+            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i, value="A")
             self.tiles.append(tile)
 
+    @staticmethod
+    def print_board_matrix():
+        for row in BOARD_MATRIX:
+            print(row)
+
+    @staticmethod
+    def update_board_matrix(self):
+        for tile in self.tiles:
+            if (PADDING / 2 <= tile.center_x <= WINDOW_WIDTH - PADDING /2 and
+                WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2 < tile.center_y
+                    <= WINDOW_HEIGHT - PADDING / 2):
+                row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
+                col = (tile.center_x - PADDING / 2) // TILE_SIZE
+
+                BOARD_MATRIX[int(row)][int(col)] = tile.value
+        # self.print_board_matrix()     # Uncomment to debug board matrix positioning
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -185,6 +223,8 @@ class GameView(arcade.Window):
 
         # Draw Tiles
         self.tiles.draw()
+        for tile in self.tiles:
+            tile.set_letter()
 
     def on_update(self, delta_time):
         """
@@ -220,6 +260,11 @@ class GameView(arcade.Window):
         for tile in self.tiles:
             if tile.dragging:
                 tile.on_mouse_release(x, y, button)
+                # TODO - Add logic to check if a tile is being placed on another tile. FIX THIS
+                if arcade.check_for_collision_with_list(tile, self.tiles):
+                    tile.center_x = MAT_POSITIONS[tile.mat_position][0]
+                    tile.center_y = MAT_POSITIONS[tile.mat_position][1]
+        self.update_board_matrix(self)
 
 
 def main():
