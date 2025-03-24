@@ -180,8 +180,12 @@ class GameView(arcade.Window):
         # Initializing player's initial tile draw
         Tile.refill_mat(self)
 
+    def compile_word(self, added_tiles):
+        """Compiles the played tiles into word vector"""
+
+
     @staticmethod
-    def find_word(prev_board_matrix, curr_board_matrix):
+    def find_added_tiles(prev_board_matrix, curr_board_matrix):
         """Finds the word that was placed on the board."""
         added_tiles = []
 
@@ -189,7 +193,7 @@ class GameView(arcade.Window):
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
                 if prev_board_matrix[row][col] is None and curr_board_matrix[row][col] is not None:
-                    added_tiles.append(curr_board_matrix[row][col])
+                    added_tiles.append((row, col))
         print(added_tiles)
 
     @staticmethod
@@ -202,11 +206,11 @@ class GameView(arcade.Window):
     def update_board_matrix(self):
         """Updates the board matrix with the current tile positions."""
 
-        # FOR DEBUG
-        # prev_matrix = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-        # for row in range(GRID_SIZE):
-        #     for col in range(GRID_SIZE):
-        #         prev_matrix[row][col] = BOARD_MATRIX[row][col]
+        # Uncomment to debug board matrix positioning
+        prev_matrix = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        for row in range(GRID_SIZE):
+            for col in range(GRID_SIZE):
+                prev_matrix[row][col] = BOARD_MATRIX[row][col]
 
 
         # Clear matrix
@@ -225,8 +229,10 @@ class GameView(arcade.Window):
                 col = (tile.center_x - PADDING / 2) // TILE_SIZE
 
                 BOARD_MATRIX[int(row)][int(col)] = tile.value
-        self.print_board_matrix()     # Uncomment to debug board matrix positioning
-        self.find_word(prev_board_matrix=prev_matrix, curr_board_matrix=BOARD_MATRIX)
+
+        # Uncomment to debug board matrix positioning
+        self.print_board_matrix()
+        self.find_added_tiles(prev_board_matrix=prev_matrix, curr_board_matrix=BOARD_MATRIX)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
