@@ -180,8 +180,51 @@ class GameView(arcade.Window):
         # Initializing player's initial tile draw
         Tile.refill_mat(self)
 
-    def compile_word(self, added_tiles):
+    # TODO - Check for other connected words
+    @staticmethod
+    def compile_word(added_tiles, test_matrix):
         """Compiles the played tiles into word vector"""
+
+        return_list = []
+
+        # Uncomment this line for testing
+        # (supposed to shadow global BOARD_MATRIX for testing purposes)
+        BOARD_MATRIX = test_matrix
+
+        # Vertical word played
+        if added_tiles[0][0] == added_tiles[1][0]:
+            # Checking before played tiles
+            if BOARD_MATRIX[added_tiles[0][0]][added_tiles[0][1] - 1] is not None:
+                return_list.append(BOARD_MATRIX[added_tiles[0][0]][added_tiles[0][1] - 1])
+
+            # Adding played tiled
+            for tile in added_tiles:
+                return_list.append(BOARD_MATRIX[tile[0]][tile[1]])
+
+            # Checking after played tiles
+            if (BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0]]
+                    [added_tiles[len(added_tiles) - 1][1] + 1] is not None):
+                return_list.append(BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0]]
+                                   [added_tiles[len(added_tiles) - 1][1] + 1])
+
+        # Horizontal word played
+        elif added_tiles[0][1] == added_tiles[1][1]:
+            # Checking before played tiles
+            if BOARD_MATRIX[added_tiles[0][0] - 1][added_tiles[0][1]] is not None:
+                return_list.append(BOARD_MATRIX[added_tiles[0][0] - 1][added_tiles[0][1]])
+
+            # Adding played tiled
+            for tile in added_tiles:
+                return_list.append(BOARD_MATRIX[tile[0]][tile[1]])
+
+            # Checking after played tiles
+            if (BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0] + 1]
+                    [added_tiles[len(added_tiles) - 1][1]] is not None):
+                return_list.append(BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0] + 1]
+                                   [added_tiles[len(added_tiles) - 1][1]])
+
+        return return_list
+
 
 
     @staticmethod
