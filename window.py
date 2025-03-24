@@ -2,6 +2,7 @@
 Starting Template from Python Arcade Documentation
 """
 import arcade
+import random
 
 # Global Sprite List
 global tiles
@@ -50,6 +51,12 @@ CENTER = [(7, 7)]
 
 # Global Board Matrix
 BOARD_MATRIX = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+
+# Tile bag dictionary. Format (value: quantity remaining). Represents default scrabble distribution
+TILE_BAG = {"A": 9, "B": 2, "C": 2, "D": 4, "E": 12, "F": 2, "G": 3, "H": 2,
+            "I": 9, "J": 1, "K": 1, "L": 4, "M": 2, "N": 6, "O": 8, "P": 2,
+            "Q": 1, "R": 6, "S": 4, "T": 6, "U": 4, "V": 2, "W": 2, "X": 1,
+            "Y": 2, "Z": 1, " ": 2}
 
 
 class Tile(arcade.SpriteSolidColor):
@@ -137,9 +144,31 @@ class GameView(arcade.Window):
         self.special_tile_text = None
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
-        # Initializing tiles
+
+        # TODO - make this into a function + add checking which positions need to be filled
+        # Initializing player's initial tile draw
         for i in range(7):
-            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i, value="A")
+            value = ""
+            valid = False
+            while not valid:
+                # # Selecting a random tile from the bag
+                # random_selection = random.randint(0, len(TILE_BAG) - 1)
+                # value = list(TILE_BAG.keys())[random_selection]
+
+                # Turning the tile bag into a list for random distribution selection
+                tile_bag_list = []
+                for letter, quantity in TILE_BAG.items():
+                    tile_bag_list.extend([letter] * quantity)
+
+                # Selecting a random tile from the bag
+                value = random.choice(tile_bag_list)
+
+                # Checking if tiles in the distribution have been used up
+                if TILE_BAG[value] > 0:
+                    TILE_BAG[value] -= 1
+                    valid = True
+
+            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i, value=value)
             self.tiles.append(tile)
 
     @staticmethod
@@ -149,6 +178,12 @@ class GameView(arcade.Window):
 
     @staticmethod
     def update_board_matrix(self):
+        # Clear matrix
+        for row in range(GRID_SIZE):
+            for col in range(GRID_SIZE):
+                BOARD_MATRIX[row][col] = None
+
+        # Update matrix
         for tile in self.tiles:
             if (PADDING / 2 <= tile.center_x <= WINDOW_WIDTH - PADDING /2 and
                 WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2 < tile.center_y
