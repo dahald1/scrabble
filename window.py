@@ -1,8 +1,8 @@
 """
 Starting Template from Python Arcade Documentation
 """
-import arcade
 import random
+import arcade
 
 # Global Sprite List
 global tiles
@@ -58,6 +58,10 @@ TILE_BAG = {"A": 9, "B": 2, "C": 2, "D": 4, "E": 12, "F": 2, "G": 3, "H": 2,
             "Q": 1, "R": 6, "S": 4, "T": 6, "U": 4, "V": 2, "W": 2, "X": 1,
             "Y": 2, "Z": 1, " ": 2}
 
+# Mat Positions Tracking
+MAT_POSITIONS_FILLED = [False for _ in range(7)]
+print(MAT_POSITIONS_FILLED)
+
 
 class Tile(arcade.SpriteSolidColor):
     """Main Tile class deals with data and dragging logic."""
@@ -90,7 +94,35 @@ class Tile(arcade.SpriteSolidColor):
         )
         text.draw()
 
-    # Dragging Logic
+    @staticmethod
+    def refill_mat(self):
+        """Refill the tile mat with a new tile."""
+        # Initializing player's initial tile draw
+        for i in range(7):
+            # Filling only positions that need to be filled
+            if not MAT_POSITIONS_FILLED[i]:
+                value = ""
+                valid = False
+                while not valid:
+                    # Turning the tile bag into a list for random distribution selection
+                    tile_bag_list = []
+                    for letter, quantity in TILE_BAG.items():
+                        tile_bag_list.extend([letter] * quantity)
+
+                    # Selecting a random tile from the bag
+                    value = random.choice(tile_bag_list)
+
+                    # Checking if tiles in the distribution have been used up
+                    if TILE_BAG[value] > 0:
+                        TILE_BAG[value] -= 1
+                        valid = True
+
+                # Creating tile sprite objects + updating mat
+                tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
+                            TILE_SIZE, TILE_SIZE, i, value=value)
+                self.tiles.append(tile)
+                MAT_POSITIONS_FILLED[i] = True
+
     def on_mouse_press(self, x, y, button):
         """ Called when the user presses a mouse button. """
         # Dragging Logic
@@ -145,39 +177,18 @@ class GameView(arcade.Window):
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
 
-        # TODO - make this into a function + add checking which positions need to be filled
         # Initializing player's initial tile draw
-        for i in range(7):
-            value = ""
-            valid = False
-            while not valid:
-                # # Selecting a random tile from the bag
-                # random_selection = random.randint(0, len(TILE_BAG) - 1)
-                # value = list(TILE_BAG.keys())[random_selection]
-
-                # Turning the tile bag into a list for random distribution selection
-                tile_bag_list = []
-                for letter, quantity in TILE_BAG.items():
-                    tile_bag_list.extend([letter] * quantity)
-
-                # Selecting a random tile from the bag
-                value = random.choice(tile_bag_list)
-
-                # Checking if tiles in the distribution have been used up
-                if TILE_BAG[value] > 0:
-                    TILE_BAG[value] -= 1
-                    valid = True
-
-            tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT, TILE_SIZE, TILE_SIZE, i, value=value)
-            self.tiles.append(tile)
+        Tile.refill_mat(self)
 
     @staticmethod
     def print_board_matrix():
+        """Prints the board matrix to console for debugging purposes."""
         for row in BOARD_MATRIX:
             print(row)
+        print("\n\n")
 
-    @staticmethod
     def update_board_matrix(self):
+        """Updates the board matrix with the current tile positions."""
         # Clear matrix
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
@@ -188,6 +199,8 @@ class GameView(arcade.Window):
             if (PADDING / 2 <= tile.center_x <= WINDOW_WIDTH - PADDING /2 and
                 WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2 < tile.center_y
                     <= WINDOW_HEIGHT - PADDING / 2):
+
+                # Calculate row and column of tile by positioning within window
                 row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
                 col = (tile.center_x - PADDING / 2) // TILE_SIZE
 
@@ -295,11 +308,13 @@ class GameView(arcade.Window):
         for tile in self.tiles:
             if tile.dragging:
                 tile.on_mouse_release(x, y, button)
-                # TODO - Add logic to check if a tile is being placed on another tile. FIX THIS
+
+                # Tests for tile collision with tiles already placed
                 if arcade.check_for_collision_with_list(tile, self.tiles):
                     tile.center_x = MAT_POSITIONS[tile.mat_position][0]
                     tile.center_y = MAT_POSITIONS[tile.mat_position][1]
-        self.update_board_matrix(self)
+
+        self.update_board_matrix()
 
 
 def main():
