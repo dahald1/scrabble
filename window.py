@@ -48,8 +48,7 @@ DOUBLE_LETTER = [(0, 3), (0, 11), (2, 6), (2, 8), (3, 0), (3, 7), (3, 14),
                  (12, 6), (12, 8), (14, 3), (14, 11)]
 CENTER = [(7, 7)]
 
-
-# Global Board Matrix
+# Global Board Matrix (15x15, top left is (0, 0))
 BOARD_MATRIX = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
 
 # Tile bag dictionary. Format (value: quantity remaining). Represents default scrabble distribution
@@ -83,6 +82,8 @@ class Tile(arcade.SpriteSolidColor):
     # Tile Letter Logic
     def set_letter(self):
         """Draw letter on top of the tile."""
+        # TODO - Add points number to tiles
+        # TODO - Make sure tiles print on top of the letters for other tiles.
         text = arcade.Text(
             self.value,
             self.center_x,
@@ -207,6 +208,16 @@ class GameView(arcade.Window):
                 return_list.append(BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0]]
                                    [added_tiles[len(added_tiles) - 1][1] + 1])
 
+            # Check for connected words on the top and bottom of played tiles
+            for tile in added_tiles:
+                # TODO - Finish this
+                if tile[0] - 1 >= 0 and BOARD_MATRIX[tile[0] - 1][tile[1]] is not None:
+                    # THIS MEANS A LETTER EXISTS TO THE LEFT OF CURRENT TILE
+                    pass
+                if tile[0] + 1 < GRID_SIZE and BOARD_MATRIX[tile[0] + 1][tile[1]] is not None:
+                    # THIS MEANS A LETTER EXISTS TO THE RIGHT OF CURRENT TILE
+                    pass
+
         # Horizontal word played
         elif added_tiles[0][1] == added_tiles[1][1]:
             # Checking before played tiles
@@ -310,6 +321,7 @@ class GameView(arcade.Window):
                     color = arcade.color.BEIGE
                     text = []
 
+                # TODO - increase special score colored tile size
                 # Drawing Board Tiles
                 arcade.draw_lbwh_rectangle_filled(x, y, TILE_SIZE, TILE_SIZE, color)
                 arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE,

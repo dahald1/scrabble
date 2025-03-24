@@ -34,7 +34,8 @@ def print_board_matrix():
 
 
 def test_vertical_existing():
-    """Tests the compile_word function with a simple vertical word addition (existing letters on one side)."""
+    """Tests the compile_word function with a simple vertical word addition
+    (existing letters on one side)."""
     added_tiles = [(5, 7), (6, 7)]
     expected_output = ['C', 'A', 'T']
 
@@ -47,7 +48,8 @@ def test_vertical_existing():
 
 
 def test_horizontal_existing():
-    """Tests the compile_word function with a simple horizontal word addition (existing letters on one side)."""
+    """Tests the compile_word function with a simple horizontal word addition
+    (existing letters on one side)."""
     added_tiles = [(7, 5), (7, 6)]
     expected_output = ['C', 'U', 'T']
 
@@ -57,6 +59,7 @@ def test_horizontal_existing():
         print("PASSED")
     else:
         print("FAILED")
+
 
 def test_vertical():
     """Tests compile_word function for a simple vertical word addition (no existing letters)."""
@@ -82,6 +85,9 @@ def test_horizontal():
         print("PASSED")
     else:
         print("FAILED")
+
+# TODO - Add tests for edge of board to make sure indices are not out of range
+
 
 if __name__ == "__main__":
     # Printing board matrix to verify letter positions
