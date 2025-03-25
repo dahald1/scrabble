@@ -1,69 +1,130 @@
 import tilebag as tb
 import player as p
 import board as b
+from board import load_dictionary
+import word as w
+
+
 class Game:
-    def __init__(self, players: list):
-        self.tile_bag = tb.TileBag()
+    def __init__(self):
+        self.tile_bag = tb.Bag()
         self.board = b.Board()
-        self.players = [p.Player(name, self.tile_bag) for name in players]
         self.current_player_index = 0
 
-    def play(self):
-        """Main game loop: keeps playing until a player reaches x points."""
-        while True:
-            self.next_turn()
-            # Check if any player has reached 10 points
-            for player in self.players:
-                if player.score >= 10:
-                    print(f"\n{player.name} wins with {player.score} points!")
-                    return  # End the game
+    def is_valid_word(self, word):
+        filename = "dictionary.csv"
+        dictionary = load_dictionary(filename)
 
-    def next_turn(self):
-        player = self.players[self.current_player_index]
-        print(f"\nIt's {player.name}'s turn.")
-        print(f"Your tiles: {[tile.letter for tile in player.rack]}")
+        if word.lower() not in dictionary:
+            print("This is not a valid word")
+            return False
 
-        while True:
-            word = input("Enter a word from your tiles: ").upper()
-            if self.is_valid_word(word, player):
-                break
-            print("Invalid word. Please use only the tiles in your rack.")
-
-        while True:
-            try:
-                start_x = int(input("Enter the starting column (0-14): "))
-                start_y = int(input("Enter the starting row (0-14): "))
-                direction = input("Enter direction (H for horizontal, V for vertical): ").upper()
-                
-                if direction in ('H', 'V') and 0 <= start_x < 15 and 0 <= start_y < 15:
-                    if self.board.place_word(word, start_x, start_y, "horizontal" if direction == "H" else "vertical"):
-                        break  # Placement was successful, break the loop
-            except ValueError:
-                pass
-            print("Invalid placement. Try again.")
-
-        # Update player score
-        word_score = sum(tile.value for tile in player.rack if tile and tile.letter in word)
-        player.score += word_score
-        print(f"{player.name} played '{word}' for {word_score} points! Total Score: {player.score}")
-
-        # Remove used tiles from rack and draw new ones
-        player.rack = [tile for tile in player.rack if tile.letter not in word]
-        player.draw_tiles(self.tile_bag)
-
-        # Show updated board
-        self.board.display()
-
-        # Move to the next player
-        self.current_player_index = (self.current_player_index + 1) % len(self.players)
-
-
-    def is_valid_word(self, word, player):
-        """Check if the word can be formed with the player's tiles."""
-        available_letters = [tile.letter for tile in player.rack]
-        for letter in word:
-            if letter in available_letters:
-                available_letters.remove(letter)
-            else:
-                return False
         return True
+
+    def turn(self, player, board, bag):
+        # Begins a turn, by displaying the current board, getting the information to play a turn, and creates a
+        # recursive loop to allow the next person to play.
+        global round_number, players, skipped_turns
+
+        # If the number of skipped turns is less than 6 and a row, and there are either tiles in the bag,
+        # or no players have run out of tiles, play the turn. Otherwise, end the game.
+        if (skipped_turns < 6) or (player.rack.get_rack_length() == 0 and bag.get_remaining_tiles() == 0):
+
+            # Displays whose turn it is, the current board, and the player's rack.
+            print("\nRound " + str(round_number) + ": " + player.get_name() + "'s turn \n")
+            print(board.get_board())
+            print("\n" + player.get_name() + "'s Letter Rack: " + player.get_rack_str())
+
+            # Gets information in order to play a word.
+            word_to_play = input("Word to play: ")
+            location = []
+            col = input("Column number: ")
+            row = input("Row number: ")
+            if (col == "" or row == "") or (
+                    col not in [str(x) for x in range(15)] or row not in [str(x) for x in range(15)]):
+                location = [-1, -1]
+            else:
+                location = [int(row), int(col)]
+            direction = input("Direction of word (right or down): ")
+
+            word = w.Word(word_to_play, location, player, direction, board.board_array())
+
+            # If the first word throws an error, creates a recursive loop until the information is given correctly.
+            checked = word.check_word()
+            while checked != True:
+                print(checked)
+                word_to_play = input("Word to play: ")
+                word.set_word(word_to_play)
+                location = []
+                col = input("Column number: ")
+                row = input("Row number: ")
+                if (col == "" or row == "") or (
+                        col not in [str(x) for x in range(15)] or row not in [str(x) for x in range(15)]):
+                    location = [-1, -1]
+                else:
+                    word.set_location([int(row), int(col)])
+                    location = [int(row), int(col)]
+                direction = input("Direction of word (right or down): ")
+                word.set_direction(direction)
+                checked = word.check_word()
+
+            # If the user has confirmed that they would like to skip their turn, skip it.
+            # Otherwise, plays the correct word and prints the board.
+            if word.get_word() == "":
+                print("Your turn has been skipped.")
+                skipped_turns += 1
+            else:
+                board.place_word(word_to_play, location, direction, player)
+                word.calculate_word_score()
+                skipped_turns = 0
+
+            # Prints the current player's score
+            print("\n" + player.get_name() + "'s score is: " + str(player.get_score()))
+
+            # Gets the next player.
+            if players.index(player) != (len(players) - 1):
+                player = players[players.index(player) + 1]
+            else:
+                player = players[0]
+                round_number += 1
+
+            # Recursively calls the function in order to play the next turn.
+            self.turn(player, board, bag)
+
+        # If the number of skipped turns is over 6 or the bag has both run out of tiles and a player is out of tiles, end the game.
+        else:
+            self.end_game()
+
+    def start_game(self):
+        # Begins the game and calls the turn function.
+        global round_number, players, skipped_turns
+        players_names =["Alice", "Bob"]
+        num_of_players = 2
+        players = []
+
+        # Welcomes players to the game and allows players to choose their name.
+        print("\nWelcome to Scrabble! Please enter the names of the players below.")
+        for i in range(num_of_players):
+            players.append(p.Player(self.tile_bag))
+            players[i].set_name(players_names[i])
+
+        # Sets the default value of global variables.
+        round_number = 1
+        skipped_turns = 0
+        current_player = players[0]
+        self.turn(current_player, self.board, self.tile_bag)
+
+    def end_game(self):
+        # Forces the game to end when the bag runs out of tiles.
+        highest_score = 0
+        winning_player = ""
+        for player in players:
+            if player.get_score > highest_score:
+                highest_score = player.get_score()
+                winning_player = player.get_name()
+        print("The game is over! " + winning_player + ", you have won!")
+
+        if input("\nWould you like to play again? (y/n)").upper() == "Y":
+            self.start_game()
+
+

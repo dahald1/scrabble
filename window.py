@@ -88,10 +88,10 @@ class Tile(arcade.SpriteSolidColor):
                 self.center_y = WINDOW_HEIGHT - self.height // 2
 
 
-class GameView(arcade.Window):
+class GameView(arcade.View):
     """ Main application class. """
     def __init__(self):
-        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+        super().__init__()
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
         # Initializing tiles
@@ -195,11 +195,16 @@ class GameView(arcade.Window):
 def main():
     """ Main function """
     # Create a window class. This is what actually shows up on screen
-    window = GameView()
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
 
-    window.setup()
+    # window = GameView()
+
+    game = GameView()
+    window.show_view(game)
+    # window.setup()
 
     arcade.run()
+
 
 
 if __name__ == "__main__":

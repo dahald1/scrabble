@@ -1,21 +1,33 @@
-import tilebag as tb
+import rack as rc
+
 
 class Player:
-    def __init__(self, name: str, tile_bag: tb.TileBag):
-        self.name = name
-        self.rack = [tile_bag.draw_tile() for _ in range(7)]  # Start with 7 tiles
+    def __init__(self,bag):
+        self.name = ""
+        self.rack = rc.Rack(bag)  # Start with 7 tiles
         self.score = 0
 
-    def play_word(self, word: str, board):
-        # Logic to check if word is valid and calculate score
-        word_score = sum(tile.value for tile in self.rack if tile and tile.letter in word)
-        self.score += word_score
-        print(f"{self.name} played '{word}' for {word_score} points!")
+    def set_name(self, name):
+        # Sets the player's name.
+        self.name = name
 
-    def draw_tiles(self, tile_bag):
-        while len(self.rack) < 7 and tile_bag.tiles:
-            self.rack.append(tile_bag.draw_tile())
+    def get_name(self):
+        # Gets the player's name.
+        return self.name
 
-    def display(self):
-        for tile in self.rack:
-            print(' ', tile)
+    def get_rack_str(self):
+        # Returns the player's rack.
+        return self.rack.get_rack_str()
+
+    def get_rack_arr(self):
+        # Returns the player's rack in the form of an array.
+        return self.rack.get_rack_arr()
+
+    def increase_score(self, increase):
+        # Increases the player's score by a certain amount. Takes the increase (int) as an argument and adds it to
+        # the score.
+        self.score += increase
+
+    def get_score(self):
+        # Returns the player's score
+        return self.score

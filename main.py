@@ -10,6 +10,7 @@ import arcade
 from arcade.gui import UIManager
 from arcade import resources
 from arcade.gui.widgets.buttons import UIFlatButton
+from window import GameView
 
 resources.load_kenney_fonts()
 # Load button textures (Replace these with your own image paths)
@@ -46,75 +47,13 @@ class Button(arcade.Sprite):
         else:
             self.set_texture(0)  # normal texture (first texture)
 
-class Room1(arcade.View):
-    """ First additional window. """
 
-    def __init__(self):
-        super().__init__()
-        self.sprites = arcade.SpriteList()
-        self.background_color = arcade.color.DARK_BLUE
-        self.back_button = Button(BUTTON_NORMAL, BUTTON_HOVER, BUTTON_CLICKED,  self.window.width // 10, self.window.height // 10, scale=0.2)
-        self.sprites.append(self.back_button)
-        self.ui_manager = UIManager()
-
-
-    def on_draw(self):
-        self.clear()
-        arcade.draw_text("This is Window 1", self.window.width // 2, self.window.height // 2,
-                         arcade.color.WHITE, 20, anchor_x="center")
-        self.sprites.draw()
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.back_button.update_button(x, y, False)
-
-    def on_mouse_press(self, x, y, button, key_modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            self.back_button.update_button(x, y, True)
-
-    def on_mouse_release(self, x, y, button, key_modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            if self.back_button.collides_with_point((x, y)):
-                self.window.show_view(GameView())
-
-
-class Room2(arcade.View):
-    """ First additional window. """
-
-    def __init__(self):
-        super().__init__()
-        self.sprites = arcade.SpriteList()
-        self.background_color = arcade.color.DARK_BLUE
-        self.back_button = Button(BUTTON_NORMAL, BUTTON_HOVER, BUTTON_CLICKED, self.window.width // 10, self.window.height // 10, scale=0.2)
-        self.sprites.append(self.back_button)
-
-    def on_draw(self):
-        self.clear()
-        arcade.draw_text("This is Window 2", self.window.width // 2, self.window.height // 2,
-                         arcade.color.WHITE, 20, anchor_x="center")
-        self.sprites.draw()
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.back_button.update_button(x, y, False)
-
-    def on_mouse_press(self, x, y, button, key_modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            self.back_button.update_button(x, y, True)
-
-    def on_mouse_release(self, x, y, button, key_modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            if self.back_button.collides_with_point((x, y)):
-                self.window.show_view(GameView())
-
-
-
-
-
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 720
+WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Intro Screen"
 
 
-class GameView(arcade.View):
+class Game_view(arcade.View):
     """ Main menu with buttons to open different views. """
 
     def __init__(self):
@@ -202,9 +141,10 @@ class GameView(arcade.View):
             self.button2.update_button(x, y, self.is_mouse_pressed)
 
             if self.play.collides_with_point((x, y)):
-                self.window.show_view(Room1())
+                self.window.show_view(GameView())
             if self.with_AI.collides_with_point((x, y)):
-                self.window.show_view(Room2())
+                print("this is clicked")
+                self.window.show_view(GameView())
 
 
 def main():
@@ -213,7 +153,7 @@ def main():
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
 
     # Create and set up the GameView
-    game = GameView()
+    game = Game_view()
     # game.setup()
 
     # Show GameView on screen
