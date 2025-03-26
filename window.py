@@ -57,6 +57,16 @@ TILE_BAG = {"A": 9, "B": 2, "C": 2, "D": 4, "E": 12, "F": 2, "G": 3, "H": 2,
             "Q": 1, "R": 6, "S": 4, "T": 6, "U": 4, "V": 2, "W": 2, "X": 1,
             "Y": 2, "Z": 1, " ": 2}
 
+# Letter's points values
+POINTS_VALUE = {0: [" "],
+                1: ["A", "E", "I", "O", "U", "L", "N", "S", "T", "R"],
+                2: ["D", "G"],
+                3: ["B", "C", "M", "P"],
+                4: ["F", "H", "V", "W", "Y"],
+                5: ["K"],
+                8: ["J", "X"],
+                10: ["Q", "Z"]}
+
 # Mat Positions Tracking
 MAT_POSITIONS_FILLED = [False for _ in range(7)]
 print(MAT_POSITIONS_FILLED)
@@ -82,8 +92,8 @@ class Tile(arcade.SpriteSolidColor):
     # Tile Letter Logic
     def set_letter(self):
         """Draw letter on top of the tile."""
-        # TODO - Add points number to tiles
         # TODO - Make sure tiles print on top of the letters for other tiles.
+        # Tile letter text object
         text = arcade.Text(
             self.value,
             self.center_x,
@@ -93,7 +103,25 @@ class Tile(arcade.SpriteSolidColor):
             anchor_x="center",
             anchor_y="center"
         )
+
+        # Calculating points value based on global dictionary
+        points_value = ""
+        for i in POINTS_VALUE.keys():
+            if self.value in POINTS_VALUE[i]:
+                points_value = str(i)
+
+        # Points value text object
+        points_text = arcade.Text(
+            points_value,
+            self.center_x + 15,
+            self.center_y + 15,
+            arcade.color.BLACK,
+            10,
+            anchor_x="center",
+            anchor_y="center"
+        )
         text.draw()
+        points_text.draw()
 
     @staticmethod
     def refill_mat(self):
@@ -181,60 +209,126 @@ class GameView(arcade.Window):
         # Initializing player's initial tile draw
         Tile.refill_mat(self)
 
+
+    @staticmethod
+    def scan_left(tile_position):
+        """Scans left of the tile for connected words."""
+        return_list = []
+        pos = list(tile_position)
+        while pos[1] - 1 >= 0 and BOARD_MATRIX[pos[0]][pos[1] - 1] is not None:
+            pos[1] -= 1
+            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
+
+        return return_list[::-1]
+
+    @staticmethod
+    def scan_right(tile_position):
+        """Scans right of the tile for connected words."""
+        return_list = []
+        pos = list(tile_position)
+        while pos[1] + 1 < GRID_SIZE and BOARD_MATRIX[pos[0]][pos[1] + 1] is not None:
+            pos[1] += 1
+            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
+
+        return return_list
+
+    @staticmethod
+    def scan_up(tile_position):
+        """Scans up of the tile for connected words."""
+        return_list = []
+        pos = list(tile_position)
+        while pos[0] - 1 >= 0 and BOARD_MATRIX[pos[0] - 1][pos[1]] is not None:
+            pos[0] -= 1
+            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
+
+        return return_list
+
+    @staticmethod
+    def scan_down(tile_position):
+        """Scans down of the tile for connected words."""
+        return_list = []
+        pos = list(tile_position)
+        while pos[0] + 1 < GRID_SIZE and BOARD_MATRIX[pos[0] + 1][pos[1]] is not None:
+            pos[0] += 1
+            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
+
+        return return_list
+
     # TODO - Check for other connected words
     @staticmethod
     def compile_word(added_tiles, test_matrix):
         """Compiles the played tiles into word vector"""
 
         return_list = []
+        return_positions = added_tiles.copy()
+        vert_list = []
+        horz_list = []
 
-        # Uncomment this line for testing
-        # (supposed to shadow global BOARD_MATRIX for testing purposes)
+        # Shadow global BOARD_MATRIX for testing purposes
+        global BOARD_MATRIX
         BOARD_MATRIX = test_matrix
 
-        # Vertical word played
+        # Horizontal word played
         if added_tiles[0][0] == added_tiles[1][0]:
             # Checking before played tiles
-            if BOARD_MATRIX[added_tiles[0][0]][added_tiles[0][1] - 1] is not None:
-                return_list.append(BOARD_MATRIX[added_tiles[0][0]][added_tiles[0][1] - 1])
+            if added_tiles[0][1] - 1 >= 0 and BOARD_MATRIX[added_tiles[0][0]][added_tiles[0][1] - 1] is not None:
+                vert_list.extend(GameView.scan_left((added_tiles[0][0], added_tiles[0][1])))
+                return_positions.extend([(added_tiles[0][0], added_tiles[0][1] - i - 1) for i in range(len(vert_list))])
 
-            # Adding played tiled
+            # Adding played tiles
             for tile in added_tiles:
-                return_list.append(BOARD_MATRIX[tile[0]][tile[1]])
+                vert_list.append(BOARD_MATRIX[tile[0]][tile[1]])
+                return_positions.append((tile[0], tile[1]))
 
             # Checking after played tiles
-            if (BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0]]
-                    [added_tiles[len(added_tiles) - 1][1] + 1] is not None):
-                return_list.append(BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0]]
-                                   [added_tiles[len(added_tiles) - 1][1] + 1])
+            if added_tiles[-1][1] + 1 < GRID_SIZE and BOARD_MATRIX[added_tiles[-1][0]][
+                added_tiles[-1][1] + 1] is not None:
+                vert_list.extend(GameView.scan_right((added_tiles[-1][0], added_tiles[-1][1])))
+                return_positions.extend([(added_tiles[-1][0], added_tiles[-1][1] + i + 1) for i in
+                                         range(len(vert_list) - len(added_tiles))])
 
-            # Check for connected words on the top and bottom of played tiles
-            for tile in added_tiles:
-                # TODO - Finish this
-                if tile[0] - 1 >= 0 and BOARD_MATRIX[tile[0] - 1][tile[1]] is not None:
-                    # THIS MEANS A LETTER EXISTS TO THE LEFT OF CURRENT TILE
-                    pass
-                if tile[0] + 1 < GRID_SIZE and BOARD_MATRIX[tile[0] + 1][tile[1]] is not None:
-                    # THIS MEANS A LETTER EXISTS TO THE RIGHT OF CURRENT TILE
-                    pass
+            return_list.append(vert_list)
 
-        # Horizontal word played
+            # Check for connected words on the left and right of played tiles
+            for tile in return_positions:
+                if BOARD_MATRIX[tile[0]][tile[1]] is not None:
+                    up_word = GameView.scan_up(tile)
+                    down_word = GameView.scan_down(tile)
+                    if up_word or down_word:
+                        return_list.append(up_word[::-1] + [BOARD_MATRIX[tile[0]][tile[1]]] + down_word)
+
+        # Vertical word played
         elif added_tiles[0][1] == added_tiles[1][1]:
             # Checking before played tiles
-            if BOARD_MATRIX[added_tiles[0][0] - 1][added_tiles[0][1]] is not None:
-                return_list.append(BOARD_MATRIX[added_tiles[0][0] - 1][added_tiles[0][1]])
+            if added_tiles[0][0] - 1 >= 0 and BOARD_MATRIX[added_tiles[0][0] - 1][added_tiles[0][1]] is not None:
+                horz_list.extend(GameView.scan_up((added_tiles[0][0], added_tiles[0][1])))
+                return_positions.extend([(added_tiles[0][0] - i - 1, added_tiles[0][1]) for i in range(len(horz_list))])
 
-            # Adding played tiled
+            # Adding played tiles
             for tile in added_tiles:
-                return_list.append(BOARD_MATRIX[tile[0]][tile[1]])
+                horz_list.append(BOARD_MATRIX[tile[0]][tile[1]])
+                return_positions.append((tile[0], tile[1]))
 
             # Checking after played tiles
-            if (BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0] + 1]
-                    [added_tiles[len(added_tiles) - 1][1]] is not None):
-                return_list.append(BOARD_MATRIX[added_tiles[len(added_tiles) - 1][0] + 1]
-                                   [added_tiles[len(added_tiles) - 1][1]])
+            if added_tiles[-1][0] + 1 < GRID_SIZE and BOARD_MATRIX[added_tiles[-1][0] + 1][
+                added_tiles[-1][1]] is not None:
+                horz_list.extend(GameView.scan_down((added_tiles[-1][0], added_tiles[-1][1])))
+                return_positions.extend([(added_tiles[-1][0] + i + 1, added_tiles[-1][1]) for i in
+                                         range(len(horz_list) - len(added_tiles))])
+
+            return_list.append(horz_list)
+
+            # Check for connected words on the left and right of played tiles
+            for tile in return_positions:
+                if BOARD_MATRIX[tile[0]][tile[1]] is not None:
+                    left_word = GameView.scan_left(tile)
+                    right_word = GameView.scan_right(tile)
+                    if left_word or right_word:
+                        return_list.append(left_word + [BOARD_MATRIX[tile[0]][tile[1]]] + right_word)
 
         return return_list
+
+
 
 
 
@@ -320,6 +414,11 @@ class GameView(arcade.Window):
                 else:
                     color = arcade.color.BEIGE
                     text = []
+
+                if color not in [arcade.color.BEIGE]:
+                    adjustment = 5
+                else:
+                    adjustment = 0
 
                 # TODO - increase special score colored tile size
                 # Drawing Board Tiles

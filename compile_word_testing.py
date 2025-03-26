@@ -33,11 +33,11 @@ def print_board_matrix():
     print("\n\n")
 
 
-def test_vertical_existing():
+def test_vertical_existing_above():
     """Tests the compile_word function with a simple vertical word addition
     (existing letters on one side)."""
     added_tiles = [(5, 7), (6, 7)]
-    expected_output = ['C', 'A', 'T']
+    expected_output = [['C', 'A', 'T'], ['C', 'U', 'T']]
 
     word = game_view.compile_word(added_tiles, TEST_BOARD_MATRIX)
 
@@ -48,10 +48,10 @@ def test_vertical_existing():
 
 
 def test_horizontal_existing():
-    """Tests the compile_word function with a simple horizontal word addition
+    """Tests the compile_word function with a simple horizontal word additi on
     (existing letters on one side)."""
     added_tiles = [(7, 5), (7, 6)]
-    expected_output = ['C', 'U', 'T']
+    expected_output = [['C', 'U', 'T'], ['C', 'A', 'T']]
 
     word = game_view.compile_word(added_tiles, TEST_BOARD_MATRIX)
 
@@ -64,7 +64,7 @@ def test_horizontal_existing():
 def test_vertical():
     """Tests compile_word function for a simple vertical word addition (no existing letters)."""
     added_tiles = [(1, 6), (2, 6), (3, 6)]
-    expected_output = ['S', 'E', 'T']
+    expected_output = [['S', 'E', 'T']]
 
     word = game_view.compile_word(added_tiles, TEST_BOARD_MATRIX)
 
@@ -77,7 +77,7 @@ def test_vertical():
 def test_horizontal():
     """Tests compile_word function for a simple horizontal word addition (no existing letters)."""
     added_tiles = [(1, 1), (1, 2), (1, 3)]
-    expected_output = ['D', 'O', 'G']
+    expected_output = [['D', 'O', 'G']]
 
     word = game_view.compile_word(added_tiles, TEST_BOARD_MATRIX)
 
@@ -85,6 +85,21 @@ def test_horizontal():
         print("PASSED")
     else:
         print("FAILED")
+#
+#
+# def test_vertical_existing_side():
+#     """Tests the compile_word function with a simple vertical word addition
+#     (existing letters on one side)."""
+#     added_tiles = [(7, 5), (7, 6)]
+#     expected_output = ['C', 'A', 'T']
+#
+#     word = game_view.compile_word(added_tiles, TEST_BOARD_MATRIX)
+#     print(word)
+#
+#     if word == expected_output:
+#         print("PASSED")
+#     else:
+#         print("FAILED")
 
 # TODO - Add tests for edge of board to make sure indices are not out of range
 
@@ -95,7 +110,7 @@ if __name__ == "__main__":
 
     # Connecting with existing letters (one side)
     print("Connecting with existing letters (one side)")
-    test_vertical_existing()
+    test_vertical_existing_above()
     test_horizontal_existing()
 
     # No existing letters
