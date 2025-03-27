@@ -3,6 +3,7 @@ Starting Template from Python Arcade Documentation
 """
 import random
 import arcade
+import arcade.gui
 
 # TODO - Diwas, I added a TODO down below in the get_board_matrix function.
 #  That's what you can call to get the matrix from another file. Enter will
@@ -173,7 +174,7 @@ class Tile(arcade.SpriteSolidColor):
             self.end_turn()
 
     def on_mouse_press(self, x, y, button):
-        """ Called when the user presses a mouse button. """
+        """ Called when the user presses a mouse button."""
         # Dragging Logic
         if button == arcade.MOUSE_BUTTON_LEFT and self.collides_with_point((x, y)):
             if self.draggable:
@@ -183,7 +184,7 @@ class Tile(arcade.SpriteSolidColor):
 
 
     def on_mouse_release(self, x, y, button):
-        """ Called when a user releases a mouse button. """
+        """ Called when a user releases a mouse button."""
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
 
@@ -225,6 +226,11 @@ class Tile(arcade.SpriteSolidColor):
             if self.center_y + self.height // 2 > WINDOW_HEIGHT:
                 self.center_y = WINDOW_HEIGHT - self.height // 2
 
+class SaveButton(arcade.gui.UIFlatButton):
+    def on_click(self, event: arcade.gui.UIOnClickEvent):
+        """ Save button logic. """
+        # TODO - implement save logic
+        print("Save button clicked!")
 
 class GameView(arcade.Window):
     """ Main application class. """
@@ -237,6 +243,14 @@ class GameView(arcade.Window):
 
         # Initializing player's initial tile draw
         Tile.refill_mat(self)
+
+        # Initializing GUI
+        self.ui_manager = arcade.gui.UIManager()
+        self.ui_manager.enable()
+
+        # Drawing Save Button
+        save_button = SaveButton(text="Save", width=100, height=40, x=WINDOW_WIDTH - PADDING - 85, y=PADDING + 20)
+        self.ui_manager.add(save_button)
 
 
     @staticmethod
@@ -361,6 +375,9 @@ class GameView(arcade.Window):
         self.tiles.draw()
         for tile in self.tiles:
             tile.set_letter()
+
+        self.ui_manager.draw()
+
 
     def on_update(self, delta_time):
         """
