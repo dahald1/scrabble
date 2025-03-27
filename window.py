@@ -4,6 +4,15 @@ Starting Template from Python Arcade Documentation
 import random
 import arcade
 
+# TODO - Diwas, I added a TODO down below in the get_board_matrix function.
+#  That's what you can call to get the matrix from another file. Enter will
+#  end the current turn, update the board matrix, and print it to the console.
+#  The played tiles will no longer be draggable. If you import this file,
+#  you should be able to call the function. Find_added_tiles is a function that
+#  returns the differences in tiles between two matrices.  It can be called
+#  when enter is hit after the board matrix is updated if need be. THe other
+#  methods are for internal stuff like dragging, drawing, and positioning.
+
 # Global Sprite List
 global tiles
 
@@ -69,7 +78,6 @@ POINTS_VALUE = {0: [" "],
 
 # Mat Positions Tracking
 MAT_POSITIONS_FILLED = [False for _ in range(7)]
-print(MAT_POSITIONS_FILLED)
 
 
 class Tile(arcade.SpriteSolidColor):
@@ -84,10 +92,17 @@ class Tile(arcade.SpriteSolidColor):
         self.offset_y = None
         self.offset_x = None
         self.dragging = False
+        self.draggable = True
         self.center_x = x + width // 2
         self.center_y = y + height // 2
         self.mat_position = mat_pos
         self.value = value
+
+    def end_turn(self):
+        """Setting values at end of turn to freeze tiles."""
+        self.draggable = False
+        MAT_POSITIONS_FILLED[self.mat_position] = False
+        self.mat_position = -1
 
     # Tile Letter Logic
     def set_letter(self):
@@ -152,13 +167,20 @@ class Tile(arcade.SpriteSolidColor):
                 self.tiles.append(tile)
                 MAT_POSITIONS_FILLED[i] = True
 
+    def on_key_press(self, key, modifiers):
+        """ Called whenever a key on the keyboard is pressed from method in GameView"""
+        if key == arcade.key.ENTER:
+            self.end_turn()
+
     def on_mouse_press(self, x, y, button):
         """ Called when the user presses a mouse button. """
         # Dragging Logic
         if button == arcade.MOUSE_BUTTON_LEFT and self.collides_with_point((x, y)):
-            self.dragging = True
-            self.offset_x = self.center_x - x
-            self.offset_y = self.center_y - y
+            if self.draggable:
+                self.dragging = True
+                self.offset_x = self.center_x - x
+                self.offset_y = self.center_y - y
+
 
     def on_mouse_release(self, x, y, button):
         """ Called when a user releases a mouse button. """
@@ -174,11 +196,18 @@ class Tile(arcade.SpriteSolidColor):
             # Restricting snapping to game board.
             if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE)
                     + PADDING or snap_x < PADDING or snap_x > WINDOW_WIDTH):
+                # Back to mat
                 self.center_x = MAT_POSITIONS[self.mat_position][0]
                 self.center_y = MAT_POSITIONS[self.mat_position][1]
+                MAT_POSITIONS_FILLED[self.mat_position] = True
+
             else:
+                # Snap to grid
                 self.center_y = snap_y - self.height
                 self.center_x = snap_x - self.width
+
+                # Updating mat's positional information
+                MAT_POSITIONS_FILLED[self.mat_position] = False
 
     def on_mouse_motion(self, x, y, dx, dy):
         """ Called when the user moves the mouse. """
@@ -211,128 +240,6 @@ class GameView(arcade.Window):
 
 
     @staticmethod
-    def scan_left(tile_position):
-        """Scans left of the tile for connected words."""
-        return_list = []
-        pos = list(tile_position)
-        while pos[1] - 1 >= 0 and BOARD_MATRIX[pos[0]][pos[1] - 1] is not None:
-            pos[1] -= 1
-            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
-
-        return return_list[::-1]
-
-    @staticmethod
-    def scan_right(tile_position):
-        """Scans right of the tile for connected words."""
-        return_list = []
-        pos = list(tile_position)
-        while pos[1] + 1 < GRID_SIZE and BOARD_MATRIX[pos[0]][pos[1] + 1] is not None:
-            pos[1] += 1
-            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
-
-        return return_list
-
-    @staticmethod
-    def scan_up(tile_position):
-        """Scans up of the tile for connected words."""
-        return_list = []
-        pos = list(tile_position)
-        while pos[0] - 1 >= 0 and BOARD_MATRIX[pos[0] - 1][pos[1]] is not None:
-            pos[0] -= 1
-            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
-
-        return return_list
-
-    @staticmethod
-    def scan_down(tile_position):
-        """Scans down of the tile for connected words."""
-        return_list = []
-        pos = list(tile_position)
-        while pos[0] + 1 < GRID_SIZE and BOARD_MATRIX[pos[0] + 1][pos[1]] is not None:
-            pos[0] += 1
-            return_list.append(BOARD_MATRIX[pos[0]][pos[1]])
-
-        return return_list
-
-    # TODO - Check for other connected words
-    @staticmethod
-    def compile_word(added_tiles, test_matrix):
-        """Compiles the played tiles into word vector"""
-
-        return_list = []
-        return_positions = added_tiles.copy()
-        vert_list = []
-        horz_list = []
-
-        # Shadow global BOARD_MATRIX for testing purposes
-        global BOARD_MATRIX
-        BOARD_MATRIX = test_matrix
-
-        # Horizontal word played
-        if added_tiles[0][0] == added_tiles[1][0]:
-            # Checking before played tiles
-            if added_tiles[0][1] - 1 >= 0 and BOARD_MATRIX[added_tiles[0][0]][added_tiles[0][1] - 1] is not None:
-                vert_list.extend(GameView.scan_left((added_tiles[0][0], added_tiles[0][1])))
-                return_positions.extend([(added_tiles[0][0], added_tiles[0][1] - i - 1) for i in range(len(vert_list))])
-
-            # Adding played tiles
-            for tile in added_tiles:
-                vert_list.append(BOARD_MATRIX[tile[0]][tile[1]])
-                return_positions.append((tile[0], tile[1]))
-
-            # Checking after played tiles
-            if added_tiles[-1][1] + 1 < GRID_SIZE and BOARD_MATRIX[added_tiles[-1][0]][
-                added_tiles[-1][1] + 1] is not None:
-                vert_list.extend(GameView.scan_right((added_tiles[-1][0], added_tiles[-1][1])))
-                return_positions.extend([(added_tiles[-1][0], added_tiles[-1][1] + i + 1) for i in
-                                         range(len(vert_list) - len(added_tiles))])
-
-            return_list.append(vert_list)
-
-            # Check for connected words on the left and right of played tiles
-            for tile in return_positions:
-                if BOARD_MATRIX[tile[0]][tile[1]] is not None:
-                    up_word = GameView.scan_up(tile)
-                    down_word = GameView.scan_down(tile)
-                    if up_word or down_word:
-                        return_list.append(up_word[::-1] + [BOARD_MATRIX[tile[0]][tile[1]]] + down_word)
-
-        # Vertical word played
-        elif added_tiles[0][1] == added_tiles[1][1]:
-            # Checking before played tiles
-            if added_tiles[0][0] - 1 >= 0 and BOARD_MATRIX[added_tiles[0][0] - 1][added_tiles[0][1]] is not None:
-                horz_list.extend(GameView.scan_up((added_tiles[0][0], added_tiles[0][1])))
-                return_positions.extend([(added_tiles[0][0] - i - 1, added_tiles[0][1]) for i in range(len(horz_list))])
-
-            # Adding played tiles
-            for tile in added_tiles:
-                horz_list.append(BOARD_MATRIX[tile[0]][tile[1]])
-                return_positions.append((tile[0], tile[1]))
-
-            # Checking after played tiles
-            if added_tiles[-1][0] + 1 < GRID_SIZE and BOARD_MATRIX[added_tiles[-1][0] + 1][
-                added_tiles[-1][1]] is not None:
-                horz_list.extend(GameView.scan_down((added_tiles[-1][0], added_tiles[-1][1])))
-                return_positions.extend([(added_tiles[-1][0] + i + 1, added_tiles[-1][1]) for i in
-                                         range(len(horz_list) - len(added_tiles))])
-
-            return_list.append(horz_list)
-
-            # Check for connected words on the left and right of played tiles
-            for tile in return_positions:
-                if BOARD_MATRIX[tile[0]][tile[1]] is not None:
-                    left_word = GameView.scan_left(tile)
-                    right_word = GameView.scan_right(tile)
-                    if left_word or right_word:
-                        return_list.append(left_word + [BOARD_MATRIX[tile[0]][tile[1]]] + right_word)
-
-        return return_list
-
-
-
-
-
-    @staticmethod
     def find_added_tiles(prev_board_matrix, curr_board_matrix):
         """Finds the word that was placed on the board."""
         added_tiles = []
@@ -342,7 +249,6 @@ class GameView(arcade.Window):
             for col in range(GRID_SIZE):
                 if prev_board_matrix[row][col] is None and curr_board_matrix[row][col] is not None:
                     added_tiles.append((row, col))
-        print(added_tiles)
 
     @staticmethod
     def print_board_matrix():
@@ -350,6 +256,12 @@ class GameView(arcade.Window):
         for row in BOARD_MATRIX:
             print(row)
         print("\n\n")
+
+    # TODO - Diwas, this returns the board matrix.
+    @staticmethod
+    def get_board_matrix():
+        """Returns the current board matrix."""
+        return BOARD_MATRIX
 
     def update_board_matrix(self):
         """Updates the board matrix with the current tile positions."""
@@ -379,8 +291,8 @@ class GameView(arcade.Window):
                 BOARD_MATRIX[int(row)][int(col)] = tile.value
 
         # Uncomment to debug board matrix positioning
-        self.print_board_matrix()
-        self.find_added_tiles(prev_board_matrix=prev_matrix, curr_board_matrix=BOARD_MATRIX)
+        # self.print_board_matrix()
+        # self.find_added_tiles(prev_board_matrix=prev_matrix, curr_board_matrix=BOARD_MATRIX)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -414,11 +326,6 @@ class GameView(arcade.Window):
                 else:
                     color = arcade.color.BEIGE
                     text = []
-
-                if color not in [arcade.color.BEIGE]:
-                    adjustment = 5
-                else:
-                    adjustment = 0
 
                 # TODO - increase special score colored tile size
                 # Drawing Board Tiles
@@ -471,6 +378,13 @@ class GameView(arcade.Window):
         """
         if key == arcade.key.ESCAPE:
             arcade.close_window()
+
+        if key == arcade.key.ENTER:
+            GameView.update_board_matrix(self)
+            GameView.print_board_matrix()
+
+            for tile in self.tiles:
+                tile.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
         """
