@@ -74,6 +74,7 @@ class DataManager:
             self.game_history = account_data["game_history"]
             self.user_doc_ref = user_doc_ref
             self.authenticated = True
+            return 1
 
         return 0
 

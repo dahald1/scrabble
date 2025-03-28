@@ -11,6 +11,11 @@ from main import GameView
 import arcade
 import arcade.gui
 from typing import List
+from data import DataManager
+
+# data manager for authentication
+# and saving/loading game save data
+data_manager = DataManager()
 
 
 # Load kenny fonts shipped with arcade
@@ -243,13 +248,16 @@ class MyView(UIView):
         self.manager.draw()
 
     def on_login_action(self):
-        username = self.username_input.text.strip()
-        password = self.password_input.text.strip()
-        print(f"User logged in with: {username} {password}")
-        # example validation (replace with actual validation logic)
-        if username == "yes" and password == "yes123":
+        entered_username = self.username_input.text.strip()
+        entered_password = self.password_input.text.strip()
+
+        success = data_manager.authenticate_user(entered_username, entered_password)
+
+        if success:
             print("Login successful!")
-            self.window.show_view(GameView())  # show the GameView after login
+
+            # show the GameView after login
+            self.window.show_view(GameView())
         else:
             print("Invalid credentials!")
 
@@ -352,11 +360,19 @@ class SignUpView(arcade.View):
 
         @sign_up_button.event("on_click")
         def on_click_sign_up(event):
-            username = self.username_input.text
-            password = self.password_input.text
-            confirm_password = self.confirm_password_input.text
-            if password == confirm_password:
-                print(f"Signing up with Username: {username} and Password: {password}")
+            entered_username = self.username_input.text
+            entered_password = self.password_input.text
+            confirmation_password = self.confirm_password_input.text
+
+            if entered_password == confirmation_password:
+                print(f"Signing up with Username: {entered_username} and Password: {entered_password}")
+                success = data_manager.sign_up(entered_username, entered_password)
+
+                if success:
+                    print("Successfully signed in")
+                    self.window.show_view(GameView())
+                else:
+                    print("Failed to signup")
             else:
                 print("Passwords do not match!")
 
