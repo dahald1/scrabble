@@ -255,6 +255,12 @@ class GameView(arcade.Window):
         save_button = SaveButton(text="Save", width=100, height=40, x=WINDOW_WIDTH - PADDING - 85, y=PADDING + 20)
         self.ui_manager.add(save_button)
 
+    @staticmethod
+    def coordinates_to_px(row, col):
+        """Converts row and column coordinates to pixel coordinates."""
+        x = col * TILE_SIZE + PADDING // 2
+        y = WINDOW_HEIGHT - ((row + 1) * TILE_SIZE) - PADDING // 2
+        return x, y
 
     @staticmethod
     def find_added_tiles(prev_board_matrix, curr_board_matrix):
