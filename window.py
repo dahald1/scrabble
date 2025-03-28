@@ -101,9 +101,12 @@ class Tile(arcade.SpriteSolidColor):
 
     def end_turn(self):
         """Setting values at end of turn to freeze tiles."""
-        self.draggable = False
-        MAT_POSITIONS_FILLED[self.mat_position] = False
-        self.mat_position = -1
+        if (PADDING / 2 <= self.center_x <= WINDOW_WIDTH - PADDING / 2
+                and WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2
+                <= self.center_y <= WINDOW_HEIGHT - PADDING / 2):
+                self.draggable = False
+                MAT_POSITIONS_FILLED[self.mat_position] = False
+                self.mat_position = -1
 
     # Tile Letter Logic
     def set_letter(self):
