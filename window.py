@@ -11,7 +11,7 @@ import arcade.gui
 #  The played tiles will no longer be draggable. If you import this file,
 #  you should be able to call the function. Find_added_tiles is a function that
 #  returns the differences in tiles between two matrices.  It can be called
-#  when enter is hit after the board matrix is updated if need be. THe other
+#  when enter is hit after the board matrix is updated if need be. The other
 #  methods are for internal stuff like dragging, drawing, and positioning.
 
 # Global Sprite List
@@ -185,33 +185,36 @@ class Tile(arcade.SpriteSolidColor):
                 self.offset_x = self.center_x - x
                 self.offset_y = self.center_y - y
 
+    def snap_to_grid(self):
+        # Snap to grid coordinates calculation
+        snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
+                  * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
+        snap_y = (round((self.center_y - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
+                  * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
+
+        # Restricting snapping to game board.
+        if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE)
+                + PADDING or snap_x < PADDING or snap_x > WINDOW_WIDTH):
+            # Back to mat
+            self.center_x = MAT_POSITIONS[self.mat_position][0]
+            self.center_y = MAT_POSITIONS[self.mat_position][1]
+            MAT_POSITIONS_FILLED[self.mat_position] = True
+
+        else:
+            # Snap to grid
+            self.center_y = snap_y - self.height
+            self.center_x = snap_x - self.width
+
+            # Updating mat's positional information
+            MAT_POSITIONS_FILLED[self.mat_position] = False
+
 
     def on_mouse_release(self, x, y, button):
         """ Called when a user releases a mouse button."""
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
+            self.snap_to_grid()
 
-            # Snap to grid coordinates
-            snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
-                      * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
-            snap_y = (round((self.center_y - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
-                      * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
-
-            # Restricting snapping to game board.
-            if (snap_y > WINDOW_HEIGHT + 20 or snap_y < WINDOW_HEIGHT - (TILE_SIZE * GRID_SIZE)
-                    + PADDING or snap_x < PADDING or snap_x > WINDOW_WIDTH):
-                # Back to mat
-                self.center_x = MAT_POSITIONS[self.mat_position][0]
-                self.center_y = MAT_POSITIONS[self.mat_position][1]
-                MAT_POSITIONS_FILLED[self.mat_position] = True
-
-            else:
-                # Snap to grid
-                self.center_y = snap_y - self.height
-                self.center_x = snap_x - self.width
-
-                # Updating mat's positional information
-                MAT_POSITIONS_FILLED[self.mat_position] = False
 
     def on_mouse_motion(self, x, y, dx, dy):
         """ Called when the user moves the mouse. """
@@ -320,9 +323,7 @@ class GameView(arcade.Window):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
-    def on_draw(self):
-        self.clear()
-
+    def draw_board(self):
         # Draw Board Boxes
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
@@ -371,6 +372,10 @@ class GameView(arcade.Window):
                         anchor_x="center"
                     )
                     self.special_tile_text.draw()
+
+    def on_draw(self):
+        self.clear()
+        self.draw_board()
 
         # Draw Tile Mat at Bottom of Screen
         arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
