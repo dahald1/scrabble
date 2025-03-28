@@ -4,15 +4,7 @@ Starting Template from Python Arcade Documentation
 import random
 import arcade
 import arcade.gui
-
-# TODO - Diwas, I added a TODO down below in the get_board_matrix function.
-#  That's what you can call to get the matrix from another file. Enter will
-#  end the current turn, update the board matrix, and print it to the console.
-#  The played tiles will no longer be draggable. If you import this file,
-#  you should be able to call the function. Find_added_tiles is a function that
-#  returns the differences in tiles between two matrices.  It can be called
-#  when enter is hit after the board matrix is updated if need be. The other
-#  methods are for internal stuff like dragging, drawing, and positioning.
+from arcade.gui.widgets.buttons import UIFlatButton
 
 # Global Sprite List
 global tiles
@@ -102,11 +94,11 @@ class Tile(arcade.SpriteSolidColor):
     def end_turn(self):
         """Setting values at end of turn to freeze tiles."""
         if (PADDING / 2 <= self.center_x <= WINDOW_WIDTH - PADDING / 2
-                and WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2
-                <= self.center_y <= WINDOW_HEIGHT - PADDING / 2):
-                self.draggable = False
-                MAT_POSITIONS_FILLED[self.mat_position] = False
-                self.mat_position = -1
+            and WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2
+            <= self.center_y <= WINDOW_HEIGHT - PADDING / 2):
+            self.draggable = False
+            MAT_POSITIONS_FILLED[self.mat_position] = False
+            self.mat_position = -1
 
     # Tile Letter Logic
     def set_letter(self):
@@ -209,14 +201,14 @@ class Tile(arcade.SpriteSolidColor):
             MAT_POSITIONS_FILLED[self.mat_position] = False
 
 
-    def on_mouse_release(self, x, y, button):
+    def on_mouse_release(self, button):
         """ Called when a user releases a mouse button."""
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.dragging = False
             self.snap_to_grid()
 
 
-    def on_mouse_motion(self, x, y, dx, dy):
+    def on_mouse_motion(self, x, y):
         """ Called when the user moves the mouse. """
         if self.dragging:
             self.center_x = x + self.offset_x
@@ -232,14 +224,9 @@ class Tile(arcade.SpriteSolidColor):
             if self.center_y + self.height // 2 > WINDOW_HEIGHT:
                 self.center_y = WINDOW_HEIGHT - self.height // 2
 
-class SaveButton(arcade.gui.UIFlatButton):
-    def on_click(self, event: arcade.gui.UIOnClickEvent):
-        """ Save button logic. """
-        # TODO - implement save logic
-        print("Save button clicked!")
-
 class GameView(arcade.Window):
     """ Main application class. """
+
     def __init__(self):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         # Initial setup of variables
@@ -255,8 +242,14 @@ class GameView(arcade.Window):
         self.ui_manager.enable()
 
         # Drawing Save Button
-        save_button = SaveButton(text="Save", width=100, height=40, x=WINDOW_WIDTH - PADDING - 85, y=PADDING + 20)
+        save_button = UIFlatButton(text="Save", width=100, height=40,
+                                 x=WINDOW_WIDTH - PADDING - 85, y=PADDING + 20)
         self.ui_manager.add(save_button)
+
+        @save_button.event("on_click")
+        def on_login(event):
+            print("Save button clicked!")
+
 
     @staticmethod
     def coordinates_to_px(row, col):
@@ -424,7 +417,7 @@ class GameView(arcade.Window):
 
     def on_mouse_motion(self, x, y, dx, dy):
         for tile in self.tiles:
-            tile.on_mouse_motion(x, y, dx, dy)
+            tile.on_mouse_motion(x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):
         for tile in self.tiles:
@@ -433,7 +426,7 @@ class GameView(arcade.Window):
     def on_mouse_release(self, x, y, button, modifiers):
         for tile in self.tiles:
             if tile.dragging:
-                tile.on_mouse_release(x, y, button)
+                tile.on_mouse_release(button)
 
                 # Tests for tile collision with tiles already placed
                 if arcade.check_for_collision_with_list(tile, self.tiles):
