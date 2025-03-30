@@ -7,7 +7,7 @@ from arcade.gui.widgets.buttons import UIFlatButton
 from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
 from arcade.gui.widgets.text import UILabel
 from arcade import resources
-from main import Game_view
+from game_start_screen import Game_view
 import arcade
 import arcade.gui
 from typing import List
@@ -237,6 +237,7 @@ class SignUpView(arcade.View):
             self.window.show_view(self.login_view)
 
     def on_hide_view(self):
+        """hides the manager"""
         self.manager.disable()
 
     def on_show_view(self):
