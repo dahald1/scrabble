@@ -91,6 +91,7 @@ class Tile(arcade.SpriteSolidColor):
         self.center_y = y + height // 2
         self.mat_position = mat_pos
         self.value = value
+        self.set_letter()
 
     def end_turn(self):
         """Setting values at end of turn to freeze tiles."""
