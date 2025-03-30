@@ -1,7 +1,7 @@
 
 class Word:
     def __init__(self, word, location, player, direction, board, round_number, players, premium_spots, letter_values):
-        self.word = word.upper()
+        self.word = "".join(word.split()).upper()
         self.location = location
         self.player = player
         self.direction = direction.lower()
@@ -25,20 +25,35 @@ class Word:
             if "#" in self.word:
                 while len(blank_tile_val) != 1:
                     blank_tile_val = input("Please enter the letter value of the blank tile: ")
-                self.word = self.word[:self.word.index("#")] + blank_tile_val.upper() + self.word[(self.word.index("#")+1):]
+                self.word = self.word[:self.word.index("#")] + blank_tile_val.upper() + self.word[
+                                                                                        (self.word.index("#") + 1):]
 
+            # Check bounds and process word placement
             if self.direction == "right":
+                if self.location[1] + len(self.word) - 1 >= len(self.board[0]):
+                    return "Word extends beyond board width.\n"
+                # print(f"Checking word '{self.word}' at {self.location} right")
+                # print(f"Row {self.location[0]}: {self.board[self.location[0]]}")
                 for i in range(len(self.word)):
-                    if self.board[self.location[0]][self.location[1]+i][1] == " " or self.board[self.location[0]][self.location[1]+i] in ["TLS", "TWS", "DLS", "DWS"] or self.board[self.location[0]][self.location[1]+i][1] == "*":
+                    cell = self.board[self.location[0]][self.location[1] + i]
+                    # print(f"Cell [{self.location[0]}, {self.location[1] + i}]: {cell}")
+                    if cell in ["   ", "TLS", "TWS", "DLS", "DWS", " * "] or cell == "":
                         current_board_ltr += " "
+                    elif len(cell.strip()) == 1:
+                        current_board_ltr += cell.strip()
                     else:
-                        current_board_ltr += self.board[self.location[0]][self.location[1]+i][1]
+                        return f"Invalid board cell at [{self.location[0]}, {self.location[1] + i}]: {cell}"
             elif self.direction == "down":
+                if self.location[0] + len(self.word) - 1 >= len(self.board):
+                    return "Word extends beyond board height.\n"
                 for i in range(len(self.word)):
-                    if self.board[self.location[0]+i][self.location[1]] in ["   ", "TLS", "TWS", "DLS", "DWS", " * "]:
+                    cell = self.board[self.location[0] + i][self.location[1]]
+                    if cell in [" ", "TLS", "TWS", "DLS", "DWS", " * "]:
                         current_board_ltr += " "
+                    elif len(cell.strip()) == 1:  # Single letter
+                        current_board_ltr += cell.strip()
                     else:
-                        current_board_ltr += self.board[self.location[0]+i][self.location[1]][1]
+                        return f"Invalid board cell at [{self.location[0] + i}, {self.location[1]}]: {cell}"
             else:
                 return "Error: please enter a valid direction."
 
@@ -49,24 +64,33 @@ class Word:
                 if current_board_ltr[i] == " ":
                     needed_tiles += self.word[i]
                 elif current_board_ltr[i] != self.word[i]:
-                    print("Current_board_ltr: " + str(current_board_ltr) + ", Word: " + self.word + ", Needed_Tiles: " + needed_tiles)
+                    print("Current_board_ltr: " + str(
+                        current_board_ltr) + ", Word: " + self.word + ", Needed_Tiles: " + needed_tiles)
                     return "The letters do not overlap correctly, please choose another word."
 
+            # Rest of the method remains unchanged...
             if blank_tile_val != "":
-                needed_tiles = needed_tiles[needed_tiles.index(blank_tile_val):] + needed_tiles[:needed_tiles.index(blank_tile_val)]
+                needed_tiles = needed_tiles[needed_tiles.index(blank_tile_val):] + needed_tiles[
+                                                                                   :needed_tiles.index(blank_tile_val)]
 
-            if (self.round_number != 1 or (self.round_number == 1 and self.players[0] != self.player)) and current_board_ltr == " " * len(self.word):
-                print("Current_board_ltr: " + str(current_board_ltr) + ", Word: " + self.word + ", Needed_Tiles: " + needed_tiles)
+            if (self.round_number != 1 or (
+                    self.round_number == 1 and self.players[0] != self.player)) and current_board_ltr == " " * len(
+                    self.word):
+                print("Current_board_ltr: " + str(
+                    current_board_ltr) + ", Word: " + self.word + ", Needed_Tiles: " + needed_tiles)
                 return "Please connect the word to a previously played letter."
 
             for letter in needed_tiles:
-                if letter not in self.player.get_rack_str() or self.player.get_rack_str().count(letter) < needed_tiles.count(letter):
+                if letter not in self.player.get_rack_str() or self.player.get_rack_str().count(
+                        letter) < needed_tiles.count(letter):
                     return "You do not have the tiles for this word\n"
 
-            if self.location[0] > 14 or self.location[1] > 14 or self.location[0] < 0 or self.location[1] < 0 or (self.direction == "down" and (self.location[0]+len(self.word)-1) > 14) or (self.direction == "right" and (self.location[1]+len(self.word)-1) > 14):
+            if self.location[0] > 14 or self.location[1] > 14 or self.location[0] < 0 or self.location[1] < 0 or (
+                    self.direction == "down" and (self.location[0] + len(self.word) - 1) > 14) or (
+                    self.direction == "right" and (self.location[1] + len(self.word) - 1) > 14):
                 return "Location out of bounds.\n"
 
-            if self.round_number == 1 and self.players[0] == self.player and self.location != [7,7]:
+            if self.round_number == 1 and self.players[0] == self.player and self.location != [7, 7]:
                 return "The first turn must begin at location (7, 7).\n"
             return True
         else:
