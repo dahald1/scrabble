@@ -2,7 +2,7 @@
 from auth import auth
 
 SAVE_DOC_NAME = "save1"
-DEBUG = True
+DEBUG = False
 
 class ScrabbleGame:
     """Class representing Scrabble game data"""
@@ -56,6 +56,11 @@ class DataManager:
 
     def authenticate_user(self, entered_username, entered_password):
         """authenticates user and loads user data"""
+        if len(entered_username) == 0:
+            if DEBUG:
+                print(f"Blank username entered")
+            return 0
+
         user_doc_ref = self.database.collection("users").document(entered_username)
         user_doc = user_doc_ref.get()
 
@@ -63,7 +68,7 @@ class DataManager:
             if DEBUG:
                 print(f"No document found for user: {entered_username}")
             return 0
-
+        
         account_data = user_doc.to_dict()
 
         actual_password = account_data["password"]
@@ -80,11 +85,18 @@ class DataManager:
 
     def sign_up(self, entered_username, entered_password):
         """creates a new account for a user if username is free"""
+        if len(entered_username) == 0:
+            if DEBUG:
+                print(f"Blank username entered")
+            return 0
+
         user_doc_ref = self.database.collection("users").document(entered_username)
         user_doc = user_doc_ref.get()
 
         # if a user doc alreadys exists with username
         if user_doc.exists:
+            if DEBUG:
+                print(f"Username already used: {entered_username}")
             return 0
 
         # username is available

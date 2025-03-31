@@ -17,137 +17,8 @@ from data import DataManager
 # and saving/loading game save data
 data_manager = DataManager()
 
-
 # Load kenny fonts shipped with arcade
 resources.load_kenney_fonts()
-
-
-# class MyView(UIView):
-#     def __init__(self):
-#         super().__init__()
-#         self.background_color = arcade.uicolor.BLUE_BELIZE_HOLE
-#         self.manager = arcade.gui.UIManager()
-#
-#         grid = UIGridLayout(
-#             size_hint=(0, 0),  # wrap children
-#             row_count=6,  # title | user, pw | login button | sing up button
-#             column_count=2,  # label and input field
-#             vertical_spacing=10,
-#             horizontal_spacing=5,
-#         )
-#         grid.with_padding(all=50)
-#         grid.with_background(color=arcade.uicolor.DARK_BLUE_WET_ASPHALT)
-#
-#         title = grid.add(
-#             UILabel(text="Login", width=150, font_size=20, font_name="Kenney Future"),
-#             column=0,
-#             row=0,
-#             column_span=2,
-#         )
-#         title.with_padding(bottom=20)
-#
-#         grid.add(UILabel(text="Username:", width=80, font_name="Kenney Future"), column=0, row=1)
-#         self.username_input = grid.add(
-#             UIInputText(width=150, font_name="Kenney Future"), column=1, row=1
-#         )
-#         self.username_input.with_background(color=arcade.uicolor.BLACK)
-#         self.username_input.padding = (0, 3)  # text padding left
-#
-#         grid.add(UILabel(text="Password:", width=80, font_name="Kenney Future"), column=0, row=2)
-#         self.password_input = grid.add(
-#             UIPasswordInput(width=150, font_name="Kenney Future"), column=1, row=2
-#         )
-#         self.password_input.with_background(color=arcade.uicolor.BLACK)
-#         self.password_input.padding = (0, 3)  # text padding left
-#         # set background to prevent full render on blinking caret
-#
-#         self.login_button = grid.add(
-#             UIFlatButton(text="Login", height=30, width=150, size_hint=(1, None)),
-#             column=0,
-#             row=3,
-#             column_span=2,
-#         )
-#
-#         self.login_button.on_click = self.on_login
-#
-#         self.sign_up_button = grid.add(
-#             UIFlatButton(text="Sign Up", height=30, width=150, size_hint=(1, None)),
-#             column=0,
-#             row=4,
-#             column_span=2,
-#         )
-#
-#         self.sign_up_button.on_click = self.on_sign_up
-#
-#         # add warning label
-#         self.warning_label = grid.add(
-#             UILabel(
-#                 text="Use 'TAB' to switch fields, then enter to login",
-#                 width=150,
-#                 font_size=10,
-#                 font_name="Kenney Future",
-#             ),
-#             column=0,
-#             row=5,
-#             column_span=2,
-#         )
-#
-#         anchor = UIAnchorLayout()  # to center grid on screen
-#         anchor.add(grid)
-#
-#         self.add_widget(anchor)
-#
-#         # activate username input field
-#         self.username_input.activate()
-#
-#
-#
-#     def on_key_press(self, symbol: int, modifiers: int) -> bool | None:
-#         # if username field active, switch fields with enter
-#         if self.username_input.active:
-#             if symbol == arcade.key.TAB:
-#                 self.username_input.deactivate()
-#                 self.password_input.activate()
-#                 return True
-#             elif symbol == arcade.key.ENTER:
-#                 self.username_input.deactivate()
-#                 self.on_login(None)
-#                 return True
-#         # if password field active, login with enter
-#         elif self.password_input.active:
-#             if symbol == arcade.key.TAB:
-#                 self.username_input.activate()
-#                 self.password_input.deactivate()
-#                 return True
-#             elif symbol == arcade.key.ENTER:
-#                 self.password_input.deactivate()
-#                 self.on_login(None)
-#                 return True
-#         return False
-#
-#     def on_login(self, event: UIOnClickEvent | None):
-#         username = self.username_input.text.strip()
-#         password = self.password_input.text.strip()
-#         print(f"User logged in with: {username} {password}")
-#         # example validation (replace with actual validation logic)
-#         if username == "yes" and password == "yes123":
-#             print("Login successful!")
-#             self.window.show_view(GameView())  # show the GameView after login
-#         else:
-#             print("Invalid credentials!")
-#
-#     def on_sign_up(self, event: UIOnClickEvent | None):
-#         print("this is sing up page")
-#
-#
-# def main():
-#     window = arcade.Window(title="Login Page")
-#     window.show_view(MyView())
-#     window.run()
-#
-#
-# if __name__ == "__main__":
-#     main()
 
 
 class MyView(UIView):
@@ -158,7 +29,7 @@ class MyView(UIView):
 
         self.grid = UIGridLayout(
             size_hint=(0, 0),  # wrap children
-            row_count=6,  # title | user, pw | login button | sing up button
+            row_count=7,  # title | user, pw | login button | sing up button
             column_count=2,  # label and input field
             vertical_spacing=10,
             horizontal_spacing=5,
@@ -215,6 +86,15 @@ class MyView(UIView):
             row=5,
             column_span=2,
         )
+        
+        # initialize incorrect password label for later use
+        self.incorrect_password_label= UILabel(
+            text="Incorrect username or password",
+            width=150,
+            font_size=10,
+            font_name="Kenney Future",
+            text_color=(255, 0, 0)
+        )
 
         self.anchor = self.manager.add(arcade.gui.UIAnchorLayout())
         self.anchor.add(
@@ -222,7 +102,7 @@ class MyView(UIView):
             anchor_y="center_y",
             child=self.grid,
         )
-
+        
         @login_button.event("on_click")
         def on_login(event):
             self.on_login_action()
@@ -250,16 +130,25 @@ class MyView(UIView):
     def on_login_action(self):
         entered_username = self.username_input.text.strip()
         entered_password = self.password_input.text.strip()
+        
+        # remove previous warning messages, if any
+        for child in self.grid.children:
+            if child == self.incorrect_password_label:
+                self.grid.remove(child)
 
         success = data_manager.authenticate_user(entered_username, entered_password)
 
         if success:
-            print("Login successful!")
-
             # show the GameView after login
             self.window.show_view(GameView())
         else:
-            print("Invalid credentials!")
+            # shows incorrect credentials label
+            self.grid.add(
+                self.incorrect_password_label,
+                column=0,
+                row=6,
+                column_span=2
+            )
 
     def on_key_press(self, symbol: int, modifiers: int) -> bool | None:
         # if username field active, switch fields with enter
@@ -298,7 +187,7 @@ class SignUpView(arcade.View):
 
         self.grid = UIGridLayout(
             size_hint=(0, 0),  # wrap children
-            row_count=7,  # title | user, pw | login button | sing up button
+            row_count=8,  # title | user, pw | login button | sing up button
             column_count=2,  # label and input field
             vertical_spacing=10,
             horizontal_spacing=5,
@@ -350,6 +239,35 @@ class SignUpView(arcade.View):
                 width=150,
                 font_size=10,
                 font_name="Kenney Future",), column=0, row=6, column_span=2,)
+        
+        # -- Error labels --
+        # initialize invalid username label for later use
+        self.invalid_username_label = UILabel(
+            text="Username must be 3 or more characters long",
+            width=150,
+            font_size=10,
+            font_name="Kenney Future",
+            text_color=(255, 0, 0)
+        )
+        
+        # initialize username already taken label for later use
+        self.taken_username_label= UILabel(
+            text="Username already taken",
+            width=150,
+            font_size=10,
+            font_name="Kenney Future",
+            text_color=(255, 0, 0)
+        )
+        
+        # initialize non-matching passwords label for later use
+        self.passwords_no_match_label= UILabel(
+            text="Passwords don't match",
+            width=150,
+            font_size=10,
+            font_name="Kenney Future",
+            text_color=(255, 0, 0)
+        )
+        # --
 
         self.anchor = self.manager.add(arcade.gui.UIAnchorLayout())
         self.anchor.add(
@@ -363,18 +281,44 @@ class SignUpView(arcade.View):
             entered_username = self.username_input.text
             entered_password = self.password_input.text
             confirmation_password = self.confirm_password_input.text
+        
+            # remove previous warning messages, if any
+            for child in self.grid.children:
+                if child in [self.invalid_username_label, self.taken_username_label, self.passwords_no_match_label]:
+                    self.grid.remove(child)
+            
+            if len(entered_username) < 3:
+                # show username too short label
+                self.grid.add(
+                    self.invalid_username_label,
+                    column=0,
+                    row=7,
+                    column_span=2
+                )
+                return
 
             if entered_password == confirmation_password:
-                print(f"Signing up with Username: {entered_username} and Password: {entered_password}")
+                print(f"Signing up with username: {entered_username} and password: {entered_password}")
                 success = data_manager.sign_up(entered_username, entered_password)
 
                 if success:
-                    print("Successfully signed in")
                     self.window.show_view(GameView())
                 else:
-                    print("Failed to signup")
+                    # show username already taken label
+                    self.grid.add(
+                        self.taken_username_label,
+                        column=0,
+                        row=7,
+                        column_span=2
+                    )
             else:
-                print("Passwords do not match!")
+                # show passwords don't match label
+                self.grid.add(
+                    self.passwords_no_match_label,
+                    column=0,
+                    row=7,
+                    column_span=2
+                )
 
         @back_button.event("on_click")
         def on_click_back_to_login(event):
