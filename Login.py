@@ -139,8 +139,8 @@ class MyView(UIView):
         success = data_manager.authenticate_user(entered_username, entered_password)
 
         if success:
-            # show the GameView after login
-            self.window.show_view(GameView())
+            # show the Game_view after login
+            self.window.show_view(Game_view())
         else:
             # shows incorrect credentials label
             self.grid.add(
@@ -302,7 +302,7 @@ class SignUpView(arcade.View):
                 success = data_manager.sign_up(entered_username, entered_password)
 
                 if success:
-                    self.window.show_view(GameView())
+                    self.window.show_view(Game_view())
                 else:
                     # show username already taken label
                     self.grid.add(

@@ -10,6 +10,9 @@ import arcade
 from arcade.gui import UIManager
 from arcade import resources
 from arcade.gui.widgets.buttons import UIFlatButton
+# can't import window without adding demo folder to path
+import sys
+sys.path.insert(0, 'demo')
 from window import GameView
 
 resources.load_kenney_fonts()
