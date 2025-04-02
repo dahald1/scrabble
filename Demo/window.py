@@ -189,7 +189,7 @@ class Tile(arcade.SpriteSolidColor):
                     MAT_POSITIONS_FILLED[i] = True
         else:
             # Use the player's rack to populate the mat
-            rack_letters = list(player_rack.split(","))  # Convert rack string or list to list of letters
+            rack_letters = list(player_rack.split(", "))  # Convert rack string or list to list of letters
 
             for i in range(7):
                 if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
