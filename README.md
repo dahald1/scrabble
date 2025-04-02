@@ -10,4 +10,5 @@ an AI. Games will be savable to the cloud and users can create accounts to save 
 ## Notes
 The functionality is all there, there are some minor bugs.  Turns with the AI are stopped after 1
 because the AI is still in development.  It has logic to make placements but cannot physically yet
-place the tiles. main.py in the demo folder can be used to run the and test the game.
+place the tiles. main.py in the demo folder can be used to run the and test the game. The game_start_screen.py
+file can be used to test the start screen. 

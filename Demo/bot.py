@@ -70,6 +70,7 @@ class AIPlayer(Player):
 
         chosen_word = random.choice(playable_words)
         location, direction = self.find_placement(chosen_word)
+        # TODO - Colin use this value to place tiles
         return chosen_word, location, direction
 
     def find_placement(self, word):
