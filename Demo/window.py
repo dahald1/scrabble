@@ -273,11 +273,11 @@ class Tile(arcade.SpriteSolidColor):
         for i, letter in enumerate(word_list):
             # Calculate the position based on direction
             if direction == "horizontal":
-                x = pixels[0] + i * TILE_SIZE
+                x = pixels[0] + (i * TILE_SIZE)
                 y = pixels[1]
             elif direction == "vertical":
                 x = pixels[0]
-                y = pixels[1] - i * TILE_SIZE
+                y = pixels[1] - (i * TILE_SIZE)
 
             # Create a new tile sprite, position, add to list.
             tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter)
