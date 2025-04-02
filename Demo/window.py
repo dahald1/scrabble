@@ -188,7 +188,7 @@ class Tile(arcade.SpriteSolidColor):
                     MAT_POSITIONS_FILLED[i] = True
         else:
             # Use the player's rack to populate the mat
-            rack_letters = list(player_rack.split(", "))  # Convert rack string or list to list of letters
+            rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
 
             for i in range(7):
                 if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
@@ -216,6 +216,7 @@ class Tile(arcade.SpriteSolidColor):
                 self.offset_y = self.center_y - y
 
     def snap_to_grid(self):
+        """ Calculation for snapping tile to grid"""
         # Snap to grid coordinates calculation
         snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
                   * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
@@ -311,7 +312,7 @@ class GameView(arcade.Window):
         self.ui_manager.add(save_button)
 
         @save_button.event("on_click")
-        def on_login(event):
+        def on_login():
             print("Save button clicked!")
 
 
@@ -375,7 +376,8 @@ class GameView(arcade.Window):
                 # Calculate row and column of tile by positioning within window
                 row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
                 col = (tile.center_x - PADDING / 2) // TILE_SIZE
-                # print(f"Tile at ({tile.center_x}, {tile.center_y}) mapped to ({int(row)}, {int(col)}) with value {tile.value}")
+                # print(f"Tile at ({tile.center_x}, {tile.center_y})
+                # mapped to ({int(row)}, {int(col)}) with value {tile.value}")
                 BOARD_MATRIX[int(row)][int(col)] = tile.value
 
         # Uncomment to debug board matrix positioning
