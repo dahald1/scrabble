@@ -2,6 +2,7 @@
 class Word:
     def __init__(self, word, location, player, direction, board, round_number, players, premium_spots, letter_values):
         self.word = "".join(word.split()).upper()
+        print(self.word)
         self.location = location
         self.player = player
         self.direction = direction.lower()

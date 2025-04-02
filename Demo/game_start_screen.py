@@ -10,7 +10,9 @@ import arcade
 from arcade.gui import UIManager
 from arcade import resources
 from arcade.gui.widgets.buttons import UIFlatButton
+from start import start_game
 from window import GameView
+
 
 resources.load_kenney_fonts()
 # Load button textures (Replace these with your own image paths)
@@ -144,7 +146,7 @@ class Game_view(arcade.View):
                 self.window.show_view(GameView())
             if self.with_AI.collides_with_point((x, y)):
                 print("this is clicked")
-                self.window.show_view(GameView())
+                self.window.show_view(start_game())
 
 
 def main():

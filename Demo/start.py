@@ -161,9 +161,12 @@ class GameController:
             self.current_player = players[0]
             round_number += 1
 
+
         print("\nRound " + str(round_number) + ": " + self.current_player.get_name() + "'s turn \n")
         print(self.board.get_board())
         print("\n" + self.current_player.get_name() + "'s Letter Rack: " + self.current_player.get_rack_str())
+
+        # word_to_play, location, direction = choose_word(added_tiles, self.game_view.get_board_matrix())
 
         self.turn_ended = False
         self.prev_board_matrix = None
@@ -218,5 +221,8 @@ def start_game():
     arcade.run()
 
 
-if __name__ == "__main__":
-    start_game()
+# if __name__ == "__main__":
+#     start_game()
+
+
+#todo dictironay wit all the data for a score, words, and turns and everything
