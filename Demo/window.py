@@ -182,7 +182,6 @@ class Tile(arcade.SpriteSolidColor):
                         if TILE_BAG[value] > 0:
                             TILE_BAG[value] -= 1
                             valid = True
-                    # TODO - fix this
                     tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
                                 TILE_SIZE, TILE_SIZE, i, value=value)
                     self.tiles.append(tile)
@@ -194,7 +193,6 @@ class Tile(arcade.SpriteSolidColor):
             for i in range(7):
                 if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
                     value = rack_letters[i]
-                    # TODO - fix this
                     tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
                                 TILE_SIZE, TILE_SIZE, i, value=value)
                     self.tiles.append(tile)
@@ -347,7 +345,6 @@ class GameView(arcade.Window):
             print(row)
         print("\n\n")
 
-    # TODO - Diwas, this returns the board matrix.
     @staticmethod
     def get_board_matrix():
         """Returns the current board matrix."""

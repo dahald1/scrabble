@@ -3,7 +3,7 @@ from tile import Tile
 
 LETTER_VALUES = {"A": 1, "B": 3, "C": 3, "D": 2, "E": 1, "F": 4, "G": 2, "H": 4, "I": 1, "J": 1,
                  "K": 5, "L": 1, "M": 3, "N": 1, "O": 1, "P": 3, "Q": 10, "R": 1, "S": 1, "T": 1,
-                 "U": 1, "V": 4, "W": 4, "X": 8, "Y": 4, "Z": 10, "#": 0}
+                 "U": 1, "V": 4, "W": 4, "X": 8, "Y": 4, "Z": 10, " ": 0}
 class Bag:
     def __init__(self):
         self.bag = []
@@ -41,7 +41,7 @@ class Bag:
         self.add_to_bag(Tile("X", LETTER_VALUES), 1)
         self.add_to_bag(Tile("Y", LETTER_VALUES), 2)
         self.add_to_bag(Tile("Z", LETTER_VALUES), 1)
-        self.add_to_bag(Tile("#", LETTER_VALUES), 2)
+        self.add_to_bag(Tile(" ", LETTER_VALUES), 2)
         shuffle(self.bag)
 
     def take_from_bag(self):
