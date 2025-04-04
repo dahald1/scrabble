@@ -88,6 +88,9 @@ class GameController:
         self.current_player = current_player
         self.prev_board_matrix = None
         self.turn_ended = False
+        self.status = ""
+        # self.AI = AIPlayer(self.board, self.bag)
+        # print(self.AI.playing_position())
 
     def sync_board_with_matrix(self):
         """Sync the Board instance with the matrix from GameView."""
@@ -102,11 +105,26 @@ class GameController:
 
     def process_turn(self):
         """Process the current player's turn."""
+        # Dictionary that saves the current game state
         global round_number, skipped_turns
+        save_game = {
+            'round_number': round_number,
+            'skipped_turns': skipped_turns,
+            'current_player': self.current_player.get_name(),
+            'board_state': self.board.get_board(),  # Assuming get_board() returns the current board state
+            'player_scores': {player.get_name(): player.get_score() for player in players},
+            'player_racks': {player.get_name(): player.get_rack_str() for player in players},
+            'remaining_tiles': self.bag.get_remaining_tiles(),
+            'status': self.status,  # Assuming you have a status attribute for game status
+        }
 
+        # end the game if conditions are met
         if (skipped_turns >= 6) or (
                 self.current_player.rack.get_rack_length() == 0 and self.bag.get_remaining_tiles() == 0):
             self.end_game()
+            save_game['status'] = "finished"
+            # save or update game state somewhere
+            # self.save_game_state(save_game)  # call save game method here
             return
 
         if isinstance(self.current_player, AIPlayer):
@@ -117,7 +135,6 @@ class GameController:
                 skipped_turns = 0
         else:
             added_tiles = self.game_view.find_added_tiles(self.prev_board_matrix, self.game_view.get_board_matrix())
-            # print(added_tiles)
             if not added_tiles:
                 print("No tiles were placed. Your turn has been skipped.")
                 skipped_turns += 1
@@ -147,9 +164,7 @@ class GameController:
                         word.calculate_word_score()
                         skipped_turns = 0
                         print(f"Word played: {word_to_play} at {location} going {direction}")
-                        # Refill the mat with the player's updated rack
-                        self.current_player.rack.replenish_rack()  # Player has a fill_rack method
-                        # self.game_view.tiles.clear()  # Clear current tiles
+                        self.current_player.rack.replenish_rack()
                         Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
 
         print("\n" + self.current_player.get_name() + "'s score is: " + str(self.current_player.get_score()))
@@ -161,15 +176,18 @@ class GameController:
             self.current_player = players[0]
             round_number += 1
 
-
         print("\nRound " + str(round_number) + ": " + self.current_player.get_name() + "'s turn \n")
         print(self.board.get_board())
         print("\n" + self.current_player.get_name() + "'s Letter Rack: " + self.current_player.get_rack_str())
 
-        # word_to_play, location, direction = choose_word(added_tiles, self.game_view.get_board_matrix())
-
         self.turn_ended = False
         self.prev_board_matrix = None
+
+        save_game['status'] = "in_progress"
+        # print(save_game)
+
+        # save the game state after processing the turn
+        # self.save_game_state(save_game)
 
     def end_game(self):
         """End the game and determine the winner."""
@@ -220,9 +238,8 @@ def start_game():
     game_view.setup()
     arcade.run()
 
-
 # if __name__ == "__main__":
 #     start_game()
 
 
-#todo dictironay wit all the data for a score, words, and turns and everything
+# todo dictironay wit all the data for a score, words, and turns and everything

@@ -5,6 +5,12 @@ import random
 from dictionary import load_dictionary_upper
 
 
+# TODO connect with the placing tiles and get the turn and playing working
+
+# TODO generate point for that word
+# TODO look for the highest points possible and play that word
+
+# TODO concern: a letter can where so How do I check for that?
 class AIPlayer(Player):
     def __init__(self, bag, board):
         super().__init__(bag)
@@ -19,104 +25,103 @@ class AIPlayer(Player):
         letters_on_board = []
         for row in range(15):
             for col in range(15):
-                cell = board_array[row][col].strip()  # Remove padding spaces
-                if len(cell) == 1 and cell.isalpha():  # Check if it's a single letter
-                    letters_on_board.append((cell, row, col))
+                # Remove padding spaces
+                cell = board_array[row][col].strip()
+                if cell not in ["TLS", "TWS", "DLS", "DWS"]:
+                    if len(cell) == 1 and cell.isalpha():  # Check if it's a single letter
+                        letters_on_board.append((cell, row, col))
         return letters_on_board
+
+    def playing_position(self):
+        """Returns a dictionary of possible positions to play and the available spaces in each direction"""
+        board_array = self.board.board_array()
+        steps = 7  # maximum # of steps a word can extend
+
+        possible_positions = {}  # Dictionary storing playable positions and available spaces
+        rows, cols = len(board_array), len(board_array[0])
+
+        directions = {
+            "up": (-1, 0),
+            "down": (1, 0),
+            "left": (0, -1),
+            "right": (0, 1)
+        }
+
+        # gets all the letter positions on the board in the format (letter, row, col)
+        on_board = self.get_board_letters()
+
+        # iterate over all placed letters
+        for cell, row, col in on_board:
+            for dir_name, (dr, dc) in directions.items():
+                space_counter = 0
+
+                # Check spaces in the given direction
+                for step in range(1, steps + 1):
+                    r, c = row + step * dr, col + step * dc
+                    if not (0 <= r < rows and 0 <= c < cols):  # out of bounds
+                        break
+                    if board_array[r][c] in {' ', "TLS", "TWS", "DLS", "DWS"}:
+                        space_counter += 1  # found a space
+                    else:
+                        break
+
+                possible_positions[(cell, row, col, dir_name)] = space_counter
+
+        return possible_positions  # return the dictionary of possible positions
+
     def choose_word(self):
         rack_letters = [tile.get_letter() for tile in self.get_rack_arr()]
-        print("Rack letters: ", rack_letters)
-        # print(self.word_list)
-        on_board = self.get_board_letters()
-        letter_in_board = []
-        for i in range(len(on_board)):
-            letter_in_board.append(on_board[i][i])
+
+        playing_positions = self.playing_position()
 
         playable_words = []
 
+        for (letter, row, col, direction), spaces in playing_positions.items():
 
-        # Iterate over each word in the word_list.
-        for word in self.word_list:
-            # convert the current word into a list of individual letters.
-            counter = 0
-            word_letters = list(word)
-            # create a copy of the rack_letters to avoid modifying the original rack during checks.
-            temp_rack = rack_letters.copy()
+            # iterate over each word in the word_list.
+            for word in self.word_list:
+                # convert the current word into a list of individual letters.
+                counter = 0
+                word_letters = list(word)
+                # create a copy of the rack_letters to avoid modifying the original rack during checks.
+                temp_rack = rack_letters.copy()
+                # check if the letter is at the start
+                # this will check for Right and Down
+                if direction == "right" or direction == "down":
+                    if letter in word_letters[0]:
+                        # check each letter in the word to see if it exists in the rack.
+                        for rack_letter in word_letters:
+                            # if the letter exists in the temp_rack, remove it (use it).
+                            if rack_letter in temp_rack:
+                                temp_rack.remove(rack_letter)
 
-            # check each letter in the word to see if it exists in the rack.
-            for letter in word_letters:
-                # if the letter exists in the temp_rack, remove it (use it).
-                if letter in temp_rack:
-                    temp_rack.remove(letter)
-                    counter += 1
-            if counter >= 2 and len(word) == 2:
-                print(counter, word)
-                can_play = True
-            elif counter >= 3 and len(word) == 3:
-                print(counter, word)
-                can_play = True
-            elif counter >= 4 and len(word) == 4:
-                print(counter, word)
-                can_play = True
-            elif counter >= 5 and len(word) == 5:
-                print(counter, word)
-                can_play = True
-            elif counter >= 6 and len(word) == 6:
-                print(counter, word)
-                can_play = True
-            elif counter >= 7 and len(word) == 7:
-                print(counter, word)
-                can_play = True
-            else:
-                can_play = False
+                        if len(temp_rack) < 7 and direction == "right":
+                            playable_words.append((word, row + len(word) - 1, col, "right"))
+                        if len(temp_rack) < 7 and direction == "down":
+                            playable_words.append((word, row, col + (len(word) - 1), "down"))
+                # check if the letter is at the start, this will check for Up and Left
+                elif direction == "left" or direction == "up":
+                    if letter in word_letters[len(word_letters) - 1]:
+                        # check each letter in the word to see if it exists in the rack.
+                        for rack_letter in word_letters:
+                            # if the letter exists in the temp_rack, remove it (use it).
+                            if rack_letter in temp_rack:
+                                temp_rack.remove(rack_letter)
 
-            if can_play:
-                playable_words.append(word)
+                        if len(temp_rack) < 7 and direction == "up":
+                            playable_words.append((word, row, col - (len(word) - 1), "down"))
+                        if len(temp_rack) < 7 and direction == "left":
+                            playable_words.append((word, row - (len(word) - 1), col, "right"))
 
-        # Print the list of playable words.
-        # print("playable words: ", playable_words)
-
-        if not playable_words:
-            return "", [7, 7], "right"
-
+        # randomly choose a word and return the word, staring location and the
+        # directions the word should be going
+        print(playable_words)
         chosen_word = random.choice(playable_words)
-        location, direction = self.find_placement(chosen_word)
-        return chosen_word, location, direction
+        word = chosen_word[0]
+        location = (chosen_word[1], chosen_word[2])
+        directions = chosen_word[3]
 
-    def find_placement(self, word):
-        print("not an array board: ", self.board)
-        board_array = self.board.board_array()
-        print("board", board_array)
-
-        # if all cells are empty
-        if any(" " not in cell for row in board_array for cell in row):
-
-            # TODO needs to print out the index
-            # todo then needs to check if the the letter at the index exits in list of words
-            # todo if the letter does exits get the length of words
-            # todo then check if their idx in right or down is empty and only place it down or right for now
-            # todo then return the starting index
-            return [7, 6], "right"
-
-        # todo in the future the AI needs to focus on scoring the most points
-
-        # every cell in a 15x15 board
-        for row in range(15):
-            for col in range(15):
-                # check if the word fits within the board when placed horizontally (right)
-                if col + len(word) <= 15:
-                    # check if placing the word at (row, col) in the right is valid
-                    if self.is_valid_placement(word, [row, col], "right"):
-                        return [row, col], "right"  # return the valid position and direction
-
-                # check if the word fits within the board when placed vertically (down)
-                if row + len(word) <= 15:
-                    # check if placing the word at (row, col) in the "down" direction is valid
-                    if self.is_valid_placement(word, [row, col], "down"):
-                        return [row, col], "down"  # Return the valid position and direction
-
-        # if no valid placement is found, default to starting at the center of the board
-        return [7, 7], "right"
+        return word, location, directions
 
     def is_valid_placement(self, word, location, direction):
         from start import round_number, players, premium_spots, LETTER_VALUES
@@ -143,42 +148,108 @@ class AIPlayer(Player):
         return True
 
 
+import unittest
+from unittest.mock import MagicMock
 
 
+class TestAIPlayer(unittest.TestCase):
+
+    def setUp(self):
+        # Mock a board for testing purposes
+        self.board = MagicMock()
+        self.board.board_array.return_value = [
+            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            # Add more rows as needed for tests
+        ]
+        self.bag = MagicMock()  # You can mock the bag if needed
+        self.ai_player = AIPlayer(self.bag, self.board)
+
+    def test_initialization(self):
+        self.assertEqual(self.ai_player.name, "AI Player")
+        self.assertIsInstance(self.ai_player.word_list, list)
+
+    def test_get_board_letters(self):
+        # Setup: Board has a few letters
+        self.board.board_array.return_value = [
+            [" ", " ", " ", "A", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", "B", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            # Add more rows as needed
+        ]
+
+        letters = self.ai_player.get_board_letters()
+        expected_letters = [("A", 0, 3), ("B", 1, 2)]
+        self.assertEqual(letters, expected_letters)
+
+    def test_playing_position(self):
+        # Mock board state where "A" and "B" are placed
+        self.board.board_array.return_value = [
+            [" ", " ", " ", "T", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", "B", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+            # Add more rows as needed
+        ]
+
+        positions = self.ai_player.playing_position()
+        # Check if the dictionary contains keys for positions (A at 0,3, B at 1,2)
+        self.assertIn(("A", 0, 3, "right"), positions)
+        self.assertIn(("B", 1, 2, "down"), positions)
+
+    def test_choose_word(self):
+        # Mocking the behavior of get_rack_arr
+        self.ai_player.get_rack_arr = MagicMock(return_value=[MagicMock(get_letter=MagicMock(return_value='A')),
+                                                              MagicMock(get_letter=MagicMock(return_value='P')),
+                                                              MagicMock(get_letter=MagicMock(return_value='F')),
+                                                              MagicMock(get_letter=MagicMock(return_value='G'))])
+        self.ai_player.playing_position = MagicMock(return_value={("C", 0, 3, "down"): 1})
+        self.ai_player.word_list = ["AB", "BA", "CAT"]
+
+        chosen_word, yes, no = self.ai_player.choose_word()
+        print("chosen word: ", chosen_word, yes, no)
+        self.assertIn(chosen_word, ["CAT"])  # Chosen word should be from the rack and dictionary
+
+    # def test_find_placement(self):
+    #     # Mock board state where no word is placed yet
+    #     self.board.board_array.return_value = [
+    #         [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+    #         [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+    #         # Add more rows as needed
+    #     ]
+    #
+    #     # Test for word placement
+    #     placement = self.ai_player.find_placement("HELLO")
+    #     self.assertEqual(placement, ([7, 7], "right"))  # Check if it returns the center position
+
+    def test_is_valid_placement(self):
+        # Mock the behavior of the Word class and check valid placement
+        self.ai_player.is_valid_placement = MagicMock(return_value=True)
+        result = self.ai_player.is_valid_placement("HELLO", [7, 7], "right")
+        self.assertTrue(result)
+
+    # def test_play_turn(self):
+    #     # Mock word placement behavior
+    #     self.ai_player.choose_word = MagicMock(return_value=("HELLO", [7, 7], "right"))
+    #     self.board.place_word = MagicMock()
+    #
+    #     result = self.ai_player.play_turn(self.board)
+    #
+    #     # Ensure place_word is called
+    #     self.board.place_word.assert_called_with("HELLO", [7, 7], "right", self.ai_player)
+    #     self.assertTrue(result)
+    #
+    # def test_play_turn_skip(self):
+    #     # Test for turn skipping when no word is chosen
+    #     self.ai_player.choose_word = MagicMock(return_value=("", [7, 7], "right"))
+    #
+    #     result = self.ai_player.play_turn(self.board)
+    #
+    #     # Ensure it skips the turn
+    #     self.assertFalse(self.board.place_word.called)
+    #     self.assertTrue(result)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    unittest.main()
 
 ########################CODES I WANN THROW AWAY BUT TOO GREDY###################################
 
@@ -314,4 +385,3 @@ class AIPlayer(Player):
 #         board.place_word(word, location, direction, self)
 #         word_obj.calculate_word_score()
 #         return True
-
