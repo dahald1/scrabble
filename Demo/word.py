@@ -37,7 +37,7 @@ class Word:
                             word_list[i] = letter
                     # Check if each combo is valid
                     if "".join(word_list) in dictionary:
-                        # TODO - WORD IS VALID
+                        # TODO - TEST THIS FUNCTIONALITY
                         # Set blank tile back to " " for scoring (0 point value)
                         word_list[index] = " "
                         self.word = "".join(word_list)

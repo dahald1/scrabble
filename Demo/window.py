@@ -286,7 +286,6 @@ class Tile(arcade.SpriteSolidColor):
             self.tiles.append(tile)
 
 
-
 class GameView(arcade.Window):
     """ Main application class. """
 
