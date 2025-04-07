@@ -1,4 +1,3 @@
-
 """
 Starting Template from Python Arcade Documentation
 """
