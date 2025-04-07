@@ -10,6 +10,8 @@ class Word:
         self.players = players
         self.premium_spots = premium_spots  # Store as instance variable
         self.letter_values = letter_values
+        self.ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
     def check_word(self):
         word_score = 0
@@ -23,10 +25,18 @@ class Word:
 
         if self.word != "":
             if " " in self.word:
-                while len(blank_tile_val) != 1:
-                    blank_tile_val = input("Please enter the letter value of the blank tile: ")
-                self.word = self.word[:self.word.index(" ")] + blank_tile_val.upper() + self.word[
-                                                                                        (self.word.index(" ") + 1):]
+                # while len(blank_tile_val) != 1:
+                #     blank_tile_val = input("Please enter the letter value of the blank tile: ")
+                # self.word = self.word[:self.word.index(" ")] + blank_tile_val.upper() + self.word[
+                #                                                                         (self.word.index(" ") + 1):]
+                word_list = list(self.word)
+                for letter in self.ALPHABET:
+                    for i, tile in enumerate(word_list):
+                        if tile == " ":
+                            word_list[i] = letter
+                    if "".join(word_list) in dictionary:
+                        self.word = "".join(word_list)
+                        break
 
             # Check bounds and process word placement
             if self.direction == "right":
