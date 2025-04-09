@@ -24,7 +24,7 @@ resources.load_kenney_fonts()
 class MyView(UIView):
     def __init__(self):
         super().__init__()
-        self.background_color = arcade.uicolor.BLUE_BELIZE_HOLE
+        self.background_color = arcade.color.LIGHT_PINK
         self.manager = arcade.gui.UIManager()
 
         self.grid = UIGridLayout(
@@ -35,40 +35,73 @@ class MyView(UIView):
             horizontal_spacing=5,
         )
         self.grid.with_padding(all=50)
-        self.grid.with_background(color=arcade.uicolor.DARK_BLUE_WET_ASPHALT)
+        self.grid.with_background(color=arcade.color.BEIGE)
 
         self.title = self.grid.add(
-            UILabel(text="Login", width=150, font_size=20, font_name="Kenney Future"),
+            UILabel(text="Login", width=150, font_size=20,
+                    font_name="Kenney Future", text_color=arcade.color.LIGHT_RED_OCHRE),
             column=0,
             row=0,
             column_span=2,
         )
         self.title.with_padding(bottom=20)
 
-        self.username_label = self.grid.add(UILabel(text="Username:", width=80, font_name="Kenney Future"), column=0, row=1)
+        self.username_label = self.grid.add(UILabel(text="Username:",
+                                                    width=80,
+                                                    font_name="Kenney Future",
+                                                    text_color=arcade.color.LIGHT_PINK),
+                                            column=0,
+                                            row=1)
         self.username_input = self.grid.add(
-            UIInputText(width=150, font_name="Kenney Future"), column=1, row=1
+            UIInputText(width=150, font_name="Kenney Future",
+                        border_color=arcade.color.LIGHT_PINK,
+                        text_color=arcade.color.LIGHT_PINK
+                        ), column=1, row=1
         )
-        self.username_input.with_background(color=arcade.uicolor.BLACK)
+        self.username_input.with_background(color=arcade.color.BEIGE)
         self.username_input.padding = (0, 3)  # text padding left
 
-        self.password_label = self.grid.add(UILabel(text="Password:", width=80, font_name="Kenney Future"), column=0, row=2)
+        self.password_label = self.grid.add(UILabel(text="Password:",
+                                                    width=80,
+                                                    font_name="Kenney Future",
+                                                    text_color=arcade.color.LIGHT_PINK),
+                                            column=0,
+                                            row=2)
         self.password_input = self.grid.add(
-            UIPasswordInput(width=150, font_name="Kenney Future"), column=1, row=2
+            UIPasswordInput(width=150, font_name="Kenney Future",
+                            border_color=arcade.color.LIGHT_PINK,
+                            text_color=arcade.color.LIGHT_PINK), column=1, row=2
         )
-        self.password_input.with_background(color=arcade.uicolor.BLACK)
+        self.password_input.with_background(color=arcade.color.BEIGE)
         self.password_input.padding = (0, 3)  # text padding left
         # set background to prevent full render on blinking caret
 
+        button_style = {
+            'normal': UIFlatButton.UIStyle(
+                font_color=arcade.color.WHITE,
+                bg=arcade.color.LIGHT_RED_OCHRE,
+            ),
+            'hover': UIFlatButton.UIStyle(
+                font_color=arcade.color.BEIGE,
+                bg=arcade.color.LIGHT_GREEN,
+            ),
+            'press': UIFlatButton.UIStyle(
+                font_color=arcade.color.LIGHT_RED_OCHRE,
+                bg=arcade.color.LIGHT_PINK,
+            ),
+        }
+
         login_button = self.grid.add(
-            UIFlatButton(text="Login", height=30, width=150, size_hint=(1, None)),
+            UIFlatButton(text="Login", height=30, width=150, size_hint=(1, None),
+                         style=button_style),
             column=0,
             row=3,
             column_span=2,
         )
 
         sign_up_button = self.grid.add(
-            UIFlatButton(text="Sign Up", height=30, width=150, size_hint=(1, None)),
+            UIFlatButton(text="Sign Up", height=30, width=150, size_hint=(1, None),
+                         style=button_style),
             column=0,
             row=4,
             column_span=2,
@@ -81,6 +114,7 @@ class MyView(UIView):
                 width=150,
                 font_size=10,
                 font_name="Kenney Future",
+                text_color=arcade.color.LIGHT_RED_OCHRE,
             ),
             column=0,
             row=5,
@@ -180,7 +214,7 @@ class SignUpView(arcade.View):
     def __init__(self, login_view):
         super().__init__()
 
-        self.background_color = arcade.uicolor.BLUE_BELIZE_HOLE
+        self.background_color = arcade.color.LIGHT_PINK
         self.manager = arcade.gui.UIManager()
 
         self.login_view = login_view
@@ -193,10 +227,11 @@ class SignUpView(arcade.View):
             horizontal_spacing=5,
         )
         self.grid.with_padding(all=50)
-        self.grid.with_background(color=arcade.uicolor.DARK_BLUE_WET_ASPHALT)
+        self.grid.with_background(color=arcade.color.BEIGE)
 
         self.title = self.grid.add(
-            UILabel(text="Sign Up", width=150, font_size=20, font_name="Kenney Future"),
+            UILabel(text="Sign Up", width=150, font_size=20,
+                    font_name="Kenney Future", text_color=arcade.color.LIGHT_RED_OCHRE),
             column=0,
             row=0,
             column_span=2,
@@ -204,33 +239,67 @@ class SignUpView(arcade.View):
         self.title.with_padding(bottom=20)
 
         # username
-        self.username_label = self.grid.add(UILabel(text="Username:", width=80, font_name="Kenney Future"), column=0,
+        self.username_label = self.grid.add(UILabel(text="Username:",
+                                                    width=80,
+                                                    font_name="Kenney Future",
+                                                    text_color=arcade.color.LIGHT_PINK),
+                                            column=0,
                                             row=1)
         self.username_input = self.grid.add(
-            UIInputText(width=150, font_name="Kenney Future"), column=1, row=1)
-        self.username_input.with_background(color=arcade.uicolor.BLACK)
+            UIInputText(width=150, font_name="Kenney Future",
+                        border_color=arcade.color.LIGHT_PINK,
+                        text_color=arcade.color.LIGHT_PINK), column=1, row=1)
+        self.username_input.with_background(color=arcade.color.BEIGE)
         self.username_input.padding = (0, 3)  # text padding left
 
         # Password
-        self.password_label = self.grid.add(UILabel(text="Password:", width=80, font_name="Kenney Future"), column=0,
+        self.password_label = self.grid.add(UILabel(text="Password:",
+                                                    width=80,
+                                                    font_name="Kenney Future",
+                                                    text_color=arcade.color.LIGHT_PINK),
+                                            column=0,
                                             row=2)
         self.password_input = self.grid.add(
-            UIPasswordInput(width=150, font_name="Kenney Future"), column=1, row=2)
-        self.password_input.with_background(color=arcade.uicolor.BLACK)
+            UIPasswordInput(width=150, font_name="Kenney Future",
+                            border_color=arcade.color.LIGHT_PINK,
+                            text_color=arcade.color.LIGHT_PINK), column=1, row=2)
+        self.password_input.with_background(color=arcade.color.BEIGE)
         self.password_input.padding = (0, 3)  # text padding left
 
         # Confirm Password
-        self.confirm_password_label = self.grid.add(UILabel(text="Confirm Password:", width=80, font_name="Kenney Future"),
+        self.confirm_password_label = self.grid.add(UILabel(text="Confirm Password:",
+                                                            width=80,
+                                                            font_name="Kenney Future",
+                                                            text_color=arcade.color.LIGHT_PINK),
                                                     column=0, row=3)
         self.confirm_password_input = self.grid.add(
-            UIPasswordInput(width=150, font_name="Kenney Future"), column=1, row=3)
-        self.confirm_password_input.with_background(color=arcade.uicolor.BLACK)
+            UIPasswordInput(width=150, font_name="Kenney Future",
+                            border_color=arcade.color.LIGHT_PINK,
+                            text_color=arcade.color.LIGHT_PINK), column=1, row=3)
+        self.confirm_password_input.with_background(color=arcade.color.BEIGE)
         self.confirm_password_input.padding = (0, 3)  # text padding left
 
+        button_style = {
+            'normal': UIFlatButton.UIStyle(
+                font_color=arcade.color.WHITE,
+                bg=arcade.color.LIGHT_RED_OCHRE,
+            ),
+            'hover': UIFlatButton.UIStyle(
+                font_color=arcade.color.BEIGE,
+                bg=arcade.color.LIGHT_GREEN,
+            ),
+            'press': UIFlatButton.UIStyle(
+                font_color=arcade.color.LIGHT_RED_OCHRE,
+                bg=arcade.color.LIGHT_PINK,
+            ),
+        }
+
         sign_up_button = self.grid.add(
-            UIFlatButton(text="Sign Up", height=30, width=150, size_hint=(1, None)), column=0, row=4, column_span=2,)
+            UIFlatButton(text="Sign Up", height=30, width=150, size_hint=(1, None),
+                         style=button_style), column=0, row=4, column_span=2,)
         back_button = self.grid.add(
-            UIFlatButton(text="Back", height=30, width=150, size_hint=(1, None)), column=0, row=5, column_span=2,)
+            UIFlatButton(text="Back", height=30, width=150, size_hint=(1, None),
+                         style=button_style), column=0, row=5, column_span=2,)
 
         # add warning label
         self.warning_label = self.grid.add(
@@ -238,7 +307,8 @@ class SignUpView(arcade.View):
                 text="Use 'TAB' to switch fields",
                 width=150,
                 font_size=10,
-                font_name="Kenney Future",), column=0, row=6, column_span=2,)
+                font_name="Kenney Future",
+                text_color=arcade.color.LIGHT_RED_OCHRE), column=0, row=6, column_span=2,)
         
         # -- Error labels --
         # initialize invalid username label for later use

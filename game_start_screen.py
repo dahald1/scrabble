@@ -64,18 +64,21 @@ class Game_view(arcade.View):
         self.hovered = False
         self.sprites = arcade.SpriteList()
 
-        self.background_color = arcade.color.WHITE
+        self.background_color = arcade.color.BEIGE
         self.is_mouse_pressed = False  # track mouse click
 
-        self.title = arcade.SpriteSolidColor(300, 100, self.window.width // 2, self.window.height//1.5,
-                                               (255, 255, 255, 255))
+        self.title = arcade.SpriteSolidColor(300, 100,
+                                             self.window.width // 2, self.window.height//1.5,
+                                             color=arcade.color.BEIGE)
         self.sprites.append(self.title)
         self.intro = arcade.Text("Welcome to Scrabble",
                                  self.title.center_x, self.title.center_y,
-                                 arcade.color.BLACK, font_size=20,
+                                 arcade.color.LIGHT_RED_OCHRE, font_size=20,
                                  anchor_x="center", anchor_y="center", font_name=("Kenney Future", "arial bold"))
 
-        self.play = arcade.SpriteSolidColor(300, 100, self.window.width // 2, self.window.height // 2,(0, 0, 255, 255))
+        self.play = arcade.SpriteSolidColor(300, 100,
+                                            self.window.width // 2, self.window.height // 2,
+                                            arcade.color.LIGHT_RED_OCHRE, font_size=20,)
         self.sprites.append(self.play)
         self.text = arcade.Text("Play",
                                 self.play.center_x, self.play.center_y,
@@ -90,7 +93,7 @@ class Game_view(arcade.View):
                                 font_name=("Kenney Future", "arial bold"))
 
         self.with_AI = arcade.SpriteSolidColor(300, 100, self.window.width // 2, self.window.height // 4,
-                                              (0, 0, 255, 255))
+                                              arcade.color.LIGHT_RED_OCHRE)
         self.sprites.append(self.with_AI)
         self.text2 = arcade.Text("Play With AI",
                                 self.with_AI.center_x, self.with_AI.center_y,
