@@ -9,7 +9,7 @@ def auth():
     """returns reference to database"""
     # NOTE: do not push the scrabble_SDK.json to the GitHub repository!
     # Leave it one directory above the project folder!
-    cred = credentials.Certificate('../serviceAccount.json')
+    cred = credentials.Certificate('serviceAccount.json')
     _ = firebase_admin.initialize_app(cred)
     database = firestore.client()
     return database

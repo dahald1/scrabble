@@ -1,4 +1,3 @@
-
 """
 Starting Template from Python Arcade Documentation
 """
@@ -91,6 +90,7 @@ class Tile(arcade.SpriteSolidColor):
         self.center_y = y + height // 2
         self.mat_position = mat_pos
         self.value = value
+        self.set_letter()
 
     def end_turn(self):
         """Setting values at end of turn to freeze tiles."""
@@ -187,7 +187,7 @@ class Tile(arcade.SpriteSolidColor):
                     MAT_POSITIONS_FILLED[i] = True
         else:
             # Use the player's rack to populate the mat
-            rack_letters = list(player_rack.split(","))  # Convert rack string or list to list of letters
+            rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
 
             for i in range(7):
                 if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
@@ -215,6 +215,7 @@ class Tile(arcade.SpriteSolidColor):
                 self.offset_y = self.center_y - y
 
     def snap_to_grid(self):
+        """ Calculation for snapping tile to grid"""
         # Snap to grid coordinates calculation
         snap_x = (round((self.center_x - PADDING / 2) / TILE_SIZE + SNAPPING_ERROR)
                   * TILE_SIZE + TILE_SIZE / 2 + PADDING / 2)
@@ -261,12 +262,37 @@ class Tile(arcade.SpriteSolidColor):
             if self.center_y + self.height // 2 > WINDOW_HEIGHT:
                 self.center_y = WINDOW_HEIGHT - self.height // 2
 
-class GameView(arcade.Window):
+    @staticmethod
+    def ai_place_tile(self, word, row, col, direction):
+        """Places tiles on the board using AI logic."""
+        pixels = GameView.coordinates_to_px(row, col)
+        word_list = list(word)
+
+        x = 0
+        y = 0
+        for i, letter in enumerate(word_list):
+            # Calculate the position based on direction
+            if direction == "horizontal":
+                x = pixels[0] + (i * TILE_SIZE)
+                y = pixels[1]
+            elif direction == "vertical":
+                x = pixels[0]
+                y = pixels[1] - (i * TILE_SIZE)
+
+            # Create a new tile sprite, position, add to list.
+            tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter)
+            tile.snap_to_grid()
+            tile.draggable = False
+            self.tiles.append(tile)
+
+
+class GameView(arcade.View):
     """ Main application class. """
 
     def __init__(self,player_rack=None):
-        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+        # super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         # Initial setup of variables
+        super().__init__()
         self.special_tile_text = None
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
@@ -285,7 +311,7 @@ class GameView(arcade.Window):
         self.ui_manager.add(save_button)
 
         @save_button.event("on_click")
-        def on_login(event):
+        def on_login():
             print("Save button clicked!")
 
 
@@ -319,14 +345,12 @@ class GameView(arcade.Window):
             print(row)
         print("\n\n")
 
-    # TODO - Diwas, this returns the board matrix.
     @staticmethod
     def get_board_matrix():
         """Returns the current board matrix."""
         return BOARD_MATRIX
 
     def update_board_matrix(self):
-        import board
         """Updates the board matrix with the current tile positions."""
 
         # Uncomment to debug board matrix positioning
@@ -351,7 +375,8 @@ class GameView(arcade.Window):
                 # Calculate row and column of tile by positioning within window
                 row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
                 col = (tile.center_x - PADDING / 2) // TILE_SIZE
-                # print(f"Tile at ({tile.center_x}, {tile.center_y}) mapped to ({int(row)}, {int(col)}) with value {tile.value}")
+                # print(f"Tile at ({tile.center_x}, {tile.center_y})
+                # mapped to ({int(row)}, {int(col)}) with value {tile.value}")
                 BOARD_MATRIX[int(row)][int(col)] = tile.value
 
         # Uncomment to debug board matrix positioning
@@ -481,15 +506,15 @@ class GameView(arcade.Window):
         self.update_board_matrix()
 
 
-def main():
-    """ Main function """
-    # Create a window class. This is what actually shows up on screen
-    window = GameView()
-
-    window.setup()
-
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
+# def main():
+#     """ Main function """
+#     # Create a window class. This is what actually shows up on screen
+#     window = GameView()
+#
+#     window.setup()
+#     # Tile.ai_place_tile(self=window, word="TEST", row=7, col=7, direction="horizontal")
+#     arcade.run()
+#
+#
+# if __name__ == "__main__":
+#     main()

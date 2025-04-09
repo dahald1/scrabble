@@ -1,4 +1,4 @@
-from Demo import board
+# from Demo import board
 from player import Player
 from word import Word
 import random
@@ -69,6 +69,7 @@ class AIPlayer(Player):
 
         return possible_positions  # return the dictionary of possible positions
 
+
     def choose_word(self):
         rack_letters = [tile.get_letter() for tile in self.get_rack_arr()]
 
@@ -120,8 +121,10 @@ class AIPlayer(Player):
         word = chosen_word[0]
         location = (chosen_word[1], chosen_word[2])
         directions = chosen_word[3]
-
+        # TODO ai_place_tile in window.py
         return word, location, directions
+
+
 
     def is_valid_placement(self, word, location, direction):
         from start import round_number, players, premium_spots, LETTER_VALUES
@@ -133,19 +136,19 @@ class AIPlayer(Player):
         else:
             return False
 
-    def play_turn(self, board):
-        word, location, direction = self.choose_word()
-        if word == "":
-            print(f"{self.name} skips their turn.")
-            return True
-
-        print(f"{self.name} plays: {word} at {location} going {direction}")
-        from start import round_number, players, premium_spots, LETTER_VALUES
-        word_obj = Word(word, location, self, direction, board.board_array(), round_number, players, premium_spots,
-                        LETTER_VALUES)
-        board.place_word(word, location, direction, self)
-        word_obj.calculate_word_score()
-        return True
+    # def play_turn(self, board):
+    #     word, location, direction = self.choose_word()
+    #     if word == "":
+    #         print(f"{self.name} skips their turn.")
+    #         return True
+    #
+    #     print(f"{self.name} plays: {word} at {location} going {direction}")
+    #     from start import round_number, players, premium_spots, LETTER_VALUES
+    #     word_obj = Word(word, location, self, direction, board.board_array(), round_number, players, premium_spots,
+    #                     LETTER_VALUES)
+    #     board.place_word(word, location, direction, self)
+    #     word_obj.calculate_word_score()
+    #     return True
 
 
 import unittest

@@ -6,6 +6,7 @@ from bot import AIPlayer
 import arcade
 from window import GameView, Tile  # Import GameView from your original code
 from window import TRIPLE_WORD, TRIPLE_LETTER, DOUBLE_WORD, DOUBLE_LETTER, CENTER
+from data import ScrabbleGame
 
 LETTER_VALUES = {"A": 1, "B": 3, "C": 3, "D": 2, "E": 1, "F": 4, "G": 2, "H": 4, "I": 1, "J": 1,
                  "K": 5, "L": 1, "M": 3, "N": 1, "O": 1, "P": 3, "Q": 10, "R": 1, "S": 1, "T": 1,
@@ -132,7 +133,7 @@ class GameController:
             if self.current_player.get_rack_str() == "":
                 skipped_turns += 1
             else:
-                skipped_turns = 0
+                print("the AI's rack is not empty")
         else:
             added_tiles = self.game_view.find_added_tiles(self.prev_board_matrix, self.game_view.get_board_matrix())
             if not added_tiles:
@@ -184,6 +185,19 @@ class GameController:
         self.prev_board_matrix = None
 
         save_game['status'] = "in_progress"
+
+        if isinstance(self.current_player, AIPlayer):
+            word, location, direction = AIPlayer.choose_word(self.current_player)
+            print(word[1])
+            # print("AI chosen word: ", word, location, direction)
+            self.board.place_word(word, location, direction, self.current_player)
+            word.calculate_word_score()
+            # print(f"Word played: {word} at {location} going {direction}")
+            self.current_player.rack.replenish_rack()
+            Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
+            skipped_turns = 0
+            self.sync_board_with_matrix()  # ensure board is up-to-date
+            self.process_turn()
         # print(save_game)
 
         # save the game state after processing the turn
@@ -236,10 +250,9 @@ def start_game():
     game_view.on_key_press = new_on_key_press
 
     game_view.setup()
-    arcade.run()
+    return game_view
+    # arcade.run()
 
 # if __name__ == "__main__":
 #     start_game()
 
-
-# todo dictironay wit all the data for a score, words, and turns and everything
