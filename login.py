@@ -29,7 +29,7 @@ class MyView(UIView):
 
         self.grid = UIGridLayout(
             size_hint=(0, 0),  # wrap children
-            row_count=7,  # title | user, pw | login button | sing up button
+            row_count=9,  # title | user, pw | login button | sing up button
             column_count=2,  # label and input field
             vertical_spacing=10,
             horizontal_spacing=5,
@@ -37,11 +37,27 @@ class MyView(UIView):
         self.grid.with_padding(all=50)
         self.grid.with_background(color=arcade.color.BEIGE)
 
+        self.head = self.grid.add(
+            UILabel(text="SCRABBLE", width=150, font_size=40,
+                    font_name="Kenney Future", text_color=arcade.color.LIGHT_RED_OCHRE),
+            column=0,
+            row=0,
+            column_span=2,
+        )
+
+        self.bar = self.grid.add(
+            UILabel(text="-----------------------------------", width=150, font_size=10,
+                    font_name="Kenney Future", text_color=arcade.color.LIGHT_RED_OCHRE),
+            column=0,
+            row=1,
+            column_span=2,
+        )
+
         self.title = self.grid.add(
             UILabel(text="Login", width=150, font_size=20,
                     font_name="Kenney Future", text_color=arcade.color.LIGHT_RED_OCHRE),
             column=0,
-            row=0,
+            row=2,
             column_span=2,
         )
         self.title.with_padding(bottom=20)
@@ -51,13 +67,13 @@ class MyView(UIView):
                                                     font_name="Kenney Future",
                                                     text_color=arcade.color.LIGHT_PINK),
                                             column=0,
-                                            row=1)
+                                            row=3)
         self.username_input = self.grid.add(
             UIInputText(width=150, font_name="Kenney Future",
                         border_color=arcade.color.LIGHT_PINK,
                         text_color=arcade.color.LIGHT_PINK,
                         caret_color=arcade.color.BLACK,
-                        ), column=1, row=1
+                        ), column=1, row=3
         )
         self.username_input.with_background(color=arcade.color.BEIGE)
         self.username_input.padding = (0, 3)  # text padding left
@@ -67,15 +83,17 @@ class MyView(UIView):
                                                     font_name="Kenney Future",
                                                     text_color=arcade.color.LIGHT_PINK),
                                             column=0,
-                                            row=2)
+                                            row=4)
         self.password_input = self.grid.add(
             UIPasswordInput(width=150, font_name="Kenney Future",
                             border_color=arcade.color.LIGHT_PINK,
                             text_color=arcade.color.LIGHT_PINK,
-                            caret_color=arcade.color.BLACK), column=1, row=2
+                            caret_color=arcade.color.BLACK), column=1, row=4
         )
         self.password_input.with_background(color=arcade.color.BEIGE)
-        self.password_input.padding = (0, 3)  # text padding left
+        self.password_input._padding_left = 3  # text padding left
+        self.password_label._padding_bottom = 10
+
         # set background to prevent full render on blinking caret
 
         button_style = {
@@ -97,7 +115,7 @@ class MyView(UIView):
             UIFlatButton(text="Login", height=30, width=150, size_hint=(1, None),
                          style=button_style),
             column=0,
-            row=3,
+            row=5,
             column_span=2,
         )
 
@@ -105,7 +123,7 @@ class MyView(UIView):
             UIFlatButton(text="Sign Up", height=30, width=150, size_hint=(1, None),
                          style=button_style),
             column=0,
-            row=4,
+            row=6,
             column_span=2,
         )
 
@@ -119,7 +137,7 @@ class MyView(UIView):
                 text_color=arcade.color.LIGHT_RED_OCHRE,
             ),
             column=0,
-            row=5,
+            row=8,
             column_span=2,
         )
         
@@ -129,7 +147,7 @@ class MyView(UIView):
             width=150,
             font_size=10,
             font_name="Kenney Future",
-            text_color=(255, 0, 0)
+            text_color=(255, 0, 0),
         )
 
         self.anchor = self.manager.add(arcade.gui.UIAnchorLayout())
@@ -182,7 +200,7 @@ class MyView(UIView):
             self.grid.add(
                 self.incorrect_password_label,
                 column=0,
-                row=6,
+                row=7,
                 column_span=2
             )
 
