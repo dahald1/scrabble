@@ -116,8 +116,9 @@ class AIPlayer(Player):
 
         # randomly choose a word and return the word, staring location and the
         # directions the word should be going
-        print(playable_words)
+        # print(playable_words)
         chosen_word = random.choice(playable_words)
+        print(chosen_word)
         word = chosen_word[0]
         location = (chosen_word[1], chosen_word[2])
         directions = chosen_word[3]
