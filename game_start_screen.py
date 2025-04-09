@@ -21,6 +21,10 @@ BUTTON_NORMAL = "back-button.png"  # Default state
 BUTTON_HOVER = "left-arrow.png"  # When mouse is over
 BUTTON_CLICKED = "left-arrow.png"  # When clicked
 
+# Color Constants
+HOVER = arcade.color.LIGHT_GREEN
+NO_HOVER = arcade.color.LIGHT_RED_OCHRE
+CLICKED = arcade.color.LIGHT_PINK
 
 class Button(arcade.Sprite):
     """ A Button class that changes appearance on hover and click. """
@@ -120,16 +124,16 @@ class Game_view(arcade.View):
         self.button2.update_button(x, y, self.is_mouse_pressed)
         if self.play.collides_with_point((x, y)):
             if not self.hovered:
-                self.play.color = arcade.color.RED  # Change color on hover
+                self.play.color = HOVER  # Change color on hover
                 self.hovered = True
         elif self.with_AI.collides_with_point((x, y)):
             if not self.hovered:
-                self.with_AI.color = arcade.color.RED  # Change color on hover
+                self.with_AI.color = HOVER  # Change color on hover
                 self.hovered = True
         else:
             if self.hovered:
-                self.with_AI.color = arcade.color.BLUE
-                self.play.color = arcade.color.BLUE  # Revert when not hovering
+                self.with_AI.color = NO_HOVER
+                self.play.color = NO_HOVER  # Revert when not hovering
                 self.hovered = False
 
     def on_mouse_press(self, x, y, button, key_modifiers):

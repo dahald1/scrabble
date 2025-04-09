@@ -55,7 +55,8 @@ class MyView(UIView):
         self.username_input = self.grid.add(
             UIInputText(width=150, font_name="Kenney Future",
                         border_color=arcade.color.LIGHT_PINK,
-                        text_color=arcade.color.LIGHT_PINK
+                        text_color=arcade.color.LIGHT_PINK,
+                        caret_color=arcade.color.BLACK,
                         ), column=1, row=1
         )
         self.username_input.with_background(color=arcade.color.BEIGE)
@@ -70,7 +71,8 @@ class MyView(UIView):
         self.password_input = self.grid.add(
             UIPasswordInput(width=150, font_name="Kenney Future",
                             border_color=arcade.color.LIGHT_PINK,
-                            text_color=arcade.color.LIGHT_PINK), column=1, row=2
+                            text_color=arcade.color.LIGHT_PINK,
+                            caret_color=arcade.color.BLACK), column=1, row=2
         )
         self.password_input.with_background(color=arcade.color.BEIGE)
         self.password_input.padding = (0, 3)  # text padding left
