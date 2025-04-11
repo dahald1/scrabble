@@ -386,6 +386,7 @@ class GameView(arcade.Window):
         """ Set up the game here. Call this function to restart the game. """
 
     def draw_board(self):
+        """ Draws the game board and special tiles. """
         # Draw Board Boxes
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
@@ -517,4 +518,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

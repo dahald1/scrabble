@@ -1,17 +1,17 @@
+"""login.py"""
 from __future__ import annotations
 
 import arcade
-from arcade.gui import UIInputText, UIOnClickEvent, UIView
+import arcade.gui
+from arcade import resources
+from arcade.gui import UIInputText, UIView
 from arcade.gui.experimental.password_input import UIPasswordInput
 from arcade.gui.widgets.buttons import UIFlatButton
-from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
+from arcade.gui.widgets.layout import UIGridLayout
 from arcade.gui.widgets.text import UILabel
-from arcade import resources
-from game_start_screen import Game_view
-import arcade
-import arcade.gui
-from typing import List
+
 from data import DataManager
+from game_start_screen import Game_view
 
 # data manager for authentication
 # and saving/loading game save data
@@ -22,6 +22,7 @@ resources.load_kenney_fonts()
 
 
 class MyView(UIView):
+    """Login view where users can enter their credentials."""
     def __init__(self):
         super().__init__()
         self.background_color = arcade.color.LIGHT_PINK
@@ -45,7 +46,7 @@ class MyView(UIView):
             column_span=2,
         )
 
-        self.bar = self.grid.add(
+        self.spacer_bar = self.grid.add(
             UILabel(text="-----------------------------------", width=150, font_size=10,
                     font_name="Kenney Future", text_color=arcade.color.LIGHT_RED_OCHRE),
             column=0,
@@ -138,31 +139,26 @@ class MyView(UIView):
             ),
             column=0,
             row=8,
-            column_span=2,
-        )
-        
+            column_span=2)
         # initialize incorrect password label for later use
         self.incorrect_password_label= UILabel(
             text="Incorrect username or password",
             width=150,
             font_size=10,
             font_name="Kenney Future",
-            text_color=(255, 0, 0),
-        )
+            text_color=(255, 0, 0))
 
         self.anchor = self.manager.add(arcade.gui.UIAnchorLayout())
         self.anchor.add(
             anchor_x="center_x",
             anchor_y="center_y",
-            child=self.grid,
-        )
-        
+            child=self.grid)
         @login_button.event("on_click")
-        def on_login(event):
+        def on_login():
             self.on_login_action()
 
         @sign_up_button.event("on_click")
-        def on_click_sign_up(event):
+        def on_click_sign_up():
             # Navigate to the sign-up page
             sign_up_view = SignUpView(self)
             self.window.show_view(sign_up_view)
@@ -182,9 +178,10 @@ class MyView(UIView):
         self.manager.draw()
 
     def on_login_action(self):
+        """Called when the login button is clicked."""
         entered_username = self.username_input.text.strip()
         entered_password = self.password_input.text.strip()
-        
+
         # remove previous warning messages, if any
         for child in self.grid.children:
             if child == self.incorrect_password_label:
@@ -328,8 +325,7 @@ class SignUpView(arcade.View):
                 width=150,
                 font_size=10,
                 font_name="Kenney Future",
-                text_color=arcade.color.LIGHT_RED_OCHRE), column=0, row=6, column_span=2,)
-        
+                text_color=arcade.color.LIGHT_RED_OCHRE), column=0, row=6, column_span=2)
         # -- Error labels --
         # initialize invalid username label for later use
         self.invalid_username_label = UILabel(
@@ -337,46 +333,38 @@ class SignUpView(arcade.View):
             width=150,
             font_size=10,
             font_name="Kenney Future",
-            text_color=(255, 0, 0)
-        )
-        
+            text_color=(255, 0, 0))
         # initialize username already taken label for later use
         self.taken_username_label= UILabel(
             text="Username already taken",
             width=150,
             font_size=10,
             font_name="Kenney Future",
-            text_color=(255, 0, 0)
-        )
-        
+            text_color=(255, 0, 0))
         # initialize non-matching passwords label for later use
         self.passwords_no_match_label= UILabel(
             text="Passwords don't match",
             width=150,
             font_size=10,
             font_name="Kenney Future",
-            text_color=(255, 0, 0)
-        )
-        # --
-
+            text_color=(255, 0, 0))
         self.anchor = self.manager.add(arcade.gui.UIAnchorLayout())
         self.anchor.add(
             anchor_x="center_x",
             anchor_y="center_y",
             child=self.grid,
         )
-
         @sign_up_button.event("on_click")
-        def on_click_sign_up(event):
+        def on_click_sign_up():
             entered_username = self.username_input.text
             entered_password = self.password_input.text
             confirmation_password = self.confirm_password_input.text
-        
             # remove previous warning messages, if any
             for child in self.grid.children:
-                if child in [self.invalid_username_label, self.taken_username_label, self.passwords_no_match_label]:
+                if child in [self.invalid_username_label,
+                             self.taken_username_label,
+                             self.passwords_no_match_label]:
                     self.grid.remove(child)
-            
             if len(entered_username) < 3:
                 # show username too short label
                 self.grid.add(
@@ -388,7 +376,8 @@ class SignUpView(arcade.View):
                 return
 
             if entered_password == confirmation_password:
-                print(f"Signing up with username: {entered_username} and password: {entered_password}")
+                print(f"Signing up with username: {entered_username} "
+                      f"and password: {entered_password}")
                 success = data_manager.sign_up(entered_username, entered_password)
 
                 if success:
@@ -411,7 +400,7 @@ class SignUpView(arcade.View):
                 )
 
         @back_button.event("on_click")
-        def on_click_back_to_login(event):
+        def on_click_back_to_login():
             # go back to login page
             self.window.show_view(self.login_view)
 
@@ -452,6 +441,7 @@ class SignUpView(arcade.View):
 
 
 def main():
+    """ Main function """
     # window = arcade.Window(title="Login Page")
     window = arcade.Window(title="Login Page", width=720, height=850)
     window.show_view(MyView())

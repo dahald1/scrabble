@@ -78,7 +78,8 @@ class Game_view(arcade.View):
         self.intro = arcade.Text("Welcome to Scrabble",
                                  self.title.center_x, self.title.center_y,
                                  arcade.color.LIGHT_RED_OCHRE, font_size=20,
-                                 anchor_x="center", anchor_y="center", font_name=("Kenney Future", "arial bold"))
+                                 anchor_x="center", anchor_y="center",
+                                 font_name=("Kenney Future", "arial bold"))
 
         self.play = arcade.SpriteSolidColor(300, 100,
                                             self.window.width // 2, self.window.height // 2,
@@ -87,7 +88,8 @@ class Game_view(arcade.View):
         self.text = arcade.Text("Play",
                                 self.play.center_x, self.play.center_y,
                                 arcade.color.WHITE, font_size=20,
-                                anchor_x="center", anchor_y="center",font_name=("Kenney Future", "arial bold"))
+                                anchor_x="center", anchor_y="center",
+                                font_name=("Kenney Future", "arial bold"))
 
         # Create a text object for the button label
         self.text = arcade.Text("Play",
@@ -96,13 +98,16 @@ class Game_view(arcade.View):
                                 anchor_x="center", anchor_y="center",
                                 font_name=("Kenney Future", "arial bold"))
 
-        self.with_AI = arcade.SpriteSolidColor(300, 100, self.window.width // 2, self.window.height // 4,
+        self.with_AI = arcade.SpriteSolidColor(300, 100,
+                                               self.window.width // 2,
+                                               self.window.height // 4,
                                               arcade.color.LIGHT_RED_OCHRE)
         self.sprites.append(self.with_AI)
         self.text2 = arcade.Text("Play With AI",
                                 self.with_AI.center_x, self.with_AI.center_y,
                                 arcade.color.WHITE, font_size=20,
-                                anchor_x="center", anchor_y="center", font_name=("Kenney Future", "arial bold"))
+                                anchor_x="center", anchor_y="center",
+                                 font_name=("Kenney Future", "arial bold"))
 
         self.button1 = Button(BUTTON_NORMAL, BUTTON_HOVER, BUTTON_CLICKED, 200, 300, scale=0.2)
         # self.sprites.append(self.button1)
