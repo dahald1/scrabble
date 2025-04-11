@@ -1,181 +1,137 @@
-"""
-Turn and Move Example.
+"""Start screen for playing game"""
 
-Right-click to cause the tank to move to that point.
-
-If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.turn_and_move
-"""
-import arcade
-from arcade.gui import UIManager
-from arcade import resources
-from arcade.gui.widgets.buttons import UIFlatButton
-# can't import window without adding demo folder to path
 import sys
+import arcade
+from arcade.gui import UIView
+from arcade.gui.widgets.buttons import UIFlatButton
+from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
+from arcade.gui.widgets.text import UILabel
+from arcade import resources
+
+# can't import window without adding demo folder to path
 sys.path.insert(0, 'demo')
 from window import GameView
 
 resources.load_kenney_fonts()
-# Load button textures (Replace these with your own image paths)
-BUTTON_NORMAL = "back-button.png"  # Default state
-BUTTON_HOVER = "left-arrow.png"  # When mouse is over
-BUTTON_CLICKED = "left-arrow.png"  # When clicked
-
-# Color Constants
-HOVER = arcade.color.LIGHT_GREEN
-NO_HOVER = arcade.color.LIGHT_RED_OCHRE
-CLICKED = arcade.color.LIGHT_PINK
-
-class Button(arcade.Sprite):
-    """ A Button class that changes appearance on hover and click. """
-
-    def __init__(self, normal_texture, hover_texture, clicked_texture, x, y, scale=0.5):
-        super().__init__(normal_texture, scale)
-
-        # Store textures as a list (instead of a dictionary)
-        self.textures = [
-            arcade.load_texture(normal_texture),  # normal texture
-            arcade.load_texture(hover_texture),  # hover texture
-            arcade.load_texture(clicked_texture)  # clicked texture
-        ]
-        # making it small
-        self.scale = scale
-        self.set_texture(0)  # Set to normal texture (first texture in the list)
-
-        self.position = (x, y)
-
-    def update_button(self, x, y, is_pressed):
-        """ Change texture based on hover or click """
-        if self.collides_with_point((x, y)):
-            if is_pressed:
-                self.set_texture(2)  # clicked texture (third texture)
-            else:
-                self.set_texture(1)  # hover texture (second texture)
-        else:
-            self.set_texture(0)  # normal texture (first texture)
-
 
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
-WINDOW_TITLE = "Intro Screen"
+WINDOW_TITLE = "Start Screen"
+
+# Color Constants
+BUTTON_DEFAULT_COLOR = arcade.color.LIGHT_RED_OCHRE
+BUTTON_HOVERED_COLOR = arcade.color.LIGHT_GREEN
+BUTTON_CLICKED_COLOR = arcade.color.LIGHT_PINK
+
+BACKGROUND_COLOR = arcade.color.LIGHT_PINK
+GRID_BACKGROUND_COLOR = arcade.color.BEIGE
+
+TEXT_FONT = ("Kenney Future", "arial bold")
+TEXT_COLOR = arcade.color.LIGHT_RED_OCHRE
+
+BUTTON_WIDTH = 200
+BUTTON_HEIGHT = 75
+
+BUTTON_STYLE = {
+    'normal': UIFlatButton.UIStyle(
+        font_color=arcade.color.WHITE,
+        bg=arcade.color.LIGHT_RED_OCHRE,
+    ),
+    'hover': UIFlatButton.UIStyle(
+        font_color=arcade.color.BEIGE,
+        bg=arcade.color.LIGHT_GREEN,
+    ),
+    'press': UIFlatButton.UIStyle(
+        font_color=arcade.color.LIGHT_RED_OCHRE,
+        bg=arcade.color.LIGHT_PINK,
+    ),
+}
 
 
-class Game_view(arcade.View):
+class StartScreenView(UIView):
     """ Main menu with buttons to open different views. """
 
     def __init__(self):
         super().__init__()
-        self.hovered = False
-        self.sprites = arcade.SpriteList()
+        self.background_color = BACKGROUND_COLOR
+        self.manager = arcade.gui.UIManager()
 
-        self.background_color = arcade.color.BEIGE
-        self.is_mouse_pressed = False  # track mouse click
+        self.grid = UIGridLayout(
+            size_hint=(0, 0),
+            row_count=5,  # title | bar | play with AI | play online | quit
+            column_count=1,
+            vertical_spacing=10,
+            horizontal_spacing=5,
+        )
 
-        self.title = arcade.SpriteSolidColor(300, 100,
-                                             self.window.width // 2, self.window.height//1.5,
-                                             color=arcade.color.BEIGE)
-        self.sprites.append(self.title)
-        self.intro = arcade.Text("Welcome to Scrabble",
-                                 self.title.center_x, self.title.center_y,
-                                 arcade.color.LIGHT_RED_OCHRE, font_size=20,
-                                 anchor_x="center", anchor_y="center",
-                                 font_name=("Kenney Future", "arial bold"))
+        # anchors grid to center of the screen
+        self.manager.add(UIAnchorLayout(children=[self.grid]))
 
-        self.play = arcade.SpriteSolidColor(300, 100,
-                                            self.window.width // 2, self.window.height // 2,
-                                            arcade.color.LIGHT_RED_OCHRE, font_size=20,)
-        self.sprites.append(self.play)
-        self.text = arcade.Text("Play",
-                                self.play.center_x, self.play.center_y,
-                                arcade.color.WHITE, font_size=20,
-                                anchor_x="center", anchor_y="center",
-                                font_name=("Kenney Future", "arial bold"))
+        # adds padding to grid to make its background larger
+        self.grid.with_padding(all=50)
+        self.grid.with_background(color=GRID_BACKGROUND_COLOR)
 
-        # Create a text object for the button label
-        self.text = arcade.Text("Play",
-                                self.play.center_x, self.play.center_y,
-                                arcade.color.WHITE, font_size=30,
-                                anchor_x="center", anchor_y="center",
-                                font_name=("Kenney Future", "arial bold"))
+        # ------------
+        title_text = UILabel(text="Welcome to Scrabble",
+                             font_size=20, font_name=TEXT_FONT,
+                             text_color=TEXT_COLOR)
+        self.grid.add(title_text, row=0)
 
-        self.with_AI = arcade.SpriteSolidColor(300, 100,
-                                               self.window.width // 2,
-                                               self.window.height // 4,
-                                              arcade.color.LIGHT_RED_OCHRE)
-        self.sprites.append(self.with_AI)
-        self.text2 = arcade.Text("Play With AI",
-                                self.with_AI.center_x, self.with_AI.center_y,
-                                arcade.color.WHITE, font_size=20,
-                                anchor_x="center", anchor_y="center",
-                                 font_name=("Kenney Future", "arial bold"))
+        title_bar = UILabel(text="--------------------------------------",
+                      font_size=10, font_name=TEXT_FONT,
+                      text_color=TEXT_COLOR)
+        title_bar.with_padding(bottom=30)
+        self.grid.add(title_bar, row=1)
 
-        self.button1 = Button(BUTTON_NORMAL, BUTTON_HOVER, BUTTON_CLICKED, 200, 300, scale=0.2)
-        # self.sprites.append(self.button1)
-        self.button2 = Button(BUTTON_NORMAL, BUTTON_HOVER, BUTTON_CLICKED, 600, 300, scale=0.2)
-        # self.sprites.append(self.button2)
+        # ------------
+        play_with_ai_button = UIFlatButton(text="Play Against AI", height=BUTTON_HEIGHT,
+                                           width=BUTTON_WIDTH, style=BUTTON_STYLE)
+        self.grid.add(play_with_ai_button, row=2)
 
+        @play_with_ai_button.event("on_click")
+        def on_play_against_ai(_):
+            self.window.show_view(GameView())
+
+        # ------------
+        play_online_button = UIFlatButton(text="Play Online", height=BUTTON_HEIGHT,
+                                          width=BUTTON_WIDTH, style=BUTTON_STYLE)
+        self.grid.add(play_online_button, row=3)
+
+        @play_online_button.event("on_click")
+        def on_play_online(_):
+            # TODO: Make it go to multiplayer view
+            print("Multiplayer not implemented!")
+
+        # ------------
+
+        quit_button = UIFlatButton(text="Quit", height=BUTTON_HEIGHT,
+                                          width=BUTTON_WIDTH, style=BUTTON_STYLE)
+        self.grid.add(quit_button, row=4)
+
+        @quit_button.event("on_click")
+        def quit_game(_):
+            self.window.close()
 
     def on_draw(self):
+        """ Draws window """
         self.clear()
-        self.sprites.draw()
-        self.intro.draw()
-        self.text.draw()
-        self.text2.draw()
+        self.manager.draw()
 
+    def on_show_view(self):
+        """ Called when the view is switched to."""
+        self.manager.enable()
 
-    def on_mouse_motion(self, x, y, dx, dy):
-        """ Detect hover effect """
-        self.button1.update_button(x, y, self.is_mouse_pressed)
-        self.button2.update_button(x, y, self.is_mouse_pressed)
-        if self.play.collides_with_point((x, y)):
-            if not self.hovered:
-                self.play.color = HOVER  # Change color on hover
-                self.hovered = True
-        elif self.with_AI.collides_with_point((x, y)):
-            if not self.hovered:
-                self.with_AI.color = HOVER  # Change color on hover
-                self.hovered = True
-        else:
-            if self.hovered:
-                self.with_AI.color = NO_HOVER
-                self.play.color = NO_HOVER  # Revert when not hovering
-                self.hovered = False
-
-    def on_mouse_press(self, x, y, button, key_modifiers):
-        """ Handle button click """
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            self.is_mouse_pressed = True
-            self.button1.update_button(x, y, self.is_mouse_pressed)
-            self.button2.update_button(x, y, self.is_mouse_pressed)
-
-    def on_mouse_release(self, x, y, button, key_modifiers):
-        """ Handle button release and navigation """
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            self.is_mouse_pressed = False
-            self.button1.update_button(x, y, self.is_mouse_pressed)
-            self.button2.update_button(x, y, self.is_mouse_pressed)
-
-            if self.play.collides_with_point((x, y)):
-                self.window.show_view(GameView())
-            if self.with_AI.collides_with_point((x, y)):
-                print("this is clicked")
-                self.window.show_view(GameView())
+    def on_hide_view(self):
+        """ Hides the manager """
+        self.manager.disable()
 
 
 def main():
     """ Main function """
-    # Create a window class. This is what actually shows up on screen
-    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+    window = arcade.Window(title=WINDOW_TITLE, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+    window.show_view(StartScreenView())
+    window.run()
 
-    # Create and set up the GameView
-    game = Game_view()
-    # game.setup()
-
-    # Show GameView on screen
-    window.show_view(game)
-
-    # Start the arcade game loop
-    arcade.run()
 
 if __name__ == "__main__":
     main()
