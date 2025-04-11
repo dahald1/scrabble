@@ -1,6 +1,10 @@
 """
 Starting Template from Python Arcade Documentation
 """
+
+"""
+Starting Template from Python Arcade Documentation
+"""
 import random
 import arcade
 import arcade.gui
@@ -167,49 +171,38 @@ class Tile(arcade.SpriteSolidColor):
     @staticmethod
     def refill_mat(self, player_rack=None):
         """Refill the tile mat with tiles based on the player's rack."""
-        # if player_rack is None:
-        #     # Fallback to original random behavior if no rack is provided
-        #     for i in range(7):
-        #         if not MAT_POSITIONS_FILLED[i]:
-        #             value = ""
-        #             valid = False
-        #             while not valid:
-        #                 tile_bag_list = []
-        #                 for letter, quantity in TILE_BAG.items():
-        #                     tile_bag_list.extend([letter] * quantity)
-        #                 value = random.choice(tile_bag_list)
-        #                 if TILE_BAG[value] > 0:
-        #                     TILE_BAG[value] -= 1
-        #                     valid = True
-        #             tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-        #                         TILE_SIZE, TILE_SIZE, i, value=value)
-        #             self.tiles.append(tile)
-        #             MAT_POSITIONS_FILLED[i] = True
-        # else:
-        #     # Use the player's rack to populate the mat
-        #     rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
-        #
-        #     for i in range(7):
-        #         if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
-        #             value = rack_letters[i]
-        #             tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-        #                         TILE_SIZE, TILE_SIZE, i, value=value)
-        #             self.tiles.append(tile)
-        #             MAT_POSITIONS_FILLED[i] = True
-        #         elif not MAT_POSITIONS_FILLED[i]:
-        #             # If rack is shorter than 7, leave remaining spots empty or handle differently
-        #             MAT_POSITIONS_FILLED[i] = False
-        rack_letters = list(player_rack.split(","))  # Convert rack string to list of letters
-        for i in range(7):
-            if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
-                value = rack_letters[i]
-                tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-                            TILE_SIZE, TILE_SIZE, i, value=value)
-                self.tiles.append(tile)
-                MAT_POSITIONS_FILLED[i] = True
-            elif not MAT_POSITIONS_FILLED[i]:
-                # If rack is shorter than 7, leave remaining spots empty or handle differently
-                MAT_POSITIONS_FILLED[i] = False
+        if player_rack is None:
+            # Fallback to original random behavior if no rack is provided
+            for i in range(7):
+                if not MAT_POSITIONS_FILLED[i]:
+                    value = ""
+                    valid = False
+                    while not valid:
+                        tile_bag_list = []
+                        for letter, quantity in TILE_BAG.items():
+                            tile_bag_list.extend([letter] * quantity)
+                        value = random.choice(tile_bag_list)
+                        if TILE_BAG[value] > 0:
+                            TILE_BAG[value] -= 1
+                            valid = True
+                    tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
+                                TILE_SIZE, TILE_SIZE, i, value=value)
+                    self.tiles.append(tile)
+                    MAT_POSITIONS_FILLED[i] = True
+        else:
+            # Use the player's rack to populate the mat
+            rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
+
+            for i in range(7):
+                if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
+                    value = rack_letters[i]
+                    tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
+                                TILE_SIZE, TILE_SIZE, i, value=value)
+                    self.tiles.append(tile)
+                    MAT_POSITIONS_FILLED[i] = True
+                elif not MAT_POSITIONS_FILLED[i]:
+                    # If rack is shorter than 7, leave remaining spots empty or handle differently
+                    MAT_POSITIONS_FILLED[i] = False
 
     def on_key_press(self, key, modifiers):
         """ Called whenever a key on the keyboard is pressed from method in GameView"""
@@ -295,6 +288,7 @@ class Tile(arcade.SpriteSolidColor):
             tile.snap_to_grid()
             tile.draggable = False
             self.tiles.append(tile)
+
 
 
 class GameView(arcade.View):
@@ -529,3 +523,4 @@ class GameView(arcade.View):
 #
 # if __name__ == "__main__":
 #     main()
+

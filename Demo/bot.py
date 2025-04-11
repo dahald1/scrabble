@@ -10,7 +10,6 @@ from dictionary import load_dictionary_upper
 # TODO generate point for that word
 # TODO look for the highest points possible and play that word
 
-# TODO concern: a letter can where so How do I check for that?
 class AIPlayer(Player):
     def __init__(self, bag, board):
         super().__init__(bag)
