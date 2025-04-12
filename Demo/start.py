@@ -161,7 +161,7 @@ class GameController:
                         print(f"Word played: {word_to_play} at {location} going {direction}")
                         print(f"Current rack1: {self.current_player.rack.get_rack_str()}")
                         # self.current_player.rack.replenish_rack()
-                        Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
+                        Tile.display_mat(self.game_view, player_rack=self.current_player.get_rack_str())
                         self.sync_board_with_matrix()
         elif isinstance(self.current_player, AIPlayer):
             ai_word, location, direction = AIPlayer.choose_word(self.current_player)
@@ -174,7 +174,7 @@ class GameController:
             Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction)
             self.current_player.rack.replenish_rack()
             print(f"Current rack2: {self.current_player.rack.get_rack_str()}")
-            Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
+            Tile.display_mat(self.game_view, player_rack=self.current_player.get_rack_str())
             self.sync_board_with_matrix()  # ensure board is up-to-date
 
         print("\n" + self.current_player.get_name() + "'s score is: " + str(self.current_player.get_score()))
@@ -220,7 +220,7 @@ class GameController:
             self.bag = bag
             self.current_player = current_player
             self.game_view.tiles.clear()
-            Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
+            # Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
         else:
             arcade.close_window()
 
