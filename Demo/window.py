@@ -267,6 +267,37 @@ class Tile(arcade.SpriteSolidColor):
 
             BOARD_MATRIX[board_row][board_col] = letter
 
+    @staticmethod
+    def lode_game_tiles(game_view, word, row, col, direction, player=None):
+        """Places tiles on the board using saved game board matrix."""
+        pixels = GameView.coordinates_to_px(row, col)
+        word_list = list(word)
+        board_row = 0
+        board_col = 0
+        x = 0
+        y = 0
+
+        for i, letter in enumerate(word_list):
+            # Calculate the position based on direction
+            if direction == "right":
+                x = pixels[0] + (i * TILE_SIZE)
+                y = pixels[1]
+                board_row = row
+                board_col = col + i
+            elif direction == "down":
+                x = pixels[0]
+                y = pixels[1] - (i * TILE_SIZE)
+                board_row = row + i
+                board_col = col
+
+            # Create and place tile
+            tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter, player=player)
+            tile.snap_to_grid()
+            tile.draggable = False
+            game_view.tiles.append(tile)
+
+            BOARD_MATRIX[board_row][board_col] = letter
+
 
 class GameView(arcade.View):
     """ Main application class. """
@@ -306,7 +337,6 @@ class GameView(arcade.View):
 
     def find_added_tiles(self, prev_board_matrix, curr_board_matrix):
         """Finds the tiles that were placed on the board."""
-        print("inside find")
         prev_matrix = prev_board_matrix
         added_tiles = []
         for row in range(GRID_SIZE):
@@ -317,7 +347,7 @@ class GameView(arcade.View):
                     tile_row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
                     tile_col = (tile.center_x - PADDING / 2) // TILE_SIZE
                     if int(tile_row) == row and int(tile_col) == col:
-                        added_tiles.append((row, col, tile))
+                        added_tiles.append((row, col, tile, tile.player))
                         # print(f"Detected tile change at ({row}, {col}): {prev_val} -> {curr_val}")
         if not added_tiles:
             print("No added tiles detected.")
@@ -365,7 +395,6 @@ class GameView(arcade.View):
         # Uncomment to debug board matrix positioning
         # self.print_board_matrix()
         self.find_added_tiles(prev_board_matrix=prev_board, curr_board_matrix=BOARD_MATRIX)
-        print("find added tills function is executed")
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -435,6 +464,7 @@ class GameView(arcade.View):
         self.tiles.draw()
         for tile in self.tiles:
             tile.set_letter()
+
 
         self.ui_manager.draw()
 
