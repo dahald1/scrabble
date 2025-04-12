@@ -202,7 +202,7 @@ class LoginView(UIView):
         return False
 
 
-class SignUpView(arcade.View):
+class SignUpView(UIView):
     """sign-up view where users can create a new account."""
 
     def __init__(self, login_view):
@@ -388,7 +388,6 @@ class SignUpView(arcade.View):
 
 def main():
     """ Main function """
-    # window = arcade.Window(title="Login Page")
     window = arcade.Window(title=WINDOW_TITLE, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
     window.show_view(LoginView())
     window.run()

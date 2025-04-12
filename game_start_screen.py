@@ -7,6 +7,7 @@ from arcade.gui.widgets.buttons import UIFlatButton
 from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
 from arcade.gui.widgets.text import UILabel
 from arcade import resources
+from multiplayer_screen import MultiplayerView
 
 # can't import window without adding demo folder to path
 sys.path.insert(0, 'demo')
@@ -99,8 +100,7 @@ class StartScreenView(UIView):
 
         @play_online_button.event("on_click")
         def on_play_online(_):
-            # TODO: Make it go to multiplayer view
-            print("Multiplayer not implemented!")
+            self.window.show_view(MultiplayerView(self))
 
         # ------------
 
@@ -110,6 +110,7 @@ class StartScreenView(UIView):
 
         @quit_button.event("on_click")
         def quit_game(_):
+            self.window.close()
             arcade.exit()
 
     def on_draw(self):
