@@ -110,7 +110,7 @@ class StartScreenView(UIView):
 
         @quit_button.event("on_click")
         def quit_game(_):
-            self.window.close()
+            arcade.exit()
 
     def on_draw(self):
         """ Draws window """
