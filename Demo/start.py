@@ -167,6 +167,7 @@ class GameController:
             if not added_tiles:
                 print("No tiles were placed. Your turn has been skipped.")
                 skipped_turns += 1
+                Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str())
             else:
                 word_to_play, location, direction = get_word_from_tiles(added_tiles, self.game_view.get_board_matrix())
                 str("".join(word_to_play.split()))
@@ -197,8 +198,7 @@ class GameController:
                         print("before refile", self.current_player.get_rack_str())
                         # TODO this refila the tile and get_rack_str() sends the rack to refile_mat
                         self.current_player.rack.replenish_rack()
-                        Tile.refill_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
-                                        player=self.current_player)
+                        Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str())
                         print("after refill: ", self.current_player.get_rack_str())
                         self.sync_board_with_matrix()
 

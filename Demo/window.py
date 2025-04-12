@@ -206,8 +206,6 @@ class Tile(arcade.SpriteSolidColor):
 
     def display_mat(self, player_rack):
         """Take in rack from start.py and display it on the mat"""
-        self.rack_display.clear()
-
         # self.rack_display.clear()
         rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
 
@@ -336,7 +334,7 @@ class GameView(arcade.View):
 
         # Initializing player's initial tile draw
         # Tile.refill_mat(self
-        Tile.refill_mat(self, player_rack=player_rack, player=player)
+        Tile.display_mat(self, player_rack=player_rack)
 
         # Initializing GUI
         self.ui_manager = arcade.gui.UIManager()
