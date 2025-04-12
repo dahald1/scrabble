@@ -27,7 +27,7 @@ GRID_BACKGROUND_COLOR = arcade.color.BEIGE
 
 TEXT_FONT = "Kenney Future"
 TEXT_COLOR = arcade.color.LIGHT_RED_OCHRE
-SECONDARY_TEXT_COLOR = arcade.color.LIGHT_PINK
+SECONDARY_TEXT_COLOR = arcade.color.OCHRE
 
 BUTTON_STYLE = {
     'normal': UIFlatButton.UIStyle(
