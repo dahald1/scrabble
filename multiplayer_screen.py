@@ -57,7 +57,7 @@ class MultiplayerView(UIView):
         self.grid = UIGridLayout(
             size_hint=(0, 0),
             row_count=10,
-            column_count=2, 
+            column_count=2,
             vertical_spacing=10,
             horizontal_spacing=5,
         )
@@ -102,20 +102,14 @@ class MultiplayerView(UIView):
                                     size_hint=(1, None), style=BUTTON_STYLE)
         self.grid.add(join_game_button, column=0, row=5, column_span=2)
 
-        @join_game_button.event("on_click")
-        def on_join_game(_):
-            # TODO: Look for lobby, go to lobbyview if it exits else error
-            print("joining game not implemented!")
+        join_game_button.on_click = self.on_join_game_action
 
         # ------------
         host_game_button = UIFlatButton(text="Host Game", height=30, width=150,
                                     size_hint=(1, None), style=BUTTON_STYLE)
         self.grid.add(host_game_button, column=0, row=6, column_span=2)
 
-        @host_game_button.event("on_click")
-        def on_host_game(_):
-            # TODO: Create lobby in firestore and pass lobby object 
-            self.window.show_view(LobbyView(self))
+        host_game_button.on_click = self.on_host_game_action
 
         # ------------
         back_button = UIFlatButton(text="Back", height=30, width=50,
@@ -123,7 +117,7 @@ class MultiplayerView(UIView):
         self.grid.add(back_button, column=0, row=7, column_span=2)
 
         @back_button.event("on_click")
-        def on_go_back(_):
+        def on_go_back(_event):
             self.window.show_view(self.start_screen_view)
 
     def on_draw(self):
@@ -140,6 +134,19 @@ class MultiplayerView(UIView):
         """ Hides the manager """
         self.manager.disable()
 
+    def on_join_game_action(self, _event=None):
+        """ Handles action for joining a lobby """
+        # TODO: Look for lobby, go to lobbyview if it exits else error
+        print("joining game not implemented!")
+
+    def on_host_game_action(self, _event):
+        """ Handles action for creating a lobby """
+        # TODO: Create lobby in firestore and pass lobby object
+        self.window.show_view(LobbyView(self))
+
+    def on_key_press(self, symbol: int, modifiers: int) -> bool | None:
+        if symbol == arcade.key.ENTER:
+            self.on_join_game_action()
 
 def main():
     """ Main function """

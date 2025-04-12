@@ -90,7 +90,7 @@ class StartScreenView(UIView):
         self.grid.add(play_with_ai_button, row=2)
 
         @play_with_ai_button.event("on_click")
-        def on_play_against_ai(_):
+        def on_play_against_ai(_event):
             self.window.show_view(GameView())
 
         # ------------
@@ -99,7 +99,7 @@ class StartScreenView(UIView):
         self.grid.add(play_online_button, row=3)
 
         @play_online_button.event("on_click")
-        def on_play_online(_):
+        def on_play_online(_event):
             self.window.show_view(MultiplayerView(self))
 
         # ------------

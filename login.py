@@ -112,13 +112,11 @@ class LoginView(UIView):
         self.password_input = self.grid.add(password_input, column=1, row=4)
 
         # ------------
-        login_button = UIFlatButton(text="Login", height=30, width=150, 
+        login_button = UIFlatButton(text="Login", height=30, width=150,
                                     size_hint=(1, None), style=BUTTON_STYLE)
         self.grid.add(login_button, column=0, row=5, column_span=2)
 
-        @login_button.event("on_click")
-        def on_login(_):
-            self.on_login_action()
+        login_button.on_click = self.on_login_action
 
         # ------------
         sign_up_button = UIFlatButton(text="Sign Up", height=30, width=150,
@@ -127,9 +125,7 @@ class LoginView(UIView):
 
         @sign_up_button.event("on_click")
         def on_click_sign_up(_):
-            # Navigate to the sign-up page
-            sign_up_view = SignUpView(self)
-            self.window.show_view(sign_up_view)
+            self.window.show_view(SignUpView(self))
 
         # ------------
         hint_label = UILabel(
@@ -162,12 +158,12 @@ class LoginView(UIView):
         self.clear()
         self.manager.draw()
 
-    def on_login_action(self):
+    def on_login_action(self, _event=None):
         """ Tries authenticating using with entered user and pass """
         entered_username = self.username_input.text.strip()
         entered_password = self.password_input.text.strip()
 
-        # remove previous error messages, if any
+        # clear previous error message, if any
         self.error_label.text = ""
 
         success = data_manager.authenticate_user(entered_username, entered_password)
@@ -344,7 +340,7 @@ class SignUpView(UIView):
         entered_password = self.password_input.text
         confirmation_password = self.confirm_password_input.text
 
-        # remove previous error messages, if any
+        # clear previous error message, if any
         self.error_label.text = ""
 
         if len(entered_username) < 3:

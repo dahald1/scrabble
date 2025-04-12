@@ -1,6 +1,6 @@
 """Displays game lobby and allows host to start game"""
 import arcade
-from arcade.gui import UIInputText, UIView
+from arcade.gui import UIView
 from arcade.gui.widgets.buttons import UIFlatButton
 from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
 from arcade.gui.widgets.text import UILabel
@@ -77,8 +77,8 @@ class LobbyView(UIView):
         self.grid.add(title_bar, column=0, row=1, column_span=2)
 
         # ------------
-        subtitle = UILabel(text=f"Lobby ID: {1234567890}", width=150, 
-                           font_size=20, font_name=TEXT_FONT, 
+        subtitle = UILabel(text=f"Lobby ID: {1234567890}", width=150,
+                           font_size=20, font_name=TEXT_FONT,
                            text_color=TEXT_COLOR)
         subtitle.with_padding(bottom=10)
         self.grid.add(subtitle, column=0, row=2, column_span=2)
@@ -95,7 +95,6 @@ class LobbyView(UIView):
         self.grid.add(player_one_user_label, column=1, row=3)
 
         # ------------
-
         player_two_label = UILabel(text="Player Two:", width=80,
                                 font_name=TEXT_FONT,
                                 text_color=SECONDARY_TEXT_COLOR)
@@ -109,21 +108,20 @@ class LobbyView(UIView):
                                                    column=1, row=3)
 
         # ------------
+        # TODO: If host, don't create start game button
         start_game_button = UIFlatButton(text="Start Game", height=30, width=150,
                                     size_hint=(1, None), style=BUTTON_STYLE)
         self.grid.add(start_game_button, column=0, row=5, column_span=2)
 
-        @start_game_button.event("on_click")
-        def on_join_game(_):
-            print("starting game not implemented!")
+        start_game_button.on_click = self.on_start_game_action
 
         # ------------
         exit_lobby_button = UIFlatButton(text="Leave Lobby", height=30, width=50,
                                     size_hint=(1, None), style=BUTTON_STYLE)
-        self.grid.add(exit_lobby_button, column=0, row=7, column_span=2)
+        self.grid.add(exit_lobby_button, column=0, row=6, column_span=2)
 
         @exit_lobby_button.event("on_click")
-        def on_exit_lobby(_):
+        def on_exit_lobby(_event):
             self.window.show_view(self.multiplayer_screen)
 
     def on_draw(self):
@@ -139,6 +137,17 @@ class LobbyView(UIView):
     def on_hide_view(self):
         """ Hides the manager """
         self.manager.disable()
+
+    def on_start_game_action(self, _event):
+        """ Handles action for starting a game """
+        # TODO: If lobby has 2 players, create game doc, set game_start flag,
+        # else display error message
+        print("starting game not implemented!")
+
+    def on_exit_game_action(self, _event):
+        """ Handles action for leaving a lobby """
+        # TODO: If host, delete lobby, else just leave lobby
+        self.window.show_view(self.multiplayer_screen)
 
 
 def main():
