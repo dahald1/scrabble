@@ -26,8 +26,8 @@ class Word:
             if "#" in self.word:
                 while len(blank_tile_val) != 1:
                     blank_tile_val = input("Please enter the letter value of the blank tile: ")
-                self.word = self.word[:self.word.index("#")] + blank_tile_val.upper() + self.word[
-                                                                                        (self.word.index("#") + 1):]
+                self.word = self.word[:self.word.index(" ")] + blank_tile_val.upper() + self.word[
+                                                                                        (self.word.index(" ") + 1):]
 
             # Check bounds and process word placement
             if self.direction == "right":

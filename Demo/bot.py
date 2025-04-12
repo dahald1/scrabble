@@ -100,9 +100,9 @@ class AIPlayer(Player):
                             counter += 1
                     if counter + 1 >= len(word) and len(word) >= 2:
                         if direction == "right":
-                            playable_words.append((word, row + len(word) - 1, col, "right"))
+                            playable_words.append((word, row, col + len(word) - 1, "right"))
                         if direction == "down":
-                            playable_words.append((word, row, col + (len(word) - 1), "down"))
+                            playable_words.append((word, row + (len(word) - 1), col, "down"))
                 # check if the letter is at the start, this will check for Up and Left
                 elif (direction == "left" or direction == "up") and word_letters[-1] == letter:
                     # check each letter in the word to see if it exists in the rack.
@@ -113,9 +113,9 @@ class AIPlayer(Player):
                             counter += 1
                     if counter + 1 >= len(word) and len(word) >= 2:
                         if direction == "up":
-                            playable_words.append((word, row, col - (len(word) - 1), "down"))
+                            playable_words.append((word, row-(len(word) - 1), col, "down"))
                         if direction == "left":
-                            playable_words.append((word, row - (len(word) - 1), col, "right"))
+                            playable_words.append((word, row, col - (len(word) - 1), "right"))
 
         # randomly choose a word and return the word, staring location and the
         # directions the word should be going
@@ -129,6 +129,8 @@ class AIPlayer(Player):
             can_play_word = self.is_valid_placement(word, location, direction)
             if can_play_word:
                 return word, location, direction
+            else:
+                return "", "", ""
 
     def is_valid_placement(self, word, location, direction):
         from start import round_number, players, premium_spots, LETTER_VALUES
