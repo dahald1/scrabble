@@ -20,7 +20,7 @@ resources.load_kenney_fonts()
 
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
-WINDOW_TITLE = "Login Screen"
+WINDOW_TITLE = "Scrabble | Login"
 
 BACKGROUND_COLOR = arcade.color.LIGHT_PINK
 GRID_BACKGROUND_COLOR = arcade.color.BEIGE
@@ -155,6 +155,7 @@ class LoginView(UIView):
     def on_show_view(self):
         """Called when the view is switched to."""
         self.manager.enable()
+        self.window.set_caption(WINDOW_TITLE)
 
     def on_draw(self):
         """Render the screen."""

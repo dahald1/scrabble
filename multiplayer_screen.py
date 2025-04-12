@@ -1,4 +1,4 @@
-"""Start screen for playing game"""
+"""Multiplayer screen for joining and creating new lobbys"""
 import arcade
 from arcade.gui import UIInputText, UIView
 from arcade.gui.widgets.buttons import UIFlatButton
@@ -10,7 +10,7 @@ resources.load_kenney_fonts()
 
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
-WINDOW_TITLE = "Multiplayer"
+WINDOW_TITLE = "Scrabble | Multiplayer"
 
 # Color Constants
 BUTTON_DEFAULT_COLOR = arcade.color.LIGHT_RED_OCHRE
@@ -89,9 +89,9 @@ class MultiplayerView(UIView):
         self.grid.add(game_id_label, column=0, row=3)
 
         game_id_input = UIInputText(width=150, font_name=TEXT_FONT,
-                                     border_color=SECONDARY_TEXT_COLOR,
-                                     text_color=SECONDARY_TEXT_COLOR,
-                                     caret_color=arcade.color.BLACK)
+                                    border_color=SECONDARY_TEXT_COLOR,
+                                    text_color=SECONDARY_TEXT_COLOR,
+                                    caret_color=arcade.color.BLACK)
         game_id_input.with_background(color=GRID_BACKGROUND_COLOR)
         game_id_input.padding = (0, 3)  # text padding left
         self.game_id_input = self.grid.add(game_id_input, column=1, row=3)
@@ -131,6 +131,7 @@ class MultiplayerView(UIView):
     def on_show_view(self):
         """ Called when the view is switched to."""
         self.manager.enable()
+        self.window.set_caption(WINDOW_TITLE)
 
     def on_hide_view(self):
         """ Hides the manager """

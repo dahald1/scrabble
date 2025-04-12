@@ -17,7 +17,7 @@ resources.load_kenney_fonts()
 
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
-WINDOW_TITLE = "Start Screen"
+WINDOW_TITLE = "Scrabble | Start Screen"
 
 # Color Constants
 BUTTON_DEFAULT_COLOR = arcade.color.LIGHT_RED_OCHRE
@@ -121,6 +121,7 @@ class StartScreenView(UIView):
     def on_show_view(self):
         """ Called when the view is switched to."""
         self.manager.enable()
+        self.window.set_caption(WINDOW_TITLE)
 
     def on_hide_view(self):
         """ Hides the manager """
