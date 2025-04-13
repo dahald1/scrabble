@@ -6,7 +6,7 @@ from arcade.gui.widgets.buttons import UIFlatButton
 from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
 from arcade.gui.widgets.text import UILabel
 from arcade import resources
-from Demo.multiplayer_screen import MultiplayerView
+from multiplayer_screen import MultiplayerView
 from start import start_game
 
 resources.load_kenney_fonts()
