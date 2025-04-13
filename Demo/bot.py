@@ -108,7 +108,7 @@ class AIPlayer(Player):
         return [7, 7], "right"
 
     def is_valid_placement(self, word, location, direction):
-        from main import round_number, players, premium_spots, LETTER_VALUES
+        from start import round_number, players, premium_spots, LETTER_VALUES
         temp_word = Word(word, location, self, direction, self.board.board_array(), round_number, players,
                          premium_spots, LETTER_VALUES)
         checked = temp_word.check_word()
@@ -124,7 +124,7 @@ class AIPlayer(Player):
             return True
 
         print(f"{self.name} plays: {word} at {location} going {direction}")
-        from main import round_number, players, premium_spots, LETTER_VALUES
+        from start import round_number, players, premium_spots, LETTER_VALUES
         word_obj = Word(word, location, self, direction, board.board_array(), round_number, players, premium_spots,
                         LETTER_VALUES)
         board.place_word(word, location, direction, self)
