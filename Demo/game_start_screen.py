@@ -1,18 +1,13 @@
 """Start screen for playing game"""
 
-import sys
 import arcade
 from arcade.gui import UIView
 from arcade.gui.widgets.buttons import UIFlatButton
 from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
 from arcade.gui.widgets.text import UILabel
 from arcade import resources
-from multiplayer_screen import MultiplayerView
-
+from Demo.multiplayer_screen import MultiplayerView
 from start import start_game
-# can't import window without adding demo folder to path
-sys.path.insert(0, 'demo')
-from window import GameView
 
 resources.load_kenney_fonts()
 
@@ -94,7 +89,7 @@ class StartScreenView(UIView):
 
         @play_with_ai_button.event("on_click")
         def on_play_against_ai(_event):
-            self.window.show_view(GameView())
+            self.window.show_view(start_game())
 
         # ------------
         play_online_button = UIFlatButton(text="Play Online", height=BUTTON_HEIGHT,
