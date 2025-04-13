@@ -199,8 +199,8 @@ class GameController:
         if not isinstance(self.current_player, AIPlayer):
             added_tiles_with_objects = self.game_view.find_added_tiles(self.prev_board_matrix,
                                                                        self.game_view.get_board_matrix())
-            added_tiles = [(row, col) for (row, col, tile, person) in added_tiles_with_objects
-                           if tile.player == self.current_player]
+            added_tiles = [(row, col) for (row, col, tile, person) in added_tiles_with_objects]
+
             print("added tiles in start.py: ", added_tiles)
             if not added_tiles:
                 print("No tiles were placed. Your turn has been skipped.")
@@ -234,7 +234,7 @@ class GameController:
                         print(f"Word played: {word_to_play} at {location} going {direction}")
                         print("before refile", self.current_player.get_rack_str())
                         self.current_player.rack.replenish_rack()
-                        Tile.refill_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
+                        Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
                                         player=self.current_player)
                         print("after refill: ", self.current_player.get_rack_str())
                         self.sync_board_with_matrix()
@@ -247,8 +247,9 @@ class GameController:
             # print("AI chosen word: ", word, location, direction)
             self.board.place_word(ai_word, location, direction, self.current_player)
             word.calculate_word_score()
-            Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
-                               player=self.current_player)
+            if not ai_word == "":
+                Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
+                                   player=self.current_player)
             self.sync_board_with_matrix()  # ensure board is up-to-date
 
         print("\n" + self.current_player.get_name() + "'s score is: " + str(self.current_player.get_score()))

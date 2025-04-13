@@ -139,31 +139,12 @@ class Tile(arcade.SpriteSolidColor):
         points_text.draw()
 
     @staticmethod
-    def refill_mat(game_view, player_rack=None, player=None):
+    def display_mat(game_view, player_rack=None, player=None):
         """Refill the tile mat with tiles based on the player's rack."""
-        # if player_rack is None:
-        #     # Fallback to original random behavior if no rack is provided
-        #     for i in range(7):
-        #         if not MAT_POSITIONS_FILLED[i]:
-        #             value = ""
-        #             valid = False
-        #             while not valid:
-        #                 tile_bag_list = []
-        #                 for letter, quantity in TILE_BAG.items():
-        #                     tile_bag_list.extend([letter] * quantity)
-        #                 value = random.choice(tile_bag_list)
-        #                 if TILE_BAG[value] > 0:
-        #                     TILE_BAG[value] -= 1
-        #                     valid = True
-        #             tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-        #                         TILE_SIZE, TILE_SIZE, i, value=value, player=player)
-        #             game_view.tiles.append(tile)
-        #             MAT_POSITIONS_FILLED[i] = True
-        # else:
-        # Use the player's rack to populate the mat
-        rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
+        # self.rack_display.clear()
+        rack_letters = list(player_rack.split(", "))
+
         for i in range(len(rack_letters)):
-            MAT_POSITIONS_FILLED[i] = False # Reset the filled positions
             if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
                 value = rack_letters[i]
                 tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
@@ -171,9 +152,7 @@ class Tile(arcade.SpriteSolidColor):
                 game_view.tiles.append(tile)
                 MAT_POSITIONS_FILLED[i] = True
             elif not MAT_POSITIONS_FILLED[i]:
-                # If rack is shorter than 7, leave remaining spots empty or handle differently
                 MAT_POSITIONS_FILLED[i] = False
-
 
     def on_key_press(self, key, modifiers):
         """ Called whenever a key on the keyboard is pressed from method in GameView"""
@@ -313,7 +292,7 @@ class GameView(arcade.View):
 
         # Initializing player's initial tile draw
         # Tile.refill_mat(self
-        Tile.refill_mat(self, player_rack=player_rack, player=player)
+        Tile.display_mat(self, player_rack=player_rack, player=player)
 
         # Initializing GUI
         self.ui_manager = arcade.gui.UIManager()
@@ -361,14 +340,12 @@ class GameView(arcade.View):
             print(row)
         print("\n\n")
 
-    # TODO - Diwas, this returns the board matrix.
     @staticmethod
     def get_board_matrix():
         """Returns the current board matrix."""
         return BOARD_MATRIX
 
     def update_board_matrix(self):
-        import board
         """Updates the board matrix with the current tile positions."""
 
         # Uncomment to debug board matrix positioning
@@ -519,16 +496,3 @@ class GameView(arcade.View):
                     tile.center_y = MAT_POSITIONS[tile.mat_position][1]
 
         # self.update_board_matrix()
-
-def main():
-    """ Main function """
-    # Create a window class. This is what actually shows up on screen
-    window = GameView()
-
-    window.setup()
-
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
