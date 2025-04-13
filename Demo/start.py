@@ -1,4 +1,4 @@
-from board import Board
+from board import Board, PREMIUM_SPOTS
 from bag import Bag
 from player import Player
 from word import Word
@@ -16,28 +16,71 @@ round_number = 1
 players = []
 skipped_turns = 0
 premium_spots = []
+premium_spots.extend(PREMIUM_SPOTS)
+
+def load_game(lode_dict):
+    """this need to load the game for the player"""
+
+    # read through the dict
+
+    # call the loge_game_tiles() form windows and pust list of
+    pass
 
 
+
+added_tiles_prev = []
 def get_word_from_tiles(added_tiles, board_matrix):
     """Determine the primary word and direction from added tiles, handling multi-row/col placements."""
-    if not added_tiles:
+    print("in the function: ", added_tiles)
+    print("added_tiles_prev", added_tiles_prev)
+    tiles_added = False
+    played_tiles = []
+    for move in added_tiles:
+        row, col = move
+        if (row, col) not in added_tiles_prev:
+            tiles_added = True
+            played_tiles.append((row, col))
+            print("played: ", row, col)
+
+    if not tiles_added:
         return "", [-1, -1], ""
 
-    added_tiles.sort(key=lambda x: (x[0], x[1]))
-    same_row = all(tile[0] == added_tiles[0][0] for tile in added_tiles)
-    same_col = all(tile[1] == added_tiles[0][1] for tile in added_tiles)
+    for move in added_tiles:
+        row, col = move
+        added_tiles_prev.append((row, col))
+
+    # if someone ever plays a single letter then it's invalid
+    if len(played_tiles) == 1:
+        row, col = played_tiles[0]
+
+        neighbors = [
+            board_matrix[row - 1][col] if row >= 0 else "   ",
+            board_matrix[row + 1][col] if row <= 14 else "   ",
+            board_matrix[row][col - 1] if col >= 0 else "   ",
+            board_matrix[row][col + 1] if col <= 14 else "   "
+        ]
+
+        if all(tile == "   " for tile in neighbors):
+            # It's isolated — invalid placement
+            return "", [-1, -1], ""
+
+    played_tiles.sort(key=lambda x: (x[0], x[1]))
+    same_row = all(tile[0] == played_tiles[0][0] for tile in played_tiles)
+    same_col = all(tile[1] == played_tiles[0][1] for tile in played_tiles)
 
     if same_row:  # Horizontal word
         direction = "right"
         row = added_tiles[0][0]
         col_start = min(tile[1] for tile in added_tiles)
         # Extend left to find start of word
-        while col_start > 0 and board_matrix[row][col_start - 1] != "   ":
+        while col_start >= 0 and board_matrix[row][col_start - 1] != "   ":
             col_start -= 1
+
         word = ""
         col = col_start
         while col < 15 and board_matrix[row][col] != "   ":
             word += board_matrix[row][col]
+            print("word tiles check:", word)
             col += 1
         location = [row, col_start]
         return word, location, direction
@@ -88,7 +131,6 @@ def get_word_from_tiles(added_tiles, board_matrix):
             return word, location, direction
         else:
             return "", [-1, -1], ""  # Still invalid if no clear alignment
-
 
 def setup():
     """Initialize the game state."""
@@ -154,16 +196,12 @@ class GameController:
                 self.current_player.rack.get_rack_length() == 0 and self.bag.get_remaining_tiles() == 0):
             self.end_game()
             save_game['status'] = "finished"
-
-        # print("raw added_tiles_with_objects:", added_tiles_with_objects)
         if not isinstance(self.current_player, AIPlayer):
             added_tiles_with_objects = self.game_view.find_added_tiles(self.prev_board_matrix,
                                                                        self.game_view.get_board_matrix())
-            # added_tiles = self.game_view.find_added_tiles(self.prev_board_matrix, self.game_view.get_board_matrix())
-            added_tiles = [(row, col) for (row, col, tile) in added_tiles_with_objects
+            added_tiles = [(row, col) for (row, col, tile, person) in added_tiles_with_objects
                            if tile.player == self.current_player]
-            print("added tiles (filtered): ", added_tiles)
-            print("added tiles: ", added_tiles)
+            print("added tiles in start.py: ", added_tiles)
             if not added_tiles:
                 print("No tiles were placed. Your turn has been skipped.")
                 skipped_turns += 1
@@ -173,7 +211,7 @@ class GameController:
                 str("".join(word_to_play.split()))
                 print(word_to_play, location, direction)
                 if word_to_play == "":
-                    print("No tiles played, Your turn has been skipped.")
+                    print("Not a valid word, Your turn has been skipped.")
                     skipped_turns += 1
                     for row in range(15):
                         for col in range(15):
@@ -183,7 +221,7 @@ class GameController:
                                 round_number, players, premium_spots, LETTER_VALUES)
                     checked = word.check_word()
                     if not checked:
-                        print(f"Invalid word: {checked}")
+                        print(f"Invalid word: {word_to_play}")
                         print("Your turn has been skipped.")
                         skipped_turns += 1
                         for row in range(15):
@@ -196,7 +234,6 @@ class GameController:
                         skipped_turns = 0
                         print(f"Word played: {word_to_play} at {location} going {direction}")
                         print("before refile", self.current_player.get_rack_str())
-                        # TODO this refila the tile and get_rack_str() sends the rack to refile_mat
                         self.current_player.rack.replenish_rack()
                         Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str())
                         print("after refill: ", self.current_player.get_rack_str())
@@ -263,7 +300,6 @@ class GameController:
 def start_game():
     """Start the game with the GameView instance."""
     board, bag, current_player = setup()
-    # TODO This needs to be changed so the tiles match
     game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player)  # Pass initial rack
     controller = GameController(game_view, board, bag, current_player)
     game_view.controller = controller
