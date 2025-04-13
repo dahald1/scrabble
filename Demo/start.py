@@ -318,7 +318,7 @@ class GameController:
 def start_game():
     """Start the game with the GameView instance."""
     board, bag, current_player = setup()
-    game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player)  # Pass initial rack
+    game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player, players=players)  # Pass initial rack
     controller = GameController(game_view, board, bag, current_player)
     game_view.controller = controller
 

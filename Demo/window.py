@@ -285,7 +285,7 @@ class Tile(arcade.SpriteSolidColor):
 class GameView(arcade.View):
     """ Main application class. """
 
-    def __init__(self,player_rack=None, player=None):
+    def __init__(self,player_rack=None, player=None, players=None):
         # super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         # Initial setup of variables
         super().__init__()
@@ -444,18 +444,18 @@ class GameView(arcade.View):
     def draw_scores(self):
         box_x = PADDING / 2
         box_y = PADDING / 2
-        box_width = 100
-        box_height = 125
+        box_width = 110
+        box_height = 80
 
         # Draw Box
         arcade.draw_lbwh_rectangle_filled(box_x, box_y, box_width, box_height, arcade.color.GRAY)
         arcade.draw_lbwh_rectangle_outline(box_x, box_y, box_width, box_height, arcade.color.BLACK, 2)
 
         # Draw player names and their scores inside the box
-        text_y = box_y + 25
+        text_y = box_y + 20
         for player in self.players:
             text = f"{player.get_name()}: {player.get_score()}"
-            arcade.Text(text, box_x + 10, text_y, arcade.color.WHITE, 14).draw()
+            arcade.Text(text, box_x + 10, text_y, arcade.color.WHITE, 12).draw()
             text_y += 20
 
     def on_draw(self):
