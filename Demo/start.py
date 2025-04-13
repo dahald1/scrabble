@@ -1,4 +1,4 @@
-from board import Board
+from board import Board, PREMIUM_SPOTS
 from bag import Bag
 from player import Player
 from word import Word
@@ -16,6 +16,7 @@ round_number = 1
 players = []
 skipped_turns = 0
 premium_spots = []
+premium_spots.extend(PREMIUM_SPOTS)
 
 def load_game(lode_dict):
     """this need to load the game for the player"""
@@ -48,12 +49,20 @@ def get_word_from_tiles(added_tiles, board_matrix):
         row, col = move
         added_tiles_prev.append((row, col))
 
-    # if len(played_tiles) >= 2:
-    #     played_tiles.sort(key=lambda x: (x[0], x[1]))
-    #     played_dir_row = all(tile[0] == played_tiles[0][0] for tile in played_tiles)
-    #     played_dir_col = all(tile[1] == played_tiles[0][1] for tile in played_tiles)
-    #
-    #     if played_dir_row:
+    # if someone ever plays a single letter then it's invalid
+    if len(played_tiles) == 1:
+        row, col = played_tiles[0]
+
+        neighbors = [
+            board_matrix[row - 1][col] if row >= 0 else "   ",
+            board_matrix[row + 1][col] if row <= 14 else "   ",
+            board_matrix[row][col - 1] if col >= 0 else "   ",
+            board_matrix[row][col + 1] if col <= 14 else "   "
+        ]
+
+        if all(tile == "   " for tile in neighbors):
+            # It's isolated — invalid placement
+            return "", [-1, -1], ""
 
     played_tiles.sort(key=lambda x: (x[0], x[1]))
     same_row = all(tile[0] == played_tiles[0][0] for tile in played_tiles)
@@ -123,7 +132,6 @@ def get_word_from_tiles(added_tiles, board_matrix):
         else:
             return "", [-1, -1], ""  # Still invalid if no clear alignment
 
-
 def setup():
     """Initialize the game state."""
     global round_number, players, skipped_turns, premium_spots
@@ -188,12 +196,9 @@ class GameController:
                 self.current_player.rack.get_rack_length() == 0 and self.bag.get_remaining_tiles() == 0):
             self.end_game()
             save_game['status'] = "finished"
-
-        # print("raw added_tiles_with_objects:", added_tiles_with_objects)
         if not isinstance(self.current_player, AIPlayer):
             added_tiles_with_objects = self.game_view.find_added_tiles(self.prev_board_matrix,
                                                                        self.game_view.get_board_matrix())
-            # added_tiles = self.game_view.find_added_tiles(self.prev_board_matrix, self.game_view.get_board_matrix())
             added_tiles = [(row, col) for (row, col, tile, person) in added_tiles_with_objects
                            if tile.player == self.current_player]
             print("added tiles in start.py: ", added_tiles)
@@ -215,7 +220,7 @@ class GameController:
                                 round_number, players, premium_spots, LETTER_VALUES)
                     checked = word.check_word()
                     if not checked:
-                        print(f"Invalid word: {checked}")
+                        print(f"Invalid word: {word_to_play}")
                         print("Your turn has been skipped.")
                         skipped_turns += 1
                         for row in range(15):
@@ -228,7 +233,6 @@ class GameController:
                         skipped_turns = 0
                         print(f"Word played: {word_to_play} at {location} going {direction}")
                         print("before refile", self.current_player.get_rack_str())
-                        # TODO this refile the tile and get_rack_str() sends the rack to refile_mat
                         self.current_player.rack.replenish_rack()
                         Tile.refill_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
                                         player=self.current_player)
@@ -296,7 +300,6 @@ class GameController:
 def start_game():
     """Start the game with the GameView instance."""
     board, bag, current_player = setup()
-    # TODO This needs to be changed so the tiles match
     game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player)  # Pass initial rack
     controller = GameController(game_view, board, bag, current_player)
     game_view.controller = controller
