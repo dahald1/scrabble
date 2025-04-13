@@ -141,17 +141,19 @@ class Tile(arcade.SpriteSolidColor):
     @staticmethod
     def display_mat(game_view, player_rack=None, player=None):
         """Refill the tile mat with tiles based on the player's rack."""
-        # self.rack_display.clear()
-        rack_letters = list(player_rack.split(", "))
+        rack_letters = player_rack.split(", ")
 
-        for i in range(len(rack_letters)):
+        for i in range(len(MAT_POSITIONS)):
             if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
                 value = rack_letters[i]
-                tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-                            TILE_SIZE, TILE_SIZE, i, value=value, player=player)
-                game_view.tiles.append(tile)
-                MAT_POSITIONS_FILLED[i] = True
-            elif not MAT_POSITIONS_FILLED[i]:
+                if value:
+                    tile = Tile(
+                        i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
+                        TILE_SIZE, TILE_SIZE, i, value=value, player=player
+                    )
+                    game_view.tiles.append(tile)
+                    MAT_POSITIONS_FILLED[i] = True
+            elif i >= len(rack_letters):
                 MAT_POSITIONS_FILLED[i] = False
 
     def on_key_press(self, key, modifiers):
@@ -358,6 +360,8 @@ class GameView(arcade.View):
         # for row in range(GRID_SIZE):
         #     for col in range(GRID_SIZE):
         #         BOARD_MATRIX[row][col] = "   "
+
+        global prev_board
 
         # Update matrix
         for tile in self.tiles:
