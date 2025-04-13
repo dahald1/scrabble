@@ -129,9 +129,14 @@ class LobbyView(UIView):
 
     def on_draw(self):
         """ Draws window """
+        # Returns to multiplayer menu if no longer connected to lobby
         if not self.multiplayer_lobby_manager.connected_to_lobby:
             self.multiplayer_lobby_manager.connected_lobby_doc_watch.unsubscribe()
             self.window.show_view(self.multiplayer_screen)
+        # Goes to game view if host started game
+        if (self.multiplayer_lobby_manager.connected_lobby_data["start_game"]
+            and not self.multiplayer_lobby_manager.is_host()):
+            print("STARTING GAME!!!")
 
         self.clear()
         self.update_ui()
@@ -163,6 +168,7 @@ class LobbyView(UIView):
     def on_start_game_action(self, _event):
         """ Handles action for starting a game """
         self.multiplayer_lobby_manager.start_game()
+        print("STARTING GAME!!!")
 
     def on_leave_lobby_action(self, _event):
         """ Handles action for leaving a lobby """

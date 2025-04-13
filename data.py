@@ -46,6 +46,22 @@ class ScrabbleGame:
         AI Score: {self.ai_score}\
         ")
 
+class MultiplayerGameManager:
+    """Manages multiplayer game data"""
+
+    def __init__(self, game_doc_ref):
+        self.database = db
+        
+        self.game_doc_ref = game_doc_ref
+        self.game_data = self.game_doc_ref.get().to_dict()
+        self.game_doc_watch = self.game_doc_ref.on_snapshot(self.on_game_doc_snapshot)
+
+    def on_game_doc_snapshot(self, doc_snapshot_list, _changes, _read_time):
+        """Updates game data when game document is changed"""
+        doc_snapshot = doc_snapshot_list[0]
+        self.game_data = doc_snapshot.to_dict()
+
+
 class MultiplayerLobbyManager:
     """Manages multiplayer lobby data for joining/hosting games"""
 
@@ -169,6 +185,13 @@ class MultiplayerLobbyManager:
             self.connected_lobby_data["player_two"]):
             return True
         return False
+    
+    def disconnect_lobby_watcher(self):
+        """Disconnects lobby watcher"""
+        pass
+        # if self.lobby_list_doc_watch:
+            # self.lobby_list_doc_watch.unsubscribe()
+            # self.lobby_list_doc_watch = None
 
 class DataManager:
     """Holds user account, performs authentication, orchestrates saving/loading games"""

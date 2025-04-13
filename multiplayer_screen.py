@@ -120,6 +120,7 @@ class MultiplayerView(UIView):
 
         @back_button.event("on_click")
         def on_go_back(_event):
+            self.multiplayer_lobby_manager.disconnect_lobby_watcher()
             self.window.show_view(self.start_screen_view)
 
         # ------------
