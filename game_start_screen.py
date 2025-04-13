@@ -52,10 +52,12 @@ BUTTON_STYLE = {
 class StartScreenView(UIView):
     """ Main menu with buttons to open different views. """
 
-    def __init__(self):
+    def __init__(self, data_manager):
         super().__init__()
         self.background_color = BACKGROUND_COLOR
         self.manager = arcade.gui.UIManager()
+
+        self.data_manager = data_manager
 
         self.grid = UIGridLayout(
             size_hint=(0, 0),
@@ -100,7 +102,7 @@ class StartScreenView(UIView):
 
         @play_online_button.event("on_click")
         def on_play_online(_event):
-            self.window.show_view(MultiplayerView(self))
+            self.window.show_view(MultiplayerView(self, self.data_manager))
 
         # ------------
 
@@ -128,12 +130,5 @@ class StartScreenView(UIView):
         self.manager.disable()
 
 
-def main():
-    """ Main function """
-    window = arcade.Window(title=WINDOW_TITLE, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
-    window.show_view(StartScreenView())
-    window.run()
-
-
 if __name__ == "__main__":
-    main()
+    print("Run login.py to play Scrabble!")

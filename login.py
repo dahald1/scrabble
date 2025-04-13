@@ -170,7 +170,7 @@ class LoginView(UIView):
 
         if success:
             # show the StartScreenView after login
-            self.window.show_view(StartScreenView())
+            self.window.show_view(StartScreenView(data_manager))
         else:
             # shows incorrect credentials message
             self.error_label.text = "Incorrect username or password"
@@ -354,7 +354,7 @@ class SignUpView(UIView):
             success = data_manager.sign_up(entered_username, entered_password)
 
             if success:
-                self.window.show_view(StartScreenView())
+                self.window.show_view(StartScreenView(data_manager))
             else:
                 # show username already taken label
                 self.error_label.text = "Username already taken"

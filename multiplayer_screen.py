@@ -6,6 +6,7 @@ from arcade.gui.widgets.layout import UIGridLayout, UIAnchorLayout
 from arcade.gui.widgets.text import UILabel
 from arcade import resources
 from lobby_screen import LobbyView
+from data import MultiplayerLobbyManager
 
 resources.load_kenney_fonts()
 
@@ -46,11 +47,12 @@ BUTTON_STYLE = {
 class MultiplayerView(UIView):
     """View where users can join or host games."""
 
-    def __init__(self, start_screen_view):
+    def __init__(self, start_screen_view, data_manager):
         super().__init__()
 
         self.background_color = BACKGROUND_COLOR
         self.manager = arcade.gui.UIManager()
+        self.multiplayer_lobby_manager = MultiplayerLobbyManager(data_manager)
 
         self.start_screen_view = start_screen_view
 
@@ -120,6 +122,13 @@ class MultiplayerView(UIView):
         def on_go_back(_event):
             self.window.show_view(self.start_screen_view)
 
+        # ------------
+        # initialize error label for later use
+        error_label = UILabel(text="", width=150, font_size=10,
+            font_name=TEXT_FONT, text_color=arcade.color.RED)
+        self.error_label = self.grid.add(error_label, column=0, row=9,
+                                         column_span=2)
+
     def on_draw(self):
         """ Draws window """
         self.clear()
@@ -129,6 +138,7 @@ class MultiplayerView(UIView):
         """ Called when the view is switched to."""
         self.manager.enable()
         self.window.set_caption(WINDOW_TITLE)
+        self.error_label.text = ""
 
     def on_hide_view(self):
         """ Hides the manager """
@@ -136,24 +146,24 @@ class MultiplayerView(UIView):
 
     def on_join_game_action(self, _event=None):
         """ Handles action for joining a lobby """
-        # TODO: Look for lobby, go to lobbyview if it exits else error
-        print("joining game not implemented!")
+        self.error_label.text = ""
+
+        entered_lobby_id = self.lobby_id_input.text.strip()
+        success = self.multiplayer_lobby_manager.join_lobby(entered_lobby_id)
+        if success:
+            self.window.show_view(LobbyView(self, self.multiplayer_lobby_manager))
+        else:
+            self.error_label.text = "Unable to join lobby!"
 
     def on_host_game_action(self, _event):
         """ Handles action for creating a lobby """
-        # TODO: Create lobby in firestore and pass lobby object
-        self.window.show_view(LobbyView(self))
+        self.multiplayer_lobby_manager.create_lobby()
+        self.window.show_view(LobbyView(self, self.multiplayer_lobby_manager))
 
     def on_key_press(self, symbol: int, modifiers: int) -> bool | None:
         if symbol == arcade.key.ENTER:
             self.on_join_game_action()
 
-def main():
-    """ Main function """
-    window = arcade.Window(title=WINDOW_TITLE, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
-    window.show_view(MultiplayerView(None))
-    window.run()
-
 
 if __name__ == "__main__":
-    main()
+    print("Run login.py to play Scrabble!")
