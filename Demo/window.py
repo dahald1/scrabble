@@ -174,6 +174,7 @@ class Tile(arcade.SpriteSolidColor):
                 # If rack is shorter than 7, leave remaining spots empty or handle differently
                 MAT_POSITIONS_FILLED[i] = False
 
+
     def on_key_press(self, key, modifiers):
         """ Called whenever a key on the keyboard is pressed from method in GameView"""
         if key == arcade.key.ENTER:
