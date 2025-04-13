@@ -264,13 +264,21 @@ class Tile(arcade.SpriteSolidColor):
 class GameView(arcade.Window):
     """ Main application class. """
 
-    def __init__(self,player_rack=None):
+    def __init__(self,player_rack=None,players=None):
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         # Initial setup of variables
         self.special_tile_text = None
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
 
+        '''
+        self.players = [
+            {"name": "Player 1", "score": 0},
+            {"name": "Player 2", "score": 0}
+        ]
+        '''
+        self.players = players or []
+        
         # Initializing player's initial tile draw
         # Tile.refill_mat(self
         Tile.refill_mat(self, player_rack=player_rack)
@@ -411,9 +419,29 @@ class GameView(arcade.Window):
                     )
                     self.special_tile_text.draw()
 
+    def draw_scores(self):
+        box_x = PADDING / 2
+        box_y = PADDING / 2
+        box_width = 100
+        box_height = 125
+
+        # Draw Box
+        arcade.draw_lbwh_rectangle_filled(box_x, box_y, box_width, box_height, arcade.color.GRAY)
+        arcade.draw_lbwh_rectangle_outline(box_x, box_y, box_width, box_height, arcade.color.BLACK, 2)
+
+        # Draw player names and their scores inside the box
+        text_y = box_y + 25
+        for player in self.players:
+            text = f"{player.get_name()}: {player.get_score()}"
+            arcade.Text(text, box_x + 10, text_y, arcade.color.WHITE, 14).draw()
+            text_y += 20
+
     def on_draw(self):
         self.clear()
         self.draw_board()
+
+        # Draw Scores
+        self.draw_scores()
 
         # Draw Tile Mat at Bottom of Screen
         arcade.draw_lbwh_rectangle_filled(WINDOW_WIDTH // MAT_PADDING_TOP_BOT, 25,
