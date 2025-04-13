@@ -1,4 +1,3 @@
-
 """
 Starting Template from Python Arcade Documentation
 """
@@ -9,6 +8,7 @@ from arcade.gui.widgets.buttons import UIFlatButton
 
 # Global Sprite List
 global tiles
+import copy
 
 # Window Constants
 WINDOW_WIDTH = 720
@@ -52,7 +52,8 @@ DOUBLE_LETTER = [(0, 3), (0, 11), (2, 6), (2, 8), (3, 0), (3, 7), (3, 14),
 CENTER = [(7, 7)]
 
 # Global Board Matrix (15x15, top left is (0, 0))
-BOARD_MATRIX = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+BOARD_MATRIX = [["   " for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+prev_board = copy.deepcopy(BOARD_MATRIX)
 
 # Tile bag dictionary. Format (value: quantity remaining). Represents default scrabble distribution
 TILE_BAG = {"A": 9, "B": 2, "C": 2, "D": 4, "E": 12, "F": 2, "G": 3, "H": 2,
@@ -81,7 +82,7 @@ class Tile(arcade.SpriteSolidColor):
     mat_position = 0
     value = ""
 
-    def __init__(self, x, y, width, height, mat_pos, value):
+    def __init__(self, x, y, width, height, mat_pos, value, player=None):
         super().__init__(width, height, color=arcade.color.BONE)
         self.offset_y = None
         self.offset_x = None
@@ -91,6 +92,7 @@ class Tile(arcade.SpriteSolidColor):
         self.center_y = y + height // 2
         self.mat_position = mat_pos
         self.value = value
+        self.player = player  # Track which player owns this tile
         self.set_letter()
 
     def end_turn(self):
@@ -136,70 +138,42 @@ class Tile(arcade.SpriteSolidColor):
         text.draw()
         points_text.draw()
 
-    # @staticmethod
-    # def refill_mat(self):
-    #     """Refill the tile mat with a new tile."""
-    #     # Initializing player's initial tile draw
-    #     for i in range(7):
-    #         # Filling only positions that need to be filled
-    #         if not MAT_POSITIONS_FILLED[i]:
-    #             value = ""
-    #             valid = False
-    #             while not valid:
-    #                 # Turning the tile bag into a list for random distribution selection
-    #                 tile_bag_list = []
-    #                 for letter, quantity in TILE_BAG.items():
-    #                     tile_bag_list.extend([letter] * quantity)
-    #
-    #                 # Selecting a random tile from the bag
-    #                 value = random.choice(tile_bag_list)
-    #
-    #                 # Checking if tiles in the distribution have been used up
-    #                 if TILE_BAG[value] > 0:
-    #                     TILE_BAG[value] -= 1
-    #                     valid = True
-    #
-    #             # Creating tile sprite objects + updating mat
-    #             tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-    #                         TILE_SIZE, TILE_SIZE, i, value=value)
-    #             self.tiles.append(tile)
-    #             MAT_POSITIONS_FILLED[i] = True
-    # In window.py, inside the Tile class
     @staticmethod
-    def refill_mat(self, player_rack=None):
+    def refill_mat(game_view, player_rack=None, player=None):
         """Refill the tile mat with tiles based on the player's rack."""
-        if player_rack is None:
-            # Fallback to original random behavior if no rack is provided
-            for i in range(7):
-                if not MAT_POSITIONS_FILLED[i]:
-                    value = ""
-                    valid = False
-                    while not valid:
-                        tile_bag_list = []
-                        for letter, quantity in TILE_BAG.items():
-                            tile_bag_list.extend([letter] * quantity)
-                        value = random.choice(tile_bag_list)
-                        if TILE_BAG[value] > 0:
-                            TILE_BAG[value] -= 1
-                            valid = True
-                    tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-                                TILE_SIZE, TILE_SIZE, i, value=value)
-                    self.tiles.append(tile)
-                    MAT_POSITIONS_FILLED[i] = True
-        else:
-            # Use the player's rack to populate the mat
-            rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
+        # if player_rack is None:
+        #     # Fallback to original random behavior if no rack is provided
+        #     for i in range(7):
+        #         if not MAT_POSITIONS_FILLED[i]:
+        #             value = ""
+        #             valid = False
+        #             while not valid:
+        #                 tile_bag_list = []
+        #                 for letter, quantity in TILE_BAG.items():
+        #                     tile_bag_list.extend([letter] * quantity)
+        #                 value = random.choice(tile_bag_list)
+        #                 if TILE_BAG[value] > 0:
+        #                     TILE_BAG[value] -= 1
+        #                     valid = True
+        #             tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
+        #                         TILE_SIZE, TILE_SIZE, i, value=value, player=player)
+        #             game_view.tiles.append(tile)
+        #             MAT_POSITIONS_FILLED[i] = True
+        # else:
+        # Use the player's rack to populate the mat
+        rack_letters = list(player_rack.split(", "))  # Convert rack string to list of letters
+        for i in range(len(rack_letters)):
+            MAT_POSITIONS_FILLED[i] = False # Reset the filled positions
+            if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
+                value = rack_letters[i]
+                tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
+                            TILE_SIZE, TILE_SIZE, i, value=value, player=player)
+                game_view.tiles.append(tile)
+                MAT_POSITIONS_FILLED[i] = True
+            elif not MAT_POSITIONS_FILLED[i]:
+                # If rack is shorter than 7, leave remaining spots empty or handle differently
+                MAT_POSITIONS_FILLED[i] = False
 
-            for i in range(7):
-                if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
-                    value = rack_letters[i]
-                    tile = Tile(i * TILE_SPACING + TILE_PADDING, TILE_MAT_HEIGHT,
-                                TILE_SIZE, TILE_SIZE, i, value=value)
-                    self.tiles.append(tile)
-                    MAT_POSITIONS_FILLED[i] = True
-                elif not MAT_POSITIONS_FILLED[i]:
-                    # If rack is shorter than 7, leave remaining spots empty or handle differently
-                    MAT_POSITIONS_FILLED[i] = False
 
     def on_key_press(self, key, modifiers):
         """ Called whenever a key on the keyboard is pressed from method in GameView"""
@@ -264,43 +238,82 @@ class Tile(arcade.SpriteSolidColor):
                 self.center_y = WINDOW_HEIGHT - self.height // 2
 
     @staticmethod
-    def ai_place_tile(self, word, row, col, direction):
-        """Places tiles on the board using AI logic."""
+    def ai_place_tile(game_view, word, row, col, direction, player=None):
+        """Places tiles on the board using AI logic and updates board matrix."""
         pixels = GameView.coordinates_to_px(row, col)
         word_list = list(word)
+        board_row = 0
+        board_col = 0
+        x =0
+        y=0
 
-        x = 0
-        y = 0
         for i, letter in enumerate(word_list):
             # Calculate the position based on direction
-            if direction == "horizontal":
+            if direction == "right":
                 x = pixels[0] + (i * TILE_SIZE)
                 y = pixels[1]
-            elif direction == "vertical":
+                board_row = row
+                board_col = col + i
+            elif direction == "down":
                 x = pixels[0]
                 y = pixels[1] - (i * TILE_SIZE)
+                board_row = row + i
+                board_col = col
 
-            # Create a new tile sprite, position, add to list.
-            tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter)
+            # Create and place tile
+            tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter, player=player)
             tile.snap_to_grid()
             tile.draggable = False
-            self.tiles.append(tile)
+            game_view.tiles.append(tile)
+
+            BOARD_MATRIX[board_row][board_col] = letter
+
+    @staticmethod
+    def lode_game_tiles(game_view, word, row, col, direction, player=None):
+        """Places tiles on the board using saved game board matrix."""
+        pixels = GameView.coordinates_to_px(row, col)
+        word_list = list(word)
+        board_row = 0
+        board_col = 0
+        x = 0
+        y = 0
+
+        for i, letter in enumerate(word_list):
+            # Calculate the position based on direction
+            if direction == "right":
+                x = pixels[0] + (i * TILE_SIZE)
+                y = pixels[1]
+                board_row = row
+                board_col = col + i
+            elif direction == "down":
+                x = pixels[0]
+                y = pixels[1] - (i * TILE_SIZE)
+                board_row = row + i
+                board_col = col
+
+            # Create and place tile
+            tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter, player=player)
+            tile.snap_to_grid()
+            tile.draggable = False
+            game_view.tiles.append(tile)
+
+            BOARD_MATRIX[board_row][board_col] = letter
 
 
-
-class GameView(arcade.Window):
+class GameView(arcade.View):
     """ Main application class. """
 
-    def __init__(self,player_rack=None):
-        super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+    def __init__(self,player_rack=None, player=None):
+        # super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
         # Initial setup of variables
+        super().__init__()
         self.special_tile_text = None
         self.background_color = arcade.color.BABY_BLUE
         self.tiles = arcade.SpriteList()
 
         # Initializing player's initial tile draw
         # Tile.refill_mat(self
-        Tile.refill_mat(self, player_rack=player_rack)
+        Tile.refill_mat(self, player_rack=player_rack, player=player)
 
         # Initializing GUI
         self.ui_manager = arcade.gui.UIManager()
@@ -323,18 +336,20 @@ class GameView(arcade.Window):
         y = WINDOW_HEIGHT - ((row + 1) * TILE_SIZE) - PADDING // 2
         return x, y
 
-    @staticmethod
-    def find_added_tiles(prev_board_matrix, curr_board_matrix):
+    def find_added_tiles(self, prev_board_matrix, curr_board_matrix):
         """Finds the tiles that were placed on the board."""
-        prev_matrix = [["" for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        prev_matrix = prev_board_matrix
         added_tiles = []
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
                 prev_val = prev_matrix[row][col]
                 curr_val = curr_board_matrix[row][col]
-                if prev_val != curr_val:
-                    added_tiles.append((row, col))
-                    # print(f"Detected tile change at ({row}, {col}): {prev_val} -> {curr_val}")
+                for tile in self.tiles:
+                    tile_row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
+                    tile_col = (tile.center_x - PADDING / 2) // TILE_SIZE
+                    if int(tile_row) == row and int(tile_col) == col:
+                        added_tiles.append((row, col, tile, tile.player))
+                        # print(f"Detected tile change at ({row}, {col}): {prev_val} -> {curr_val}")
         if not added_tiles:
             print("No added tiles detected.")
         return added_tiles
@@ -346,26 +361,26 @@ class GameView(arcade.Window):
             print(row)
         print("\n\n")
 
+    # TODO - Diwas, this returns the board matrix.
     @staticmethod
     def get_board_matrix():
         """Returns the current board matrix."""
         return BOARD_MATRIX
 
     def update_board_matrix(self):
+        import board
         """Updates the board matrix with the current tile positions."""
 
         # Uncomment to debug board matrix positioning
-        prev_matrix = [["" for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-        for row in range(GRID_SIZE):
-            for col in range(GRID_SIZE):
-                prev_matrix[row][col] = BOARD_MATRIX[row][col]
-
+        # prev_matrix = [["   " for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        # for row in range(GRID_SIZE):
+        #     for col in range(GRID_SIZE):
+        #         prev_matrix[row][col] = BOARD_MATRIX[row][col]
 
         # Clear matrix
-        for row in range(GRID_SIZE):
-            for col in range(GRID_SIZE):
-                BOARD_MATRIX[row][col] = ""
-
+        # for row in range(GRID_SIZE):
+        #     for col in range(GRID_SIZE):
+        #         BOARD_MATRIX[row][col] = "   "
 
         # Update matrix
         for tile in self.tiles:
@@ -382,7 +397,7 @@ class GameView(arcade.Window):
 
         # Uncomment to debug board matrix positioning
         # self.print_board_matrix()
-        self.find_added_tiles(prev_board_matrix=prev_matrix, curr_board_matrix=BOARD_MATRIX)
+        self.find_added_tiles(prev_board_matrix=prev_board, curr_board_matrix=BOARD_MATRIX)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -415,7 +430,6 @@ class GameView(arcade.Window):
                     color = arcade.color.BEIGE
                     text = []
 
-                # TODO - increase special score colored tile size
                 # Drawing Board Tiles
                 arcade.draw_lbwh_rectangle_filled(x, y, TILE_SIZE, TILE_SIZE, color)
                 arcade.draw_lbwh_rectangle_outline(x, y, TILE_SIZE, TILE_SIZE,
@@ -454,6 +468,7 @@ class GameView(arcade.Window):
         for tile in self.tiles:
             tile.set_letter()
 
+
         self.ui_manager.draw()
 
 
@@ -477,9 +492,8 @@ class GameView(arcade.Window):
         if key == arcade.key.ENTER:
             GameView.update_board_matrix(self)
             # GameView.print_board_matrix()
-
-            for tile in self.tiles:
-                tile.on_key_press(key, modifiers)
+            # for tile in self.tiles:
+            #     tile.on_key_press(key, modifiers)
 
     def on_key_release(self, key, modifiers):
         """
@@ -504,8 +518,7 @@ class GameView(arcade.Window):
                     tile.center_x = MAT_POSITIONS[tile.mat_position][0]
                     tile.center_y = MAT_POSITIONS[tile.mat_position][1]
 
-        self.update_board_matrix()
-
+        # self.update_board_matrix()
 
 def main():
     """ Main function """
@@ -513,10 +526,9 @@ def main():
     window = GameView()
 
     window.setup()
-    # Tile.ai_place_tile(self=window, word="TEST", row=7, col=7, direction="horizontal")
+
     arcade.run()
 
 
 if __name__ == "__main__":
     main()
-

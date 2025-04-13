@@ -10,6 +10,7 @@ import arcade
 from arcade.gui import UIManager
 from arcade import resources
 from arcade.gui.widgets.buttons import UIFlatButton
+from start import start_game
 # can't import window without adding demo folder to path
 import sys
 sys.path.insert(0, 'demo')
@@ -144,26 +145,27 @@ class Game_view(arcade.View):
             self.button2.update_button(x, y, self.is_mouse_pressed)
 
             if self.play.collides_with_point((x, y)):
-                self.window.show_view(GameView())
+                print("play")
+                self.window.show_view(start_game())
             if self.with_AI.collides_with_point((x, y)):
-                print("this is clicked")
-                self.window.show_view(GameView())
+                print("this is clicked, for AI")
+                self.window.show_view(start_game())
 
-
-def main():
-    """ Main function """
-    # Create a window class. This is what actually shows up on screen
-    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
-
-    # Create and set up the GameView
-    game = Game_view()
-    # game.setup()
-
-    # Show GameView on screen
-    window.show_view(game)
-
-    # Start the arcade game loop
-    arcade.run()
-
-if __name__ == "__main__":
-    main()
+#
+# def main():
+#     """ Main function """
+#     # Create a window class. This is what actually shows up on screen
+#     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+#
+#     # Create and set up the GameView
+#     game = Game_view()
+#     # game.setup()
+#
+#     # Show GameView on screen
+#     window.show_view(game)
+#
+#     # Start the arcade game loop
+#     arcade.run()
+#
+# if __name__ == "__main__":
+#     main()
