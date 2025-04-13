@@ -95,9 +95,9 @@ class AIPlayer(Player):
                             counter += 1
                     if counter + 1 >= len(word) and len(word) >= 2:
                         if direction == "right":
-                            playable_words.append((word, row, col + len(word) - 1, "right"))
+                            playable_words.append((word, row, col + len(word), "right"))
                         if direction == "down":
-                            playable_words.append((word, row + (len(word) - 1), col, "down"))
+                            playable_words.append((word, row, col, "down"))
                 # check if the letter is at the start, this will check for Up and Left
                 elif (direction == "left" or direction == "up") and word_letters[-1] == letter:
                     # check each letter in the word to see if it exists in the rack.
@@ -115,6 +115,8 @@ class AIPlayer(Player):
         # randomly choose a word and return the word, staring location and the
         # directions the word should be going
         # print(playable_words)
+        if not playable_words:
+            playable_words.append(("", 0, 0, "notplaying"))
         random.choice(playable_words)  # Shuffle to randomize order
         for chosen_word in playable_words:
             print(chosen_word)

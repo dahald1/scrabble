@@ -72,7 +72,7 @@ class Board:
                 if tile.get_letter() == letter:
                     player.rack.remove_from_rack(tile)
                     break
-        # player.rack.replenish_rack()
+        player.rack.replenish_rack()
 
     def board_array(self):
         return self.board
