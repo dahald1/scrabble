@@ -68,11 +68,12 @@ class Board:
                 self.board[location[0] + i][location[1]] = word[i]
 
         # TODO - tiles not getting removed
-        for added_tile in added_tiles:
-            for tile in player.get_rack_arr():
-                if tile == added_tile:
-                    player.rack.remove_from_rack(tile)
-                    break
+        if added_tiles is not None:
+            for added_tile in added_tiles:
+                for tile in player.get_rack_arr():
+                    if tile.get_letter() == added_tile[2].value:
+                        player.rack.remove_from_rack(tile)
+
         # player.rack.replenish_rack()
 
     def board_array(self):
