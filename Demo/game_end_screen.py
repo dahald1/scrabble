@@ -1,3 +1,4 @@
+"""View for displaying game over screen and final scores"""
 import arcade
 from arcade.gui import UIView
 from arcade.gui.widgets.buttons import UIFlatButton
@@ -69,10 +70,9 @@ class GameOverView(UIView):
         title_bar = UILabel(text="-----------------------------------",
                             width=150, font_size=10, font_name=TEXT_FONT,
                             text_color=TEXT_COLOR)
-        self.grid.add(title_bar, column=0, row=1, column_span=2)        
+        self.grid.add(title_bar, column=0, row=1, column_span=2)
 
         # ------------
-        UIAnchorLayout
         your_score_label = UILabel(text="Your score:", width=80,
                                 font_name=TEXT_FONT,
                                 text_color=SECONDARY_TEXT_COLOR)
