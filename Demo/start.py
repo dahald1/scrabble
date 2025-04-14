@@ -4,7 +4,7 @@ from player import Player
 from word import Word
 from bot import AIPlayer
 import arcade
-from window import GameView, Tile  # Import GameView from your original code
+from window import GameView, Tile, MAT_POSITIONS_FILLED, MAT_POSITIONS  # Import GameView from your original code
 
 LETTER_VALUES = {"A": 1, "B": 3, "C": 3, "D": 2, "E": 1, "F": 4, "G": 2, "H": 4, "I": 1, "J": 8,
                  "K": 5, "L": 1, "M": 3, "N": 1, "O": 1, "P": 3, "Q": 10, "R": 1, "S": 1, "T": 1,
@@ -216,9 +216,16 @@ class GameController:
                 if word_to_play == "":
                     print("Not a valid word, Your turn has been skipped.")
                     skipped_turns += 1
+                    for tile in added_tiles_with_objects:
+                        # self.game_view.tiles.remove(tile[2])
+                        tile[2].center_x = MAT_POSITIONS[tile[2].mat_position][0]
+                        tile[2].center_y = MAT_POSITIONS[tile[2].mat_position][1]
+                        MAT_POSITIONS_FILLED[tile[2].mat_position] = True
                     for row in range(15):
                         for col in range(15):
                             self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
+                            self.game_view.update_board_matrix()
+
                 else:
                     word = Word(word_to_play, location, self.current_player, direction, self.board.board_array(),
                                 round_number, players, premium_spots, LETTER_VALUES)
