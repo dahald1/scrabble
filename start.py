@@ -21,7 +21,8 @@ added_tiles_prev = []
 
 
 def get_word_from_tiles(added_tiles, board_matrix):
-    """Determine the primary word and direction from added tiles, handling multi-row/col placements."""
+    """Determine the primary word and direction from added
+    tiles, handling multi-row/col placements."""
     print("in the function: ", added_tiles)
     print("added_tiles_prev", added_tiles_prev)
     tiles_added = False
@@ -65,7 +66,8 @@ def get_word_from_tiles(added_tiles, board_matrix):
         row = played_tiles[0][0]
         col_start = min(tile[1] for tile in played_tiles)
         # Extend left to find start of word
-        while col_start >= 0 and board_matrix[row][col_start - 1] not in ["   ", "TLS", "TWS", "DLS", "DWS", " * "]:
+        while (col_start >= 0 and board_matrix[row][col_start - 1]
+               not in ["   ", "TLS", "TWS", "DLS", "DWS", " * "]):
             col_start -= 1
 
         word = ""
@@ -82,7 +84,8 @@ def get_word_from_tiles(added_tiles, board_matrix):
         col = played_tiles[0][1]
         row_start = min(tile[0] for tile in played_tiles)
         # Extend up to find start of word
-        while row_start > 0 and board_matrix[row_start - 1][col] not in ["   ", "TLS", "TWS", "DLS", "DWS", " * "]:
+        while (row_start > 0 and board_matrix[row_start - 1][col]
+               not in ["   ", "TLS", "TWS", "DLS", "DWS", " * "]):
             row_start -= 1
         word = ""
         row = row_start
@@ -171,7 +174,6 @@ def setup_from_game_data(game_data):
     player_scores = game_data['player_scores']
     player_score = player_scores['Player']
     ai_player_score = player_scores['AI Player']
-    
     player = Player(bag, rack=player_rack, score=player_score)
     player.set_name("Player")
     players.append(player)
@@ -223,17 +225,20 @@ class GameController:
 
         # end the game if conditions are met
         if (skipped_turns >= 6) or (ai_skipped_turns >= 6) or (
-                self.current_player.rack.get_rack_length() == 0 and self.bag.get_remaining_tiles() == 0):
+                self.current_player.rack.get_rack_length() == 0
+                and self.bag.get_remaining_tiles() == 0):
             self.end_game()
         if not isinstance(self.current_player, AIPlayer):
-            added_tiles_with_objects = self.game_view.find_added_tiles(self.prev_board_matrix,
-                                                                       self.game_view.get_board_matrix())
+            added_tiles_with_objects = (
+                self.game_view.find_added_tiles(self.prev_board_matrix,
+                                                self.game_view.get_board_matrix()))
             added_tiles = [(row, col) for (row, col, tile, person) in added_tiles_with_objects]
             if not added_tiles:
                 print("No tiles were placed. Your turn has been skipped.")
                 skipped_turns += 1
             else:
-                word_to_play, location, direction = get_word_from_tiles(added_tiles, self.game_view.get_board_matrix())
+                word_to_play, location, direction = (
+                    get_word_from_tiles(added_tiles, self.game_view.get_board_matrix()))
                 str("".join(word_to_play.split()))
                 print("this is right after calling get_word", word_to_play, location, direction)
 
@@ -243,11 +248,13 @@ class GameController:
 
                     for row in range(15):
                         for col in range(15):
-                            self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
+                            self.game_view.get_board_matrix()[row][col] = (
+                                self.prev_board_matrix)[row][col]
                             self.game_view.update_board_matrix()
 
                 else:
-                    word = Word(word_to_play, location, self.current_player, direction, self.board.board_array(),
+                    word = Word(word_to_play, location, self.current_player,
+                                direction, self.board.board_array(),
                                 round_number, players, LETTER_VALUES)
                     checked = word.check_word()
 
@@ -268,18 +275,21 @@ class GameController:
                         for tile, original_position in removed_tiles:
                             if tile.mat_position != -1:
                                 positions.append(tile.mat_position)
-                            tile.mat_position = original_position  # Restore the original mat position
+                            tile.mat_position = original_position
 
 
-                        Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
-                                         player=self.current_player, empty_positions=positions)
+                        Tile.display_mat(self.game_view,
+                                         player_rack=self.current_player.rack.get_rack_str(),
+                                         player=self.current_player,
+                                         empty_positions=positions)
 
                         print(f"Invalid word: {word_to_play}")
                         print("Your turn has been skipped.")
                         skipped_turns += 1
                         for row in range(15):
                             for col in range(15):
-                                self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
+                                self.game_view.get_board_matrix()[row][col] = (
+                                    self.prev_board_matrix)[row][col]
                     else:
                         played_tiles_coords = []
                         for move in added_tiles_with_objects:
@@ -296,7 +306,8 @@ class GameController:
                         played_tiles_preserve = played_tiles.copy()
 
                         print("this is tile stuff: ", word_to_play, location, direction)
-                        premium_spots = self.board.place_word(word_to_play, location, direction, self.current_player,
+                        premium_spots = self.board.place_word(word_to_play, location,
+                                                              direction, self.current_player,
                                                               played_tiles)
                         print("prim spot", premium_spots)
                         word.update_premium_spots(premium_spots)
@@ -304,7 +315,8 @@ class GameController:
                         skipped_turns = 0
                         print(f"Word played: {word_to_play} at {location} going {direction}")
                         print("before refile", self.current_player.get_rack_str())
-                        empty_positions = self.current_player.rack.replenish_rack(self.current_player)
+                        empty_positions = (self.current_player.rack.
+                                           replenish_rack(self.current_player))
                         print("after refill: ", self.current_player.get_rack_str())
 
                         original_positions = []
@@ -316,8 +328,10 @@ class GameController:
                         for tile in added_tiles_with_objects:
                             tile[2].mat_position = -1
 
-                        Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
-                                        player=self.current_player, empty_positions=empty_positions)
+                        Tile.display_mat(self.game_view,
+                                         player_rack=self.current_player.rack.get_rack_str(),
+                                        player=self.current_player,
+                                         empty_positions=empty_positions)
 
                         for i, tile in enumerate(added_tiles_with_objects):
                             tile[2].mat_position = original_positions[i]
@@ -333,28 +347,25 @@ class GameController:
                 print("aI couldn't find any word to play ")
                 ai_skipped_turns += 1
             else:
-                word = Word(ai_word, location, self.current_player, direction, self.board.board_array(),
+                word = Word(ai_word, location, self.current_player,
+                            direction, self.board.board_array(),
                             round_number, players, LETTER_VALUES)
                 # print("AI chosen word: ", word, location, direction)
-                ai_premium_spots = self.board.place_word(ai_word, location, direction, self.current_player, None)
+                ai_premium_spots = self.board.place_word(ai_word, location,
+                                                         direction,
+                                                         self.current_player, None)
                 print("ai prim spot", ai_premium_spots)
                 word.update_premium_spots(ai_premium_spots)
                 word.calculate_word_score()
-                Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
+                Tile.ai_place_tile(self.game_view, ai_word,
+                                   location[0], location[1], direction,
                                    player=self.current_player)
                 self.current_player.rack.replenish_rack(player=self.current_player)
                 self.sync_board_with_matrix()  # ensure board is up-to-date
-            # word = Word(ai_word, location, self.current_player, direction, self.board.board_array(),
-            #             round_number, players, premium_spots, LETTER_VALUES)
-            # # print("AI chosen word: ", word, location, direction)
-            # self.board.place_word(ai_word, location, direction, self.current_player)
-            # word.calculate_word_score()
-            # # if not ai_word == "":
-            # Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
-            #                    player=self.current_player)
-            # self.sync_board_with_matrix()  # ensure board is up-to-date
 
-        print("\n" + self.current_player.get_name() + "'s score is: " + str(self.current_player.get_score()))
+
+        print("\n" + self.current_player.get_name() + "'s score is: " +
+              str(self.current_player.get_score()))
 
         for tile in played_tiles_preserve:
             tile[2].mat_position = -1
@@ -366,22 +377,26 @@ class GameController:
         if current_player_index == len(players) - 1:
             round_number += 1
 
-        print("\nRound " + str(round_number) + ": " + self.current_player.get_name() + "'s turn \n")
+        print("\nRound " + str(round_number) + ": " +
+              self.current_player.get_name() + "'s turn \n")
         print(self.board.get_board())
-        print("\n" + self.current_player.get_name() + "'s Letter Rack: " + self.current_player.get_rack_str())
+        print("\n" + self.current_player.get_name() + "'s Letter Rack: " +
+              self.current_player.get_rack_str())
 
         if isinstance(self.current_player, AIPlayer):
             print("AI detected, processing AI turn automatically...")
             self.process_turn()
 
-    def on_key_press(self, key, modifiers):
+    def on_key_press(self, key):
         """Handle key presses from GameView."""
         if key == arcade.key.ENTER:
-            self.prev_board_matrix = [row[:] for row in self.game_view.get_board_matrix()]
+            self.prev_board_matrix = [row[:] for row in
+                                      self.game_view.get_board_matrix()]
             self.sync_board_with_matrix()
             self.process_turn()
 
     def get_game_data(self):
+        """Get the current game data for saving."""
         global round_number, skipped_turns, ai_skipped_turns
 
         game_data = {
@@ -389,8 +404,10 @@ class GameController:
             'skipped_turns': skipped_turns,
             'ai_skipped_turns': ai_skipped_turns,
             'board_state': self.board.get_board_array_as_dict(),
-            'player_scores': {player.get_name(): player.get_score() for player in players},
-            'player_racks': {player.get_name(): player.get_rack_letters() for player in players},
+            'player_scores': {player.get_name(): player.get_score()
+                              for player in players},
+            'player_racks': {player.get_name(): player.get_rack_letters()
+                             for player in players},
             'bag': self.bag.get_bag()
         }
 
@@ -401,26 +418,6 @@ class GameController:
         game_data = self.get_game_data()
         player_score = game_data['player_scores']['Player']
         ai_player_score = game_data['player_scores']['AI Player']
-
-        # self.game_view.window.show_view(GameOverView(player_score, ai_player_score))
-
-        # highest_score = 0
-        # winning_player = ""
-        # for player in players:
-        #     if player.get_score() > highest_score:
-        #         highest_score = player.get_score()
-        #         winning_player = player.get_name()
-        # print("The game is over! " + winning_player + ", you have won!")
-        #
-        # if input("\nWould you like to play again? (y/n)").upper() == "Y":
-        #     board, bag, current_player = setup()
-        #     self.board = board
-        #     self.bag = bag
-        #     self.current_player = current_player
-        #     self.game_view.tiles.clear()
-        #     Tile.refill_mat(self.game_view, player_rack=self.current_player.get_rack_str())
-        # else:
-        #     arcade.close_window()
 
 
 def start_game(data_manager, load_game=False):
@@ -445,7 +442,8 @@ def start_game(data_manager, load_game=False):
     else:
         # starts new game
         board, bag, current_player = setup()
-        game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player, players=players)  # Pass initial rack
+        game_view = GameView(player_rack=current_player.get_rack_str(),
+                             player=current_player, players=players)
         controller = GameController(game_view, board, bag, current_player)
         game_view.controller = controller
 

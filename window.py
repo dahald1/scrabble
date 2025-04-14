@@ -2,7 +2,6 @@
 """
 Starting Template from Python Arcade Documentation
 """
-import random
 import arcade
 import arcade.gui
 from arcade.gui.widgets.buttons import UIFlatButton
@@ -109,7 +108,6 @@ class Tile(arcade.SpriteSolidColor):
     # Tile Letter Logic
     def set_letter(self):
         """Draw letter on top of the tile."""
-        # TODO - Make sure tiles print on top of the letters for other tiles.
         # Tile letter text object
         text = arcade.Text(
             self.value,
@@ -172,7 +170,7 @@ class Tile(arcade.SpriteSolidColor):
                 empty_positions.append(i)
         return empty_positions
 
-    def on_key_press(self, key, modifiers):
+    def on_key_press(self, key):
         """ Called whenever a key on the keyboard is pressed from method in GameView"""
         if key == arcade.key.ENTER:
             self.end_turn()
@@ -302,7 +300,9 @@ class GameView(arcade.View):
 
         # Initializing player's initial tile draw
         # Tile.refill_mat(self
-        Tile.display_mat(self, player_rack=player_rack, player=player, empty_positions=[0, 1, 2, 3, 4, 5, 6])
+        Tile.display_mat(self, player_rack=player_rack,
+                         player=player,
+                         empty_positions=[0, 1, 2, 3, 4, 5, 6])
 
         # Initializing GUI
         self.ui_manager = arcade.gui.UIManager()
@@ -445,8 +445,11 @@ class GameView(arcade.View):
         box_height = 80
 
         # Draw Box
-        arcade.draw_lbwh_rectangle_filled(box_x, box_y, box_width, box_height, arcade.color.GRAY)
-        arcade.draw_lbwh_rectangle_outline(box_x, box_y, box_width, box_height, arcade.color.BLACK, 2)
+        arcade.draw_lbwh_rectangle_filled(box_x, box_y,
+                                          box_width, box_height, arcade.color.GRAY)
+        arcade.draw_lbwh_rectangle_outline(box_x, box_y,
+                                           box_width, box_height,
+                                           arcade.color.BLACK, 2)
 
         # Draw player names and their scores inside the box
         text_y = box_y + 20
