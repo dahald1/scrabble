@@ -27,11 +27,22 @@ class Word:
 
         elif self.word != "":
 
-            if "#" in self.word:
-                while len(blank_tile_val) != 1:
-                    blank_tile_val = input("Please enter the letter value of the blank tile: ")
-                self.word = self.word[:self.word.index(" ")] + blank_tile_val.upper() + self.word[
-                                                                                        (self.word.index(" ") + 1):]
+            if " " in self.word:
+                word_list = list(self.word)
+
+                # Replace blank tile with each letter of the alphabet
+                for letter in self.ALPHABET:
+                    index = 0
+                    for i, tile in enumerate(word_list):
+                        index = i
+                        if tile == " ":
+                            word_list[i] = letter
+                    # Check if each combo is valid
+                    if "".join(word_list) in dictionary:
+                        # Set blank tile back to " " for scoring (0 point value)
+                        word_list[index] = " "
+                        self.word = "".join(word_list)
+                        break
             # Check bounds and process word placement
             if self.direction == "right":
                 if self.location[1] + len(self.word) - 1 >= len(self.board[0]):
