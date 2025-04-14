@@ -6,6 +6,7 @@ from word import Word
 from bot import AIPlayer
 import arcade
 from window import GameView, Tile, MAT_POSITIONS_FILLED, MAT_POSITIONS  # Import GameView from your original code
+from game_end_screen import GameOverView
 
 LETTER_VALUES = {"A": 1, "B": 3, "C": 3, "D": 2, "E": 1, "F": 4, "G": 2, "H": 4, "I": 1, "J": 8,
                  "K": 5, "L": 1, "M": 3, "N": 1, "O": 1, "P": 3, "Q": 10, "R": 1, "S": 1, "T": 1,
@@ -398,7 +399,12 @@ class GameController:
 
     def end_game(self):
         """End the game and determine the winner."""
-        pass
+        game_data = self.get_game_data()
+        player_score = game_data['player_scores']['Player']
+        ai_player_score = game_data['player_scores']['AI Player']
+
+        # self.game_view.window.show_view(GameOverView(player_score, ai_player_score))
+
         # highest_score = 0
         # winning_player = ""
         # for player in players:
