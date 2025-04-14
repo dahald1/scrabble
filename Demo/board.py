@@ -46,7 +46,7 @@ class Board:
         for coordinate in DOUBLE_LETTER_SCORE:
             self.board[coordinate[0]][coordinate[1]] = "DLS"
 
-    def place_word(self, word, location, direction, player):
+    def place_word(self, word, location, direction, player, added_tiles):
         direction = direction.lower()
         word = word.upper()
 
@@ -67,9 +67,10 @@ class Board:
                     PREMIUM_SPOTS.append((word[i], cell))
                 self.board[location[0] + i][location[1]] = word[i]
 
-        for letter in word:
+        # TODO - tiles not getting removed
+        for added_tile in added_tiles:
             for tile in player.get_rack_arr():
-                if tile.get_letter() == letter:
+                if tile == added_tile:
                     player.rack.remove_from_rack(tile)
                     break
         # player.rack.replenish_rack()

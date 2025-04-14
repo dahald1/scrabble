@@ -243,7 +243,7 @@ class GameController:
                                 self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
                     else:
                         print("this is tile stuff: ", word_to_play, location, direction)
-                        self.board.place_word(word_to_play, location, direction, self.current_player)
+                        self.board.place_word(word_to_play, location, direction, self.current_player, added_tiles_with_objects)
                         word.calculate_word_score()
                         skipped_turns = 0
                         print(f"Word played: {word_to_play} at {location} going {direction}")
@@ -264,7 +264,7 @@ class GameController:
                 word = Word(ai_word, location, self.current_player, direction, self.board.board_array(),
                             round_number, players, premium_spots, LETTER_VALUES)
                 # print("AI chosen word: ", word, location, direction)
-                self.board.place_word(ai_word, location, direction, self.current_player)
+                self.board.place_word(ai_word, location, direction, self.current_player, None)
                 word.calculate_word_score()
                 Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
                                    player=self.current_player)
