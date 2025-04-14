@@ -43,6 +43,9 @@ class Bag:
         self.add_to_bag(Tile("Z", LETTER_VALUES), 1)
         self.add_to_bag(Tile(" ", LETTER_VALUES), 2)
         shuffle(self.bag)
+    
+    def set_bag_from_list(self, bag_list):
+        self.bag = [Tile(letter, LETTER_VALUES) for letter in bag_list]
 
     def take_from_bag(self):
         return self.bag.pop()

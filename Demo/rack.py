@@ -1,13 +1,20 @@
 from Demo.window import MAT_POSITIONS_FILLED
 from window import Tile
+from bag import LETTER_VALUES
+from tile import Tile
 
 empty_positions = []
 
 class Rack:
-    def __init__(self, bag):
-        self.rack = []
+    def __init__(self, bag, rack=None):
+        if rack:
+            self.rack = [Tile(letter, LETTER_VALUES) for letter in rack]
+        else:
+            self.rack = []
+
         self.bag = bag
-        self.initialize()
+        if not rack:
+            self.initialize()
 
     def add_to_rack(self):
         self.rack.append(self.bag.take_from_bag())

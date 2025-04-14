@@ -6,8 +6,8 @@ from dictionary import load_dictionary_upper
 
 
 class AIPlayer(Player):
-    def __init__(self, bag, board):
-        super().__init__(bag)
+    def __init__(self, bag, board, rack=None, score=None):
+        super().__init__(bag, rack, score)
         self.name = "AI Player"
         self.board = board
 

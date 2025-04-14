@@ -1,5 +1,6 @@
 from board import Board
 from bag import Bag
+from rack import Rack
 from player import Player
 from word import Word
 from bot import AIPlayer
@@ -14,16 +15,6 @@ round_number = 1
 players = []
 skipped_turns = 0
 ai_skipped_turns = 0
-
-
-
-def load_game(lode_dict):
-    """this need to load the game for the player"""
-
-    # read through the dict
-
-    # call the loge_game_tiles() form windows and pust list of
-    pass
 
 
 added_tiles_prev = []
@@ -142,7 +133,7 @@ def setup():
 
     players.clear()
     players.append(Player(bag))
-    players[0].set_name("Jason")
+    players[0].set_name("Player")
     players.append(AIPlayer(bag, board))
 
     round_number = 1
@@ -150,6 +141,47 @@ def setup():
     ai_skipped_turns = 0
 
     current_player = players[0]
+
+    print("\nWelcome to Scrabble! You'll play against an AI opponent.")
+    print("\nRound " + str(round_number) + ": " + current_player.get_name() + "'s turn \n")
+    print(board.get_board())
+    print("\n" + current_player.get_name() + "'s Letter Rack: " + current_player.get_rack_str())
+
+    return board, bag, current_player
+
+def setup_from_game_data(game_data):
+    """loads game using passed data"""
+    global round_number, players, skipped_turns, premium_spots, ai_skipped_turns
+
+    board = Board()
+    board.set_board_from_dict(game_data['board_state'])
+
+    bag = Bag()
+    bag.set_bag_from_list(game_data['bag'])
+    players.clear()
+
+    player_racks = game_data['player_racks']
+    player_rack_data = player_racks['Player']
+    ai_player_rack_data = player_racks['AI Player']
+
+    player_rack = Rack(bag, rack=player_rack_data)
+    ai_player_rack = Rack(bag, rack=ai_player_rack_data)
+
+    player_scores = game_data['player_scores']
+    player_score = player_scores['Player']
+    ai_player_score = player_scores['AI Player']
+    
+    player = Player(bag, rack=player_rack, score=player_score)
+    player.set_name("Player")
+    players.append(player)
+
+    players.append(AIPlayer(bag, board, rack=ai_player_rack, score=ai_player_score))
+
+    round_number = game_data['round_number']
+    skipped_turns = game_data['skipped_turns']
+    ai_skipped_turns = game_data['ai_skipped_turns']
+
+    current_player = player
 
     print("\nWelcome to Scrabble! You'll play against an AI opponent.")
     print("\nRound " + str(round_number) + ": " + current_player.get_name() + "'s turn \n")
@@ -177,7 +209,7 @@ class GameController:
                     self.board.board_array()[row][col] = matrix[row][col]
                 else:
                     self.board.board_array()[row][col] = "   "
-        # self.board.add_premium_squares()
+        self.board.add_premium_squares()
 
     def process_turn(self):
         """Process the current player's turn."""
@@ -307,13 +339,15 @@ class GameController:
             self.process_turn()
 
     def get_game_data(self):
-        global round_number
+        global round_number, skipped_turns, ai_skipped_turns
 
         game_data = {
             'round_number': round_number,
+            'skipped_turns': skipped_turns,
+            'ai_skipped_turns': ai_skipped_turns,
             'board_state': self.board.get_board_array_as_dict(),
             'player_scores': {player.get_name(): player.get_score() for player in players},
-            'player_racks': {player.get_name(): player.get_rack_str() for player in players},
+            'player_racks': {player.get_name(): player.get_rack_letters() for player in players},
             'bag': self.bag.get_bag()
         }
 
@@ -343,10 +377,29 @@ class GameController:
 
 def start_game(data_manager, load_game=False):
     """Start the game with the GameView instance."""
-    board, bag, current_player = setup()
-    game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player, players=players)  # Pass initial rack
-    controller = GameController(game_view, board, bag, current_player)
-    game_view.controller = controller
+    game_view = None
+    controller = None
+
+    if load_game:
+        # loads game from Firestore data
+        loaded_game_data = data_manager.load_game()
+        board, bag, current_player = setup_from_game_data(loaded_game_data)
+        game_view = GameView(player_rack=current_player.get_rack_str(),
+                             player=current_player, players=players)
+        controller = GameController(game_view, board, bag, current_player)
+        game_view.controller = controller
+
+        for row_num, row in enumerate(controller.board.board_array()):
+            for col_num, letter in enumerate(row):
+                if not letter in ['DLS', 'DWS', 'TLS', 'TWS', '   ']:
+                    print("DEBUG", type(letter), len(letter), f"'{letter}'")
+                    Tile.place_tile(game_view, letter, row=row_num, col=col_num)
+    else:
+        # starts new game
+        board, bag, current_player = setup()
+        game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player, players=players)  # Pass initial rack
+        controller = GameController(game_view, board, bag, current_player)
+        game_view.controller = controller
 
     def save_game_action(_event):
         game_data = controller.get_game_data()

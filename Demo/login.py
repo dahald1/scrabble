@@ -22,6 +22,7 @@ WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Scrabble | Login"
 
+# Color constants
 BACKGROUND_COLOR = arcade.color.LIGHT_PINK
 GRID_BACKGROUND_COLOR = arcade.color.BEIGE
 
