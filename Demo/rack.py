@@ -1,4 +1,4 @@
-from Demo.window import MAT_POSITIONS_FILLED
+from window import MAT_POSITIONS_FILLED
 from window import Tile
 from bag import LETTER_VALUES
 from tile import Tile
