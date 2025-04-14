@@ -11,6 +11,8 @@ class Word:
         self.players = players
         self.premium_spots = None  # Store as instance variable
         self.letter_values = letter_values
+        self.ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
     def check_word(self):
         word_score = 0
