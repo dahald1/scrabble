@@ -1,7 +1,4 @@
 
-
-
-PREMIUM_SPOTS = []
 class Board:
     def __init__(self):
         # from window import GameView
@@ -49,6 +46,7 @@ class Board:
     def place_word(self, word, location, direction, player, added_tiles):
         direction = direction.lower()
         word = word.upper()
+        premium_spots = []
 
         if direction == "right":
             if location[1] + len(word) - 1 >= len(self.board[0]):
@@ -56,7 +54,7 @@ class Board:
             for i in range(len(word)):
                 cell = self.board[location[0]][location[1] + i]
                 if cell in ["TWS", "TLS", "DWS", "DLS", " * "]:
-                    PREMIUM_SPOTS.append((word[i], cell))
+                    premium_spots.append((word[i], cell))
                 self.board[location[0]][location[1] + i] = word[i]
         elif direction == "down":
             if location[0] + len(word) - 1 >= len(self.board):
@@ -64,7 +62,7 @@ class Board:
             for i in range(len(word)):
                 cell = self.board[location[0] + i][location[1]]
                 if cell in ["TWS", "TLS", "DWS", "DLS", " * "]:
-                    PREMIUM_SPOTS.append((word[i], cell))
+                    premium_spots.append((word[i], cell))
                 self.board[location[0] + i][location[1]] = word[i]
 
         # TODO - tiles not getting removed
@@ -75,6 +73,8 @@ class Board:
                         player.rack.remove_from_rack(tile)
 
         # player.rack.replenish_rack()
+
+        return premium_spots
 
     def board_array(self):
         return self.board

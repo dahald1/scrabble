@@ -130,9 +130,9 @@ class AIPlayer(Player):
                 return "", "", ""
 
     def is_valid_placement(self, word, location, direction):
-        from start import round_number, players, premium_spots, LETTER_VALUES
+        from start import round_number, players, LETTER_VALUES
         temp_word = Word(word, location, self, direction, self.board.board_array(), round_number, players,
-                         premium_spots, LETTER_VALUES)
+                         LETTER_VALUES)
         checked = temp_word.check_word()
         if checked:
             return True
