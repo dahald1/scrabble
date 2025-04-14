@@ -1,6 +1,6 @@
 
 class Word:
-    def __init__(self, word, location, player, direction, board, round_number, players, premium_spots, letter_values):
+    def __init__(self, word, location, player, direction, board, round_number, players, letter_values):
         self.word = "".join(word.split()).upper()
 
         self.location = location
@@ -9,7 +9,7 @@ class Word:
         self.board = board
         self.round_number = round_number
         self.players = players
-        self.premium_spots = premium_spots  # Store as instance variable
+        self.premium_spots = None  # Store as instance variable
         self.letter_values = letter_values
 
     def check_word(self):
@@ -106,6 +106,8 @@ class Word:
                 return False
             return True
 
+    def update_premium_spots(self, premium_spots):
+        self.premium_spots = premium_spots
 
     def calculate_word_score(self):
         word_score = 0
@@ -114,9 +116,9 @@ class Word:
             for spot in self.premium_spots:  # Use instance variable instead of global
                 if letter == spot[0]:
                     if spot[1] == "TLS":
-                        word_score += self.letter_values[letter] * 2
+                        word_score += self.letter_values[letter] * 3
                     elif spot[1] == "DLS":
-                        word_score += self.letter_values[letter]
+                        word_score += self.letter_values[letter] * 2
             word_score += self.letter_values[letter]
         for spot in self.premium_spots:  # Use instance variable instead of global
             if spot[1] == "TWS":

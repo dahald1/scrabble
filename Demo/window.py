@@ -335,6 +335,8 @@ class GameView(arcade.View):
                 prev_val = prev_matrix[row][col]
                 curr_val = curr_board_matrix[row][col]
                 for tile in self.tiles:
+                    if not tile.draggable:
+                        continue  # skip AI or previously placed tiles
                     tile_row = (WINDOW_HEIGHT - tile.center_y - PADDING / 2) // TILE_SIZE
                     tile_col = (tile.center_x - PADDING / 2) // TILE_SIZE
                     if int(tile_row) == row and int(tile_col) == col:
