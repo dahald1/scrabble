@@ -212,7 +212,7 @@ class GameController:
             else:
                 word_to_play, location, direction = get_word_from_tiles(added_tiles, self.game_view.get_board_matrix())
                 str("".join(word_to_play.split()))
-                print(word_to_play, location, direction)
+                print("this is right after calling get_word", word_to_play, location, direction)
                 if word_to_play == "":
                     print("Not a valid word, Your turn has been skipped.")
                     skipped_turns += 1
@@ -231,7 +231,7 @@ class GameController:
                             for col in range(15):
                                 self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
                     else:
-                        print(word_to_play, location, direction)
+                        print("this is tile stuff: ", word_to_play, location, direction)
                         self.board.place_word(word_to_play, location, direction, self.current_player)
                         word.calculate_word_score()
                         skipped_turns = 0
