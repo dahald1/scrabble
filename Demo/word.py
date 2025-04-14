@@ -100,12 +100,6 @@ class Word:
                 print("Please connect the word to a previously played letter.")
                 return False
 
-            for letter in needed_tiles:
-                if letter not in self.player.get_rack_str() or self.player.get_rack_str().count(
-                        letter) < needed_tiles.count(letter):
-                    print("You do not have the tiles for this word\n")
-                    return False
-
             if self.location[0] > 14 or self.location[1] > 14 or self.location[0] < 0 or self.location[1] < 0 or (
                     self.direction == "down" and (self.location[0] + len(self.word) - 1) > 14) or (
                     self.direction == "right" and (self.location[1] + len(self.word) - 1) > 14):
