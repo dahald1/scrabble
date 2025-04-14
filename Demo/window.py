@@ -370,7 +370,7 @@ class GameView(arcade.View):
         #     for col in range(GRID_SIZE):
         #         BOARD_MATRIX[row][col] = "   "
 
-        global prev_board
+        # global prev_board
 
         # Update matrix
         for tile in self.tiles:
