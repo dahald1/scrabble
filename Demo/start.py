@@ -361,7 +361,7 @@ class GameController:
         ai_player_score = game_data['player_scores']['AI Player']
 
         # self.game_view.window.show_view(GameOverView(player_score, ai_player_score))
-        
+
         # highest_score = 0
         # winning_player = ""
         # for player in players:
@@ -411,10 +411,6 @@ def start_game(data_manager, load_game=False):
         game_data = controller.get_game_data()
         data_manager.save_game(game_data)
     game_view.save_button.on_click = save_game_action
-
-    print("Gatrble")
-    controller.end_game()
-    print("Gatrble")
 
     # Override GameView's on_key_press to include controller logic
     original_on_key_press = game_view.on_key_press
