@@ -140,7 +140,7 @@ class Tile(arcade.SpriteSolidColor):
         points_text.draw()
 
     @staticmethod
-    def display_mat(game_view, player_rack=None, player=None):
+    def display_mat(game_view, player, player_rack=None):
         """Refill the tile mat with tiles based on the player's rack."""
         rack_letters = player_rack.split(", ")
 
@@ -154,8 +154,17 @@ class Tile(arcade.SpriteSolidColor):
                     )
                     game_view.tiles.append(tile)
                     MAT_POSITIONS_FILLED[i] = True
-            elif i >= len(rack_letters):
+            elif i > len(rack_letters):
                 MAT_POSITIONS_FILLED[i] = False
+
+    @staticmethod
+    def get_empty_mat_positions():
+        """Returns the empty mat positions."""
+        empty_positions = []
+        for i in range(len(MAT_POSITIONS)):
+            if not MAT_POSITIONS_FILLED[i]:
+                empty_positions.append(i)
+        return empty_positions
 
     def on_key_press(self, key, modifiers):
         """ Called whenever a key on the keyboard is pressed from method in GameView"""
@@ -370,7 +379,7 @@ class GameView(arcade.View):
         #     for col in range(GRID_SIZE):
         #         BOARD_MATRIX[row][col] = "   "
 
-        global prev_board
+        # global prev_board
 
         # Update matrix
         for tile in self.tiles:

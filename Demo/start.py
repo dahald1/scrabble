@@ -216,15 +216,17 @@ class GameController:
                 if word_to_play == "":
                     print("Not a valid word, Your turn has been skipped.")
                     skipped_turns += 1
+
+                    for row in range(15):
+                        for col in range(15):
+                            self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
+                            self.game_view.update_board_matrix()
+
                     for tile in added_tiles_with_objects:
                         # self.game_view.tiles.remove(tile[2])
                         tile[2].center_x = MAT_POSITIONS[tile[2].mat_position][0]
                         tile[2].center_y = MAT_POSITIONS[tile[2].mat_position][1]
                         MAT_POSITIONS_FILLED[tile[2].mat_position] = True
-                    for row in range(15):
-                        for col in range(15):
-                            self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
-                            self.game_view.update_board_matrix()
 
                 else:
                     word = Word(word_to_play, location, self.current_player, direction, self.board.board_array(),
