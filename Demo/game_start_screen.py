@@ -89,7 +89,7 @@ class StartScreenView(UIView):
 
         @play_with_ai_button.event("on_click")
         def on_play_against_ai(_event):
-            self.window.show_view(start_game())
+            self.window.show_view(start_game(self.data_manager))
 
         # ------------
         play_online_button = UIFlatButton(text="Play Online", height=BUTTON_HEIGHT,

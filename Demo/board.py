@@ -77,3 +77,15 @@ class Board:
 
     def board_array(self):
         return self.board
+    
+    def get_board_array_as_dict(self):
+        """converts board 2D array into a dictionary for Firestore storage
+            as nested arrays aren't supported in Firestore."""
+        dict_board = {}
+
+        i = 0
+        for row in self.board:
+            dict_board[str(i)] = row
+            i += 1
+
+        return dict_board
