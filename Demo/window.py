@@ -310,13 +310,9 @@ class GameView(arcade.View):
         self.ui_manager.enable()
 
         # Drawing Save Button
-        save_button = UIFlatButton(text="Save", width=100, height=40,
+        self.save_button = UIFlatButton(text="Save", width=100, height=40,
                                  x=WINDOW_WIDTH - PADDING - 85, y=PADDING + 20)
-        self.ui_manager.add(save_button)
-
-        @save_button.event("on_click")
-        def on_login():
-            print("Save button clicked!")
+        self.ui_manager.add(self.save_button)
 
 
     @staticmethod
