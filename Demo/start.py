@@ -203,7 +203,7 @@ class GameController:
                     print("Not a valid word, Your turn has been skipped.")
                     skipped_turns += 1
                     for tile in added_tiles_with_objects:
-                        # self.game_view.tiles.remove(tile[2])
+                        self.game_view.tiles.remove(tile[2])
                         tile[2].center_x = MAT_POSITIONS[tile[2].mat_position][0]
                         tile[2].center_y = MAT_POSITIONS[tile[2].mat_position][1]
                         MAT_POSITIONS_FILLED[tile[2].mat_position] = True
@@ -224,18 +224,35 @@ class GameController:
                             for col in range(15):
                                 self.game_view.get_board_matrix()[row][col] = self.prev_board_matrix[row][col]
                     else:
+                        played_tiles_coords = []
+                        for move in added_tiles_with_objects:
+                            row, col, tile, player = move
+                            if move[2].player == self.current_player:
+                                played_tiles_coords.append((row, col))
+
+                        played_tiles = []
+                        for tile in added_tiles_with_objects:
+                            row, col = tile[0], tile[1]
+                            if (row, col) in played_tiles_coords:
+                                played_tiles.append(tile)
+
                         print("this is tile stuff: ", word_to_play, location, direction)
-                        premium_spots = self.board.place_word(word_to_play, location, direction, self.current_player)
+                        premium_spots = self.board.place_word(word_to_play, location, direction, self.current_player,
+                                                              played_tiles)
                         print("prim spot", premium_spots)
                         word.update_premium_spots(premium_spots)
                         word.calculate_word_score()
                         skipped_turns = 0
                         print(f"Word played: {word_to_play} at {location} going {direction}")
                         print("before refile", self.current_player.get_rack_str())
-                        self.current_player.rack.replenish_rack()
+                        empty_positions = self.current_player.rack.replenish_rack(self.current_player)
                         print("after refill: ", self.current_player.get_rack_str())
+
+                        for tile in added_tiles_with_objects:
+                            tile[2].mat_position = -1
+
                         Tile.display_mat(self.game_view, player_rack=self.current_player.rack.get_rack_str(),
-                                        player=self.current_player)
+                                        player=self.current_player, empty_positions=empty_positions)
                         print("after display mat refill: ", self.current_player.get_rack_str())
                         self.sync_board_with_matrix()
 
@@ -255,7 +272,7 @@ class GameController:
                 word.calculate_word_score()
                 Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
                                    player=self.current_player)
-                self.current_player.rack.replenish_rack()
+                self.current_player.rack.replenish_rack(player=self.current_player)
                 self.sync_board_with_matrix()  # ensure board is up-to-date
             # word = Word(ai_word, location, self.current_player, direction, self.board.board_array(),
             #             round_number, players, premium_spots, LETTER_VALUES)

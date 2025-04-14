@@ -102,7 +102,8 @@ class Tile(arcade.SpriteSolidColor):
             and WINDOW_HEIGHT - (GRID_SIZE * TILE_SIZE) - PADDING / 2
             <= self.center_y <= WINDOW_HEIGHT - PADDING / 2):
             self.draggable = False
-            MAT_POSITIONS_FILLED[self.mat_position] = False
+            if self.mat_position != -1:
+                MAT_POSITIONS_FILLED[self.mat_position] = False
             self.mat_position = -1
 
     # Tile Letter Logic
@@ -140,12 +141,18 @@ class Tile(arcade.SpriteSolidColor):
         points_text.draw()
 
     @staticmethod
-    def display_mat(game_view, player, player_rack=None):
+    def display_mat(game_view, player, empty_positions, player_rack=None):
         """Refill the tile mat with tiles based on the player's rack."""
         rack_letters = player_rack.split(", ")
 
-        for i in range(len(MAT_POSITIONS)):
-            if i < len(rack_letters) and not MAT_POSITIONS_FILLED[i]:
+        for position in empty_positions:
+            for tile in game_view.tiles:
+                if tile.mat_position == position and tile.mat_position != -1:
+                    game_view.tiles.remove(tile)
+                    break
+
+        for i in range(len(rack_letters)):
+            if i < len(rack_letters) and i in empty_positions:
                 value = rack_letters[i]
                 if value:
                     tile = Tile(
@@ -154,8 +161,7 @@ class Tile(arcade.SpriteSolidColor):
                     )
                     game_view.tiles.append(tile)
                     MAT_POSITIONS_FILLED[i] = True
-            elif i > len(rack_letters):
-                MAT_POSITIONS_FILLED[i] = False
+
 
     @staticmethod
     def get_empty_mat_positions():
@@ -312,7 +318,7 @@ class GameView(arcade.View):
 
         # Initializing player's initial tile draw
         # Tile.refill_mat(self
-        Tile.display_mat(self, player_rack=player_rack, player=player)
+        Tile.display_mat(self, player_rack=player_rack, player=player, empty_positions=[0, 1, 2, 3, 4, 5, 6])
 
         # Initializing GUI
         self.ui_manager = arcade.gui.UIManager()

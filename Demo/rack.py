@@ -1,6 +1,8 @@
 from Demo.window import MAT_POSITIONS_FILLED
 from window import Tile
 
+empty_positions = []
+
 class Rack:
     def __init__(self, bag):
         self.rack = []
@@ -19,21 +21,32 @@ class Rack:
             self.add_to_rack()
 
     def get_rack_str(self):
-        return ", ".join(str(item.get_letter()) for item in self.rack)
+        return ", ".join(str(item.get_letter()) for item in self.rack if item is not None)
 
     def get_rack_arr(self):
         return self.rack
 
-    def remove_from_rack(self, tile):
-        self.rack.remove(tile)
+    def remove_from_rack(self, tile, position, preserve_positions=False):
+        if preserve_positions:
+            self.rack[position] = None
+        else:
+            self.rack.remove(tile)
+
 
     def get_rack_length(self):
         return len(self.rack)
 
-    def replenish_rack(self):
-        empty_positions = Tile.get_empty_mat_positions()
-        # while self.get_rack_length() < 7 and self.bag.get_remaining_tiles() > 0:
-        for i, position in enumerate(empty_positions):
-            self.insert_to_rack(position)
-            MAT_POSITIONS_FILLED[position] = True
-            # self.add_to_rack()
+    def replenish_rack(self, player):
+        for index, tile in enumerate(self.rack):
+            if tile is None:
+                self.rack[index] = self.bag.take_from_bag()
+                empty_positions.append(index)
+                empty_positions.sort()
+                MAT_POSITIONS_FILLED[index] = True
+                print(f"Replaced None at position {index}")  # Debugging
+        return empty_positions
+
+
+
+
+

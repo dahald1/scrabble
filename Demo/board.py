@@ -65,12 +65,15 @@ class Board:
                     premium_spots.append((word[i], cell))
                 self.board[location[0] + i][location[1]] = word[i]
 
-        # TODO - tiles not getting removed
+
         if added_tiles is not None:
-            for added_tile in added_tiles:
+            for added_tile in added_tiles[:]:
                 for tile in player.get_rack_arr():
-                    if tile.get_letter() == added_tile[2].value:
-                        player.rack.remove_from_rack(tile)
+                    if tile is not None:
+                        if tile.get_letter() == added_tile[2].value:
+                            player.rack.remove_from_rack(tile, added_tile[2].mat_position, preserve_positions=True)
+                            added_tiles.remove(added_tile)
+                            break
 
         # player.rack.replenish_rack()
 
