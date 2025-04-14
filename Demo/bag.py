@@ -46,6 +46,9 @@ class Bag:
 
     def take_from_bag(self):
         return self.bag.pop()
+    
+    def get_bag(self):
+        return [tile.get_letter() for tile in self.bag]
 
     def get_remaining_tiles(self):
         return len(self.bag)

@@ -3,7 +3,7 @@ from uuid import uuid4
 from google.cloud import firestore
 from auth import auth
 
-SAVE_DOC_NAME = "save1"
+DEFAULT_SAVE_NAME = "save1"
 LOBBY_LIST_DOC = "lobby_list"
 LOBBY_ID_LENGTH = 6
 DEBUG = False
@@ -242,7 +242,7 @@ class DataManager:
 
         return 1
 
-    def save_game(self, save_name, game_data):
+    def save_game(self, game_data, save_name=DEFAULT_SAVE_NAME):
         """saves game to firestore document with id save_name"""
 
         if not self.authenticated:
@@ -262,7 +262,7 @@ class DataManager:
 
         return 1
 
-    def load_game(self, save_name) -> dict | None:
+    def load_game(self, save_name=DEFAULT_SAVE_NAME) -> dict | None:
         """loads game from firestore document with id save_name"""
 
         if not self.authenticated:
@@ -302,8 +302,8 @@ if __name__ == "__main__":
         "ai_score": 0
     }
 
-    test_data_manager.save_game(SAVE_DOC_NAME, data)
-    loaded_data = test_data_manager.load_game(SAVE_DOC_NAME)
+    test_data_manager.save_game(data)
+    loaded_data = test_data_manager.load_game()
 
     assert data == loaded_data
     # ---------------------

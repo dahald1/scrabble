@@ -167,7 +167,6 @@ class GameController:
         self.current_player = current_player
         self.prev_board_matrix = [["   " for _ in range(15)] for _ in range(15)]
         self.turn_ended = False
-        self.status = ""
 
     def sync_board_with_matrix(self):
         """Sync the Board instance with the matrix from GameView."""
@@ -184,23 +183,11 @@ class GameController:
         """Process the current player's turn."""
         # Dictionary that saves the current game state
         global round_number, skipped_turns, ai_skipped_turns
-        save_game = {
-            'round_number': round_number,
-            'skipped_turns': skipped_turns,
-            'ai_skipped_turn': ai_skipped_turns,
-            'current_player': self.current_player.get_name(),
-            'board_state': self.board.get_board(),  # Assuming get_board() returns the current board state
-            'player_scores': {player.get_name(): player.get_score() for player in players},
-            'player_racks': {player.get_name(): player.get_rack_str() for player in players},
-            'remaining_tiles': self.bag.get_remaining_tiles(),
-            'status': self.status,  # Assuming you have a status attribute for game status
-        }
 
         # end the game if conditions are met
         if (skipped_turns >= 6) or (ai_skipped_turns >= 6) or (
                 self.current_player.rack.get_rack_length() == 0 and self.bag.get_remaining_tiles() == 0):
             self.end_game()
-            save_game['status'] = "finished"
         if not isinstance(self.current_player, AIPlayer):
             added_tiles_with_objects = self.game_view.find_added_tiles(self.prev_board_matrix,
                                                                        self.game_view.get_board_matrix())
@@ -295,14 +282,25 @@ class GameController:
             print("AI detected, processing AI turn automatically...")
             self.process_turn()
 
-        save_game['status'] = "in_progress"
-
     def on_key_press(self, key, modifiers):
         """Handle key presses from GameView."""
         if key == arcade.key.ENTER:
             self.prev_board_matrix = [row[:] for row in self.game_view.get_board_matrix()]
             self.sync_board_with_matrix()
             self.process_turn()
+
+    def get_game_data(self):
+        global round_number
+
+        game_data = {
+            'round_number': round_number,
+            'board_state': self.board.get_board_array_as_dict(),
+            'player_scores': {player.get_name(): player.get_score() for player in players},
+            'player_racks': {player.get_name(): player.get_rack_str() for player in players},
+            'bag': self.bag.get_bag()
+        }
+
+        return game_data
 
     def end_game(self):
         """End the game and determine the winner."""
@@ -326,12 +324,17 @@ class GameController:
         #     arcade.close_window()
 
 
-def start_game():
+def start_game(data_manager, load_game=False):
     """Start the game with the GameView instance."""
     board, bag, current_player = setup()
     game_view = GameView(player_rack=current_player.get_rack_str(), player=current_player, players=players)  # Pass initial rack
     controller = GameController(game_view, board, bag, current_player)
     game_view.controller = controller
+
+    def save_game_action(_event):
+        game_data = controller.get_game_data()
+        data_manager.save_game(game_data)
+    game_view.save_button.on_click = save_game_action
 
     # Override GameView's on_key_press to include controller logic
     original_on_key_press = game_view.on_key_press
