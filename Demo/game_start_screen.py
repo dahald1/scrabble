@@ -11,6 +11,8 @@ from start import start_game
 
 resources.load_kenney_fonts()
 
+DEFAULT_SAVE_NAME = "save1"
+
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Scrabble | Start Screen"
@@ -26,8 +28,8 @@ GRID_BACKGROUND_COLOR = arcade.color.BEIGE
 TEXT_FONT = ("Kenney Future", "arial bold")
 TEXT_COLOR = arcade.color.LIGHT_RED_OCHRE
 
-BUTTON_WIDTH = 200
-BUTTON_HEIGHT = 75
+BUTTON_WIDTH = 300
+BUTTON_HEIGHT = 50
 
 BUTTON_STYLE = {
     'normal': UIFlatButton.UIStyle(
@@ -42,6 +44,10 @@ BUTTON_STYLE = {
         font_color=arcade.color.LIGHT_RED_OCHRE,
         bg=arcade.color.LIGHT_PINK,
     ),
+    'disabled': UIFlatButton.UIStyle(
+        font_color=arcade.color.BEIGE,
+        bg=arcade.color.AUROMETALSAURUS,
+    )
 }
 
 
@@ -57,7 +63,7 @@ class StartScreenView(UIView):
 
         self.grid = UIGridLayout(
             size_hint=(0, 0),
-            row_count=5,  # title | bar | play with AI | play online | quit
+            row_count=7,  # title | bar | play with AI | play online | quit
             column_count=1,
             vertical_spacing=10,
             horizontal_spacing=5,
@@ -79,7 +85,6 @@ class StartScreenView(UIView):
         title_bar = UILabel(text="--------------------------------------",
                       font_size=10, font_name=TEXT_FONT,
                       text_color=TEXT_COLOR)
-        title_bar.with_padding(bottom=30)
         self.grid.add(title_bar, row=1)
 
         # ------------
@@ -92,9 +97,27 @@ class StartScreenView(UIView):
             self.window.show_view(start_game(self.data_manager))
 
         # ------------
+        load_game_button = UIFlatButton(text="Load Previous Game", height=BUTTON_HEIGHT,
+                                        width=BUTTON_WIDTH, style=BUTTON_STYLE)
+        self.grid.add(load_game_button, row=3)
+
+        if not DEFAULT_SAVE_NAME in data_manager.saved_games:
+            load_game_button.disabled = True
+
+        @load_game_button.event("on_click")
+        def on_load_game(_event):
+            self.window.show_view(start_game(self.data_manager, load_game=True))
+
+        # ------------
+        divider = UILabel(text="---------------------",
+                      font_size=10, font_name=TEXT_FONT,
+                      text_color=TEXT_COLOR)
+        self.grid.add(divider, row=4)
+
+        # ------------
         play_online_button = UIFlatButton(text="Play Online", height=BUTTON_HEIGHT,
                                           width=BUTTON_WIDTH, style=BUTTON_STYLE)
-        self.grid.add(play_online_button, row=3)
+        self.grid.add(play_online_button, row=5)
 
         @play_online_button.event("on_click")
         def on_play_online(_event):
@@ -104,7 +127,7 @@ class StartScreenView(UIView):
 
         quit_button = UIFlatButton(text="Quit", height=BUTTON_HEIGHT,
                                           width=BUTTON_WIDTH, style=BUTTON_STYLE)
-        self.grid.add(quit_button, row=4)
+        self.grid.add(quit_button, row=6)
 
         @quit_button.event("on_click")
         def quit_game(_):

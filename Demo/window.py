@@ -251,35 +251,19 @@ class Tile(arcade.SpriteSolidColor):
             BOARD_MATRIX[board_row][board_col] = letter
 
     @staticmethod
-    def lode_game_tiles(game_view, word, row, col, direction, player=None):
+    def place_tile(game_view, letter, row, col, player=None):
         """Places tiles on the board using saved game board matrix."""
         pixels = GameView.coordinates_to_px(row, col)
-        word_list = list(word)
-        board_row = 0
-        board_col = 0
-        x = 0
-        y = 0
+        x = pixels[0]
+        y = pixels[1]
 
-        for i, letter in enumerate(word_list):
-            # Calculate the position based on direction
-            if direction == "right":
-                x = pixels[0] + (i * TILE_SIZE)
-                y = pixels[1]
-                board_row = row
-                board_col = col + i
-            elif direction == "down":
-                x = pixels[0]
-                y = pixels[1] - (i * TILE_SIZE)
-                board_row = row + i
-                board_col = col
+        # Create and place tile
+        tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter, player=player)
+        tile.snap_to_grid()
+        tile.draggable = False
+        game_view.tiles.append(tile)
 
-            # Create and place tile
-            tile = Tile(x, y, TILE_SIZE, TILE_SIZE, -1, letter, player=player)
-            tile.snap_to_grid()
-            tile.draggable = False
-            game_view.tiles.append(tile)
-
-            BOARD_MATRIX[board_row][board_col] = letter
+        BOARD_MATRIX[row][col] = letter
 
 
 class GameView(arcade.View):
