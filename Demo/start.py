@@ -62,6 +62,7 @@ def get_word_from_tiles(added_tiles, board_matrix):
 
         if all(tile == "   " for tile in neighbors):
             # It's isolated — invalid placement
+            print("git tile func if a letter is by it's self")
             return "", [-1, -1], ""
 
     played_tiles.sort(key=lambda x: (x[0], x[1]))
@@ -130,6 +131,7 @@ def get_word_from_tiles(added_tiles, board_matrix):
             location = [row_start, col]
             return word, location, direction
         else:
+            print("git word form tile function was entred")
             return "", [-1, -1], ""  # Still invalid if no clear alignment
 
 
@@ -266,15 +268,15 @@ class GameController:
                                    player=self.current_player)
                 # self.current_player.rack.replenish_rack()
                 self.sync_board_with_matrix()  # ensure board is up-to-date
-            word = Word(ai_word, location, self.current_player, direction, self.board.board_array(),
-                        round_number, players, premium_spots, LETTER_VALUES)
-            # print("AI chosen word: ", word, location, direction)
-            self.board.place_word(ai_word, location, direction, self.current_player)
-            word.calculate_word_score()
-            if not ai_word == "":
-                Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
-                                   player=self.current_player)
-            self.sync_board_with_matrix()  # ensure board is up-to-date
+            # word = Word(ai_word, location, self.current_player, direction, self.board.board_array(),
+            #             round_number, players, premium_spots, LETTER_VALUES)
+            # # print("AI chosen word: ", word, location, direction)
+            # self.board.place_word(ai_word, location, direction, self.current_player)
+            # word.calculate_word_score()
+            # # if not ai_word == "":
+            # Tile.ai_place_tile(self.game_view, ai_word, location[0], location[1], direction,
+            #                    player=self.current_player)
+            # self.sync_board_with_matrix()  # ensure board is up-to-date
 
         print("\n" + self.current_player.get_name() + "'s score is: " + str(self.current_player.get_score()))
 
