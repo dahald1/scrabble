@@ -337,7 +337,7 @@ class GameView(arcade.View):
                         added_tiles.append((row, col, tile, tile.player))
                         # print(f"Detected tile change at ({row}, {col}): {prev_val} -> {curr_val}")
         if not added_tiles:
-            print("No added tiles detected.")
+            print("No added tiles detected. ")
         return added_tiles
 
     @staticmethod
@@ -366,7 +366,7 @@ class GameView(arcade.View):
         #     for col in range(GRID_SIZE):
         #         BOARD_MATRIX[row][col] = "   "
 
-        global prev_board
+        # global prev_board
 
         # Update matrix
         for tile in self.tiles:
