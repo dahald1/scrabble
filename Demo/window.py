@@ -14,7 +14,7 @@ import copy
 # Window Constants
 WINDOW_WIDTH = 720
 WINDOW_HEIGHT = 850
-WINDOW_TITLE = "Scrabble"
+WINDOW_TITLE = "Scrabble | Game"
 PADDING = 40
 
 # Tile Constants
@@ -463,6 +463,8 @@ class GameView(arcade.View):
 
         self.ui_manager.draw()
 
+    def on_show_view(self):
+        self.window.set_caption(WINDOW_TITLE)
 
     def on_update(self, delta_time):
         """

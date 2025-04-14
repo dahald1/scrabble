@@ -18,10 +18,6 @@ WINDOW_HEIGHT = 850
 WINDOW_TITLE = "Scrabble | Start Screen"
 
 # Color Constants
-BUTTON_DEFAULT_COLOR = arcade.color.LIGHT_RED_OCHRE
-BUTTON_HOVERED_COLOR = arcade.color.LIGHT_GREEN
-BUTTON_CLICKED_COLOR = arcade.color.LIGHT_PINK
-
 BACKGROUND_COLOR = arcade.color.LIGHT_PINK
 GRID_BACKGROUND_COLOR = arcade.color.BEIGE
 
