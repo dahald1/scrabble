@@ -177,7 +177,7 @@ class GameController:
                     self.board.board_array()[row][col] = matrix[row][col]
                 else:
                     self.board.board_array()[row][col] = "   "
-        # self.board.add_premium_squares()
+        self.board.add_premium_squares()
 
     def process_turn(self):
         """Process the current player's turn."""
