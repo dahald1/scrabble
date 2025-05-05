@@ -457,7 +457,7 @@ def start_game(data_manager, load_game=False):
 
     def new_on_key_press(key, modifiers):
         original_on_key_press(key, modifiers)
-        controller.on_key_press(key, modifiers)
+        controller.on_key_press(key)
 
     game_view.on_key_press = new_on_key_press
 
